@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>作文比赛评分系统</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  /* ── CONFIG: Replace with your Supabase values ── */
+  /* See README.md for setup instructions           */
+
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --border: #e8e6df;
+    --border-strong: #c8c5bc;
+    --text: #1a1917;
+    --text-muted: #6b6860;
+    --text-faint: #a09e99;
+    --accent: #2d5a3d;
+    --accent-light: #eaf2ec;
+    --accent-text: #1a3d27;
+    --warn: #8b4513;
+    --warn-light: #fdf0e8;
+    --gold: #b8860b;
+    --gold-light: #fef9e7;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Georgia', 'Noto Serif SC', serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-title {
+    font-size: 17px;
+    font-weight: normal;
+    letter-spacing: .03em;
+    color: var(--text);
+  }
+  .header-title span {
+    color: var(--accent);
+    font-style: italic;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* ── Screens ── */
+  .screen { display: none; padding: 2rem; max-width: 900px; margin: 0 auto; }
+  .screen.active { display: block; }
+
+  /* ── Judge Select ── */
+  .welcome-text {
+    text-align: center;
+    margin: 2rem 0 2.5rem;
+  }
+  .welcome-text h1 {
+    font-size: 26px;
+    font-weight: normal;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+  .welcome-text p {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  .judge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .judge-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1rem;
+    cursor: pointer;
+    transition: border-color .15s, transform .1s;
+    text-align: center;
+  }
+  .judge-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .judge-card:active { transform: scale(.98); }
+  .judge-avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    color: var(--accent-text);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    margin: 0 auto 10px;
+    font-style: italic;
+  }
+  .judge-card-name { font-size: 15px; margin-bottom: 4px; }
+  .judge-card-sub { font-size: 12px; color: var(--text-faint); }
+  .judge-card-progress {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--accent);
+    font-family: 'Courier New', monospace;
+  }
+
+  /* ── Workspace ── */
+  .workspace-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .ws-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    color: var(--accent-text);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-style: italic; flex-shrink: 0;
+  }
+  .ws-title { font-size: 16px; }
+  .ws-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .ws-actions { margin-left: auto; display: flex; gap: 8px; }
+
+  .btn {
+    padding: 7px 16px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    transition: background .1s;
+  }
+  .btn:hover { background: var(--bg); }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .btn-primary:hover { background: #234a31; }
+  .btn-submit {
+    background: var(--gold);
+    color: #fff;
+    border-color: var(--gold);
+  }
+  .btn-submit:hover { background: #9a7008; }
+
+  /* ── Group Pills ── */
+  .group-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+  .group-pill {
+    padding: 5px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: 20px;
+    background: var(--surface);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    transition: all .15s;
+  }
+  .group-pill.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .group-pill-count {
+    font-size: 11px;
+    opacity: .75;
+    margin-left: 4px;
+  }
+
+  /* ── Main layout ── */
+  .main-layout {
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  /* ── Student list ── */
+  .student-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .student-panel-header {
+    padding: 10px 14px;
+    font-size: 11px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    border-bottom: 1px solid var(--border);
+  }
+  .student-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background .1s;
+    font-size: 13px;
+  }
+  .student-item:last-child { border-bottom: none; }
+  .student-item:hover { background: var(--bg); }
+  .student-item.active {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    padding-left: 11px;
+  }
+  .student-item.scored .s-dot {
+    background: var(--accent);
+  }
+  .s-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--border-strong);
+    flex-shrink: 0;
+  }
+  .s-name { flex: 1; color: var(--text); }
+  .s-status {
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+  .student-item.scored .s-status {
+    color: var(--accent);
+  }
+
+  /* ── Essay panel ── */
+  .essay-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .essay-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .essay-header-name { font-size: 16px; }
+  .essay-header-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .essay-layout {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+  }
+  .essay-content {
+    padding: 1.5rem 1.75rem;
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--text);
+    border-right: 1px solid var(--border);
+    min-height: 360px;
+    max-height: 500px;
+    overflow-y: auto;
+  }
+  .essay-content p { margin-bottom: 1rem; }
+  .essay-content p:last-child { margin-bottom: 0; }
+
+  /* ── Scoring panel ── */
+  .scoring-panel {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .scoring-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text-faint);
+    margin-bottom: 0.25rem;
+  }
+  .score-item { }
+  .score-item-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+  .score-item-name { font-size: 13px; color: var(--text); }
+  .score-item-max { font-size: 11px; color: var(--text-faint); }
+  .score-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .score-input {
+    width: 72px;
+    padding: 6px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-size: 18px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-align: center;
+    background: var(--bg);
+    color: var(--text);
+    transition: border-color .15s;
+  }
+  .score-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--surface);
+  }
+  .score-bar-track {
+    flex: 1;
+    height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .score-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width .2s;
+  }
+
+  .score-divider { border: none; border-top: 1px solid var(--border); }
+
+  .total-display {
+    text-align: center;
+    padding: 1rem 0;
+  }
+  .total-num {
+    font-size: 38px;
+    font-family: 'Courier New', monospace;
+    color: var(--text);
+    line-height: 1;
+  }
+  .total-denom {
+    font-size: 12px;
+    color: var(--text-faint);
+    margin-top: 4px;
+  }
+
+  .score-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .score-actions .btn { width: 100%; text-align: center; font-size: 13px; }
+
+  /* ── Empty state ── */
+  .empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    color: var(--text-faint);
+    font-size: 13px;
+    font-style: italic;
+  }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text);
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 20px;
+    font-size: 13px;
+    opacity: 0;
+    transition: opacity .25s, transform .25s;
+    pointer-events: none;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ── Loading ── */
+  .loading {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--text-muted);
+    z-index: 100;
+  }
+  .loading.hidden { display: none; }
+
+  /* ── Submitted state ── */
+  .submitted-banner {
+    background: var(--gold-light);
+    border: 1px solid #e8d080;
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    font-size: 13px;
+    color: var(--gold);
+    text-align: center;
+  }
+
+  @media (max-width: 680px) {
+    .screen { padding: 1rem; }
+    .main-layout { grid-template-columns: 1fr; }
+    .essay-layout { grid-template-columns: 1fr; }
+    .essay-content { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<div class="loading" id="loading">连接中…</div>
+
+<div class="header">
+  <div class="header-title">作文比赛 · <span>评分系统</span></div>
+  <div class="header-right" id="header-right"></div>
+</div>
+
+<!-- Screen 1: Judge selection -->
+<div class="screen active" id="screen-select">
+  <div class="welcome-text">
+    <h1>请选择您的姓名</h1>
+    <p>选择后进入您的评分工作台</p>
+  </div>
+  <div class="judge-grid" id="judge-grid">
+    <div style="color:var(--text-faint);font-size:13px">加载中…</div>
+  </div>
+</div>
+
+<!-- Screen 2: Judge workspace -->
+<div class="screen" id="screen-workspace">
+  <div class="workspace-header">
+    <div class="ws-avatar" id="ws-avatar"></div>
+    <div>
+      <div class="ws-title" id="ws-title"></div>
+      <div class="ws-sub" id="ws-sub"></div>
+    </div>
+    <div class="ws-actions">
+      <button class="btn" onclick="backToSelect()">切换</button>
+      <button class="btn btn-submit" id="btn-submit-all" onclick="submitAll()">提交全部评分</button>
+    </div>
+  </div>
+  <div id="submitted-banner-wrap"></div>
+  <div class="group-pills" id="group-pills"></div>
+  <div class="main-layout">
+    <div class="student-panel">
+      <div class="student-panel-header">考生列表</div>
+      <div id="student-list"></div>
+    </div>
+    <div class="essay-panel" id="essay-panel">
+      <div class="empty-state">← 选择考生开始评分</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════
+// CONFIG — replace these two values
+// ════════════════════════════════════════════
+const SUPABASE_URL = 'https://cmnueivbcqkgjionubne.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbnVlaXZiY3FrZ2ppb251Ym5lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5MzE2ODQsImV4cCI6MjA5MjUwNzY4NH0.4hESinCQ1zQIAC72lTw2kErDNGkEXb7TZNQipqesEdA';
+// ════════════════════════════════════════════
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let state = {
+  judges: [],
+  students: [],
+  scores: {},       // { judgeId: { studentId: {content, expression, creativity, submitted} } }
+  currentJudge: null,
+  currentGroup: null,
+  currentStudent: null,
+};
+
+// ── Init ─────────────────────────────────────
+async function init() {
+  const loadingEl = document.getElementById('loading');
+  try {
+    loadingEl.textContent = '连接数据库…';
+    const judgesRes = await db.from('judges').select('*').order('name');
+    if (judgesRes.error) throw new Error('judges: ' + judgesRes.error.message);
+    loadingEl.textContent = '载入考生…';
+    const studentsRes = await db.from('students').select('*').order('name');
+    if (studentsRes.error) throw new Error('students: ' + studentsRes.error.message);
+    loadingEl.textContent = '载入评分…';
+    const scoresRes = await db.from('scores').select('*');
+    if (scoresRes.error) throw new Error('scores: ' + scoresRes.error.message);
+    state.judges = judgesRes.data || [];
+    state.students = studentsRes.data || [];
+    (scoresRes.data || []).forEach(s => {
+      if (!state.scores[s.judge_id]) state.scores[s.judge_id] = {};
+      state.scores[s.judge_id][s.student_id] = s;
+    });
+    renderJudgeGrid();
+    subscribeRealtime();
+    loadingEl.classList.add('hidden');
+  } catch(e) {
+    loadingEl.textContent = '错误：' + e.message;
+    loadingEl.style.fontSize = '13px';
+    loadingEl.style.padding = '2rem';
+    loadingEl.style.color = '#c0392b';
+    console.error(e);
+  }
+}
+
+// ── Realtime ─────────────────────────────────
+function subscribeRealtime() {
+  db.channel('scores').on('postgres_changes',
+    { event: '*', schema: 'public', table: 'scores' },
+    payload => {
+      const s = payload.new || payload.old;
+      if (!s) return;
+      if (!state.scores[s.judge_id]) state.scores[s.judge_id] = {};
+      if (payload.eventType === 'DELETE') {
+        delete state.scores[s.judge_id][s.student_id];
+      } else {
+        state.scores[s.judge_id][s.student_id] = s;
+      }
+    }
+  ).subscribe();
+}
+
+// ── Helpers ──────────────────────────────────
+function getJudgeStudents(judgeId) {
+  const judge = state.judges.find(j => j.id === judgeId);
+  if (!judge) return [];
+  return state.students.filter(s =>
+    judge.groups.some(g => g.grade === s.grade && g.stream === s.stream)
+  );
+}
+
+function getScore(judgeId, studentId) {
+  return state.scores[judgeId]?.[studentId] || null;
+}
+
+function isScored(judgeId, studentId) {
+  const sc = getScore(judgeId, studentId);
+  return sc && sc.content !== null && sc.expression !== null && sc.creativity !== null;
+}
+
+function totalScore(sc) {
+  if (!sc || sc.content === null || sc.expression === null || sc.creativity === null) return null;
+  return sc.content + sc.expression + sc.creativity;
+}
+
+function isSubmitted(judgeId) {
+  const students = getJudgeStudents(judgeId);
+  return students.length > 0 && students.every(s => {
+    const sc = getScore(judgeId, s.id);
+    return sc && sc.submitted;
+  });
+}
+
+function getGroups(judgeId) {
+  const judge = state.judges.find(j => j.id === judgeId);
+  return judge ? judge.groups : [];
+}
+
+// ── Toast ─────────────────────────────────────
+function toast(msg, duration = 2000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ── Screen 1: Judge Grid ──────────────────────
+function renderJudgeGrid() {
+  const grid = document.getElementById('judge-grid');
+  if (!state.judges.length) {
+    grid.innerHTML = '<div style="color:var(--text-faint);font-size:13px">暂无老师数据，请先在 Supabase 插入数据。</div>';
+    return;
+  }
+  grid.innerHTML = state.judges.map(j => {
+    const students = getJudgeStudents(j.id);
+    const scored = students.filter(s => isScored(j.id, s.id)).length;
+    const sub = isSubmitted(j.id);
+    const initials = j.name[0];
+    return `<div class="judge-card" onclick="selectJudge('${j.id}')">
+      <div class="judge-avatar">${initials}</div>
+      <div class="judge-card-name">${j.name}</div>
+      <div class="judge-card-sub">${students.length} 位考生</div>
+      <div class="judge-card-progress">${scored}/${students.length} ${sub ? '✓ 已提交' : '已评'}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Screen 2: Workspace ───────────────────────
+function selectJudge(judgeId) {
+  state.currentJudge = judgeId;
+  const judge = state.judges.find(j => j.id === judgeId);
+  const students = getJudgeStudents(judgeId);
+  const groups = getGroups(judgeId);
+  state.currentGroup = groups[0] ? `${groups[0].grade} ${groups[0].stream}` : null;
+  state.currentStudent = null;
+
+  document.getElementById('ws-avatar').textContent = judge.name[0];
+  document.getElementById('ws-title').textContent = judge.name;
+  updateWsSub();
+
+  document.getElementById('screen-select').classList.remove('active');
+  document.getElementById('screen-workspace').classList.add('active');
+
+  const sub = isSubmitted(judgeId);
+  document.getElementById('submitted-banner-wrap').innerHTML = sub
+    ? '<div class="submitted-banner">您已完成提交，感谢！如需修改请联系管理员。</div>' : '';
+  document.getElementById('btn-submit-all').disabled = sub;
+  document.getElementById('btn-submit-all').style.opacity = sub ? '.5' : '1';
+
+  renderGroupPills();
+  renderStudentList();
+  renderEssayPanel(null);
+}
+
+function updateWsSub() {
+  const students = getJudgeStudents(state.currentJudge);
+  const scored = students.filter(s => isScored(state.currentJudge, s.id)).length;
+  document.getElementById('ws-sub').textContent = `${scored} / ${students.length} 已完成评分`;
+}
+
+function backToSelect() {
+  state.currentJudge = null;
+  state.currentStudent = null;
+  document.getElementById('screen-workspace').classList.remove('active');
+  document.getElementById('screen-select').classList.add('active');
+  renderJudgeGrid();
+}
+
+// ── Group Pills ──────────────────────────────
+function renderGroupPills() {
+  const groups = getGroups(state.currentJudge);
+  const pills = document.getElementById('group-pills');
+  pills.innerHTML = groups.map(g => {
+    const label = `${g.grade} ${g.stream}`;
+    const students = state.students.filter(s => s.grade === g.grade && s.stream === g.stream);
+    const scored = students.filter(s => isScored(state.currentJudge, s.id)).length;
+    return `<button class="group-pill${state.currentGroup === label ? ' active' : ''}"
+      onclick="selectGroup('${label}')">${label}<span class="group-pill-count">${scored}/${students.length}</span></button>`;
+  }).join('');
+}
+
+function selectGroup(label) {
+  state.currentGroup = label;
+  state.currentStudent = null;
+  renderGroupPills();
+  renderStudentList();
+  renderEssayPanel(null);
+}
+
+// ── Student List ─────────────────────────────
+function renderStudentList() {
+  const [grade, stream] = (state.currentGroup || '').split(' ');
+  const students = getJudgeStudents(state.currentJudge)
+    .filter(s => s.grade === grade && s.stream === stream);
+  const list = document.getElementById('student-list');
+  list.innerHTML = students.map(s => {
+    const scored = isScored(state.currentJudge, s.id);
+    const active = state.currentStudent === s.id;
+    return `<div class="student-item${scored ? ' scored' : ''}${active ? ' active' : ''}"
+      onclick="selectStudent('${s.id}')">
+      <div class="s-dot"></div>
+      <span class="s-name">${s.name}</span>
+      <span class="s-status">${scored ? '已评' : '待评'}</span>
+    </div>`;
+  }).join('') || '<div style="padding:1rem;font-size:13px;color:var(--text-faint)">暂无考生</div>';
+}
+
+// ── Essay Panel ──────────────────────────────
+function renderEssayPanel(studentId) {
+  const panel = document.getElementById('essay-panel');
+  if (!studentId) {
+    panel.innerHTML = '<div class="empty-state">← 选择考生开始评分</div>';
+    return;
+  }
+  const s = state.students.find(x => x.id === studentId);
+  const sc = getScore(state.currentJudge, studentId) || {};
+  const sub = isSubmitted(state.currentJudge);
+
+  const maxes = { content: 40, expression: 40, creativity: 20 };
+  const labels = { content: '内容', expression: '表达', creativity: '创意' };
+  const tot = totalScore(sc);
+
+  // ── build manuscript pages ──
+  const msHtml = buildManuscriptHtml(s.essay || '');
+
+  const scoreFields = Object.keys(maxes).map(field => {
+    const val = sc[field] !== null && sc[field] !== undefined ? sc[field] : '';
+    const pct = val !== '' ? Math.round(val / maxes[field] * 100) : 0;
+    return `<div class="score-item">
+      <div class="score-item-label">
+        <span class="score-item-name">${labels[field]}</span>
+        <span class="score-item-max">满分 ${maxes[field]}</span>
+      </div>
+      <div class="score-input-wrap">
+        <input type="number" class="score-input" min="0" max="${maxes[field]}"
+          value="${val}" placeholder="—"
+          ${sub ? 'disabled' : ''}
+          oninput="onScoreChange('${studentId}','${field}',this.value,${maxes[field]})"
+          id="input-${field}"/>
+        <div class="score-bar-track">
+          <div class="score-bar-fill" id="bar-${field}" style="width:${pct}%"></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  panel.innerHTML = `
+    <div class="essay-header">
+      <div>
+        <div class="essay-header-name">${s.name}</div>
+        <div class="essay-header-meta">${s.grade} · ${s.stream}</div>
+      </div>
+    </div>
+    <div class="essay-layout">
+      <div class="essay-manuscript" id="ms-container-${studentId}">
+        <div class="manuscript-pages" id="ms-pages-${studentId}">${msHtml}</div>
+      </div>
+      <div class="scoring-panel">
+        <div class="scoring-title">评分</div>
+        ${scoreFields}
+        <hr class="score-divider"/>
+        <div class="total-display">
+          <div class="total-num" id="total-num">${tot !== null ? tot : '—'}</div>
+          <div class="total-denom">/ 100 总分</div>
+        </div>
+        <div class="score-actions">
+          ${!sub ? '<button class="btn btn-primary" onclick="saveScore(\'' + studentId + '\')">储存评分</button><button class="btn" onclick="nextStudent(\'' + studentId + '\')">下一位 →</button>' : ''}
+        </div>
+      </div>
+    </div>`;
+  initManuscriptForStudent(studentId);
+}
+
+function selectStudent(studentId) {
+  state.currentStudent = studentId;
+  renderStudentList();
+  renderEssayPanel(studentId);
+}
+
+function onScoreChange(studentId, field, val, max) {
+  let n = parseInt(val);
+  if (isNaN(n)) n = null;
+  else if (n < 0) n = 0;
+  else if (n > max) n = max;
+  const pct = n !== null ? Math.round(n / max * 100) : 0;
+  const bar = document.getElementById(`bar-${field}`);
+  if (bar) bar.style.width = pct + '%';
+  // Update local cache so total updates immediately
+  if (!state.scores[state.currentJudge]) state.scores[state.currentJudge] = {};
+  if (!state.scores[state.currentJudge][studentId]) state.scores[state.currentJudge][studentId] = {};
+  state.scores[state.currentJudge][studentId][field] = n;
+  const sc = state.scores[state.currentJudge][studentId];
+  const tot = totalScore(sc);
+  const tn = document.getElementById('total-num');
+  if (tn) tn.textContent = tot !== null ? tot : '—';
+}
+
+async function saveScore(studentId) {
+  const sc = state.scores[state.currentJudge]?.[studentId] || {};
+  if (sc.content === null || sc.content === undefined ||
+      sc.expression === null || sc.expression === undefined ||
+      sc.creativity === null || sc.creativity === undefined) {
+    toast('请填写全部三项分数');
+    return;
+  }
+  try {
+    const { error } = await db.from('scores').upsert({
+      judge_id: state.currentJudge,
+      student_id: studentId,
+      content: sc.content,
+      expression: sc.expression,
+      creativity: sc.creativity,
+      submitted: false,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'judge_id,student_id' });
+    if (error) throw error;
+    if (!state.scores[state.currentJudge]) state.scores[state.currentJudge] = {};
+    state.scores[state.currentJudge][studentId] = { ...sc, submitted: false };
+    renderStudentList();
+    renderGroupPills();
+    updateWsSub();
+    toast('已储存 ✓');
+  } catch (e) {
+    toast('储存失败，请重试');
+    console.error(e);
+  }
+}
+
+function nextStudent(studentId) {
+  saveScore(studentId).then(() => {
+    const [grade, stream] = (state.currentGroup || '').split(' ');
+    const students = getJudgeStudents(state.currentJudge)
+      .filter(s => s.grade === grade && s.stream === stream);
+    const idx = students.findIndex(s => s.id === studentId);
+    if (idx < students.length - 1) {
+      selectStudent(students[idx + 1].id);
+    } else {
+      toast('本组已到最后一位');
+    }
+  });
+}
+
+async function submitAll() {
+  const students = getJudgeStudents(state.currentJudge);
+  const unscored = students.filter(s => !isScored(state.currentJudge, s.id));
+  if (unscored.length > 0) {
+    toast(`还有 ${unscored.length} 位考生未完成评分`);
+    return;
+  }
+  if (!confirm('确认提交全部评分？提交后无法修改。')) return;
+  try {
+    const updates = students.map(s => ({
+      judge_id: state.currentJudge,
+      student_id: s.id,
+      ...state.scores[state.currentJudge][s.id],
+      submitted: true,
+      updated_at: new Date().toISOString(),
+    }));
+    const { error } = await db.from('scores').upsert(updates, { onConflict: 'judge_id,student_id' });
+    if (error) throw error;
+    students.forEach(s => {
+      state.scores[state.currentJudge][s.id].submitted = true;
+    });
+    toast('评分已提交！感谢您的辛苦 ✓', 3000);
+    document.getElementById('submitted-banner-wrap').innerHTML =
+      '<div class="submitted-banner">您已完成提交，感谢！如需修改请联系管理员。</div>';
+    document.getElementById('btn-submit-all').disabled = true;
+    document.getElementById('btn-submit-all').style.opacity = '.5';
+    renderStudentList();
+    renderGroupPills();
+  } catch (e) {
+    toast('提交失败，请重试');
+    console.error(e);
+  }
+}
+
+// ════════════════════════════════════════════
+// 稿纸渲染引擎（改编自竞赛稿纸模块）
+// ════════════════════════════════════════════
+const MS_COLS = 20, MS_ROWS = 22;
+const MS_GRID_COLOR = '#4caf50';
+
+function buildManuscriptHtml(text) {
+  const pages = paginateText(text);
+  if (!pages.length) pages.push([]);
+  return pages.map(function(pageChars, pi) {
+    var pageNum = pages.length > 1 ? '<div class="ms-page-num">第 ' + (pi+1) + ' 页</div>' : '';
+    return '<div class="ms-page-block" data-page="' + pi + '">' +
+      '<div class="ms-grid-wrap">' +
+        '<canvas class="ms-grid-canvas"></canvas>' +
+        '<div class="ms-text-layer"></div>' +
+      '</div>' +
+      pageNum +
+    '</div>';
+  }).join('');
+}
+
+function paginateText(text) {
+  var pages = [];
+  var row = 0, col = 0, page = [];
+  var NEWLINE = '\n';
+  for (var i = 0; i < text.length; i++) {
+    var ch = text[i];
+    if (ch === NEWLINE) {
+      row++; col = 0;
+    } else {
+      page.push({ ch: ch, row: row % MS_ROWS, col: col });
+      col++;
+      if (col >= MS_COLS) { row++; col = 0; }
+    }
+    if (row >= MS_ROWS) {
+      pages.push(page); page = []; row = 0; col = 0;
+    }
+  }
+  if (page.length || !pages.length) pages.push(page);
+  return pages;
+}
+
+function renderManuscript(containerId, text) {
+  const container = document.getElementById('ms-pages-' + containerId);
+  if (!container) return;
+  const dpr = window.devicePixelRatio || 1;
+
+  container.querySelectorAll('.ms-page-block').forEach((block, pi) => {
+    const wrap = block.querySelector('.ms-grid-wrap');
+    const cv = block.querySelector('.ms-grid-canvas');
+    const textLayer = block.querySelector('.ms-text-layer');
+    if (!wrap || !cv || !textLayer) return;
+
+    const TW = wrap.clientWidth || wrap.parentNode.clientWidth || 400;
+    const cW = TW / MS_COLS;
+    const maxCH = Math.floor(957 / 31.8);
+    const cH = Math.min(cW, maxCH);
+    const auxH = Math.round(cH * 0.4);
+    const gH = cH + auxH;
+    const TH = (MS_ROWS - 1) * gH + cH;
+    const BOT = 2;
+
+    // Draw grid on canvas
+    cv.width = Math.round(TW * dpr);
+    cv.height = Math.round((TH + BOT) * dpr);
+    cv.style.width = TW + 'px';
+    cv.style.height = (TH + BOT) + 'px';
+    wrap.style.height = (TH + BOT) + 'px';
+
+    const ctx = cv.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, TW, TH + BOT);
+    ctx.strokeStyle = MS_GRID_COLOR;
+    ctx.lineWidth = 0.7;
+
+    for (let r = 0; r < MS_ROWS; r++) {
+      const base = r * gH, wb = base + cH, ab = wb + auxH;
+      if (r < MS_ROWS - 1) {
+        ctx.beginPath(); ctx.moveTo(0, wb); ctx.lineTo(TW, wb); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, ab); ctx.lineTo(TW, ab); ctx.stroke();
+      }
+      for (let c = 1; c < MS_COLS; c++) {
+        ctx.beginPath(); ctx.moveTo(c * cW, base); ctx.lineTo(c * cW, wb); ctx.stroke();
+      }
+    }
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(0.75, 0.75, TW - 1.5, TH + BOT - 1.5);
+
+    // Render characters
+    textLayer.innerHTML = '';
+    textLayer.style.width = TW + 'px';
+    textLayer.style.height = TH + 'px';
+
+    const fs = Math.round(cH * 0.60);
+    const topOffset = Math.round((cH - fs) / 2);
+    const translateY = Math.round(fs * 0.08);
+
+    // Re-paginate to get this page's chars
+    const pages = paginateText(text);
+    const pageChars = pages[pi] || [];
+
+    pageChars.forEach(({ ch, row: r, col: c }) => {
+      const span = document.createElement('span');
+      span.textContent = ch;
+      span.style.cssText = `position:absolute;left:${c*cW}px;top:${r*gH+topOffset}px;` +
+        `width:${cW}px;height:${fs}px;display:flex;align-items:center;justify-content:center;` +
+        `font-size:${fs}px;font-weight:100;line-height:1;color:#1a2a3a;` +
+        `font-family:"SimSun","宋体","STSong",serif;box-sizing:border-box;` +
+        `-webkit-font-smoothing:antialiased;transform:translateY(-${translateY}px);`;
+      textLayer.appendChild(span);
+    });
+  });
+}
+
+function initManuscriptForStudent(studentId) {
+  // Run after DOM is painted
+  requestAnimationFrame(() => {
+    const s = state.students.find(x => x.id === studentId);
+    if (!s) return;
+    renderManuscript(studentId, s.essay || '');
+  });
+}
+// ════════════════════════════════════════════
+
+
+init();
+</script>
+</body>
+</html>

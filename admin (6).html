@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>主控台 — 作文比赛</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --border: #e8e6df;
+    --border-strong: #c8c5bc;
+    --text: #1a1917;
+    --text-muted: #6b6860;
+    --text-faint: #a09e99;
+    --accent: #2d5a3d;
+    --accent-light: #eaf2ec;
+    --accent-text: #1a3d27;
+    --gold: #b8860b;
+    --gold-light: #fef9e7;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Georgia', 'Noto Serif SC', serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Login ── */
+  .login-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .login-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2.5rem 2rem;
+    width: 340px;
+    text-align: center;
+  }
+  .login-box h1 {
+    font-size: 20px;
+    font-weight: normal;
+    margin-bottom: 0.5rem;
+  }
+  .login-box p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    font-style: italic;
+  }
+  .login-box input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-family: 'Courier New', monospace;
+    letter-spacing: .2em;
+    text-align: center;
+    background: var(--bg);
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .login-box input:focus { outline: none; border-color: var(--accent); }
+  .login-box .btn-login {
+    width: 100%;
+    padding: 10px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .login-box .btn-login:hover { background: #234a31; }
+  .login-error { color: #c0392b; font-size: 13px; margin-top: 10px; }
+
+  /* ── Layout ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-title { font-size: 17px; font-weight: normal; letter-spacing: .03em; }
+  .header-title span { color: var(--accent); font-style: italic; }
+  .header-badge {
+    font-size: 11px;
+    background: var(--gold-light);
+    color: var(--gold);
+    border: 1px solid #e8d080;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  .admin-wrap {
+    max-width: 1050px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  /* ── Stat cards ── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 1.75rem;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1rem;
+    text-align: center;
+  }
+  .stat-n {
+    font-size: 30px;
+    font-family: 'Courier New', monospace;
+    color: var(--text);
+    line-height: 1.1;
+  }
+  .stat-l {
+    font-size: 12px;
+    color: var(--text-faint);
+    margin-top: 4px;
+  }
+
+  /* ── Section ── */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1.25rem;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .section-title { font-size: 14px; font-weight: normal; letter-spacing: .02em; }
+  .section-body { padding: 1.25rem 1.5rem; }
+
+  /* ── Progress ── */
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .progress-row:last-child { border-bottom: none; }
+  .prog-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    color: var(--accent-text);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-style: italic; flex-shrink: 0;
+  }
+  .prog-name { font-size: 13px; min-width: 70px; }
+  .prog-track {
+    flex: 1;
+    height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .prog-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width .4s;
+  }
+  .prog-fill.pending { background: #e8b860; }
+  .prog-count { font-size: 12px; color: var(--text-muted); min-width: 40px; text-align: right; }
+  .prog-status {
+    font-size: 11px;
+    min-width: 50px;
+    text-align: right;
+  }
+  .prog-status.done { color: var(--accent); }
+  .prog-status.pending { color: var(--gold); }
+
+  /* ── Filter pills ── */
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  .filter-pill {
+    padding: 4px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: 20px;
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .filter-pill.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  /* ── Result table ── */
+  .rtable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    table-layout: fixed;
+  }
+  .rtable th {
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: normal;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    border-bottom: 1px solid var(--border);
+  }
+  .rtable td {
+    padding: 11px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .rtable tr:last-child td { border-bottom: none; }
+  .rtable tr:hover td { background: var(--bg); }
+
+  .rank-num {
+    font-family: 'Courier New', monospace;
+    font-size: 15px;
+    font-weight: bold;
+  }
+  .rank-1 { color: #b8860b; }
+  .rank-2 { color: #7a7a7a; }
+  .rank-3 { color: #8b4513; }
+
+  .student-name { font-size: 14px; }
+  .group-tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--bg);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    margin-top: 3px;
+  }
+  .avg-score {
+    font-size: 20px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    color: var(--text);
+  }
+  .grade-pill {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-family: sans-serif;
+  }
+  .grade-te { background: #fef9e7; color: #8b6914; border: 1px solid #e8d080; }
+  .grade-ex { background: var(--accent-light); color: var(--accent-text); border: 1px solid #b0d8b8; }
+  .grade-gd { background: #e8f4fb; color: #1a5a7a; border: 1px solid #a0cce0; }
+  .grade-ok { background: #f5f0e8; color: #7a6030; border: 1px solid #d8c898; }
+  .grade-na { background: var(--bg); color: var(--text-faint); border: 1px solid var(--border); }
+
+  .judge-scores-list { display: flex; flex-direction: column; gap: 3px; margin-top: 2px; }
+  .judge-score-row { font-size: 12px; color: var(--text-muted); }
+  .judge-score-row strong { color: var(--text); font-family: 'Courier New', monospace; }
+  .subscores { font-size: 11px; color: var(--text-faint); }
+
+  /* ── Breakdown table ── */
+  .btable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .btable th {
+    padding: 7px 12px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: normal;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    border-bottom: 1px solid var(--border);
+  }
+  .btable td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .btable tr:last-child td { border-bottom: none; }
+  .btable tr:hover td { background: var(--bg); }
+  .judge-section { margin-bottom: 1.5rem; }
+  .judge-section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .judge-section-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    color: var(--accent-text);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-style: italic; flex-shrink: 0;
+  }
+  .judge-section-name { font-size: 14px; }
+  .judge-section-sub { font-size: 12px; color: var(--text-faint); margin-left: auto; }
+
+  /* ── Export ── */
+  .btn {
+    padding: 7px 16px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    transition: background .1s;
+  }
+  .btn:hover { background: var(--bg); }
+
+  /* ── Loading ── */
+  .loading {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: var(--text-muted); z-index: 100;
+  }
+  .loading.hidden { display: none; }
+
+  .last-updated {
+    font-size: 12px;
+    color: var(--text-faint);
+    font-style: italic;
+  }
+
+  @media (max-width: 680px) {
+    .admin-wrap { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="loading" id="loading">连接中…</div>
+
+<!-- Admin dashboard -->
+<div id="admin-screen">
+  <div class="header">
+    <div class="header-title">作文比赛 · <span>主控台</span></div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="last-updated" id="last-updated"></span>
+      <button class="btn" onclick="loadData()">刷新</button>
+      <button class="btn" onclick="exportCSV()">导出 CSV</button>
+      <span class="header-badge">管理员</span>
+    </div>
+  </div>
+
+  <div class="admin-wrap">
+    <div class="stat-row" id="stat-row"></div>
+
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">评分进度</span>
+      </div>
+      <div class="section-body" style="padding:0.75rem 1.5rem">
+        <div id="progress-list"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">最终排名</span>
+        <div class="filter-row" style="margin:0" id="result-filters"></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="rtable" id="result-table">
+          <thead>
+            <tr>
+              <th style="width:60px">名次</th>
+              <th style="width:140px">考生</th>
+              <th style="width:80px">综合分</th>
+              <th>各老师评分</th>
+              <th style="width:70px">等级</th>
+            </tr>
+          </thead>
+          <tbody id="result-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">老师评分明细</span>
+      </div>
+      <div class="section-body" id="breakdown"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+// CONFIG — must match index.html
+// ════════════════════════════════════════════
+const SUPABASE_URL = 'https://cmnueivbcqkgjionubne.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbnVlaXZiY3FrZ2ppb251Ym5lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5MzE2ODQsImV4cCI6MjA5MjUwNzY4NH0.4hESinCQ1zQIAC72lTw2kErDNGkEXb7TZNQipqesEdA';
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let state = { judges: [], students: [], scores: [] };
+let resultGroup = null;
+
+async function loadData() {
+  const loadingEl = document.getElementById('loading');
+  loadingEl.classList.remove('hidden');
+  loadingEl.textContent = '连接数据库…';
+  loadingEl.style.color = '';
+  try {
+    const j = await db.from('judges').select('*').order('name');
+    if (j.error) throw new Error('judges: ' + j.error.message);
+    const s = await db.from('students').select('*').order('name');
+    if (s.error) throw new Error('students: ' + s.error.message);
+    const sc = await db.from('scores').select('*');
+    if (sc.error) throw new Error('scores: ' + sc.error.message);
+    state.judges = j.data || [];
+    state.students = s.data || [];
+    state.scores = sc.data || [];
+    renderAll();
+    document.getElementById('last-updated').textContent =
+      '更新于 ' + new Date().toLocaleTimeString('zh-SG');
+    loadingEl.classList.add('hidden');
+  } catch(e) {
+    loadingEl.textContent = '错误：' + e.message;
+    loadingEl.style.color = '#c0392b';
+    loadingEl.style.fontSize = '13px';
+    loadingEl.style.padding = '2rem';
+    console.error(e);
+  }
+}
+
+function subscribeRealtime() {
+  db.channel('admin-scores').on('postgres_changes',
+    { event: '*', schema: 'public', table: 'scores' },
+    () => loadData()
+  ).subscribe();
+}
+
+// ── Helpers ──────────────────────────────────
+function getScoreObj(judgeId, studentId) {
+  return state.scores.find(s => s.judge_id === judgeId && s.student_id === studentId) || null;
+}
+
+function totalOf(sc) {
+  if (!sc || sc.content === null || sc.expression === null || sc.creativity === null) return null;
+  return sc.content + sc.expression + sc.creativity;
+}
+
+function getGroups() {
+  const set = new Set();
+  state.students.forEach(s => set.add(`${s.grade} ${s.stream}`));
+  return [...set].sort();
+}
+
+function computeResults() {
+  return state.students.map(s => {
+    const judgeScores = [];
+    let sum = 0, count = 0;
+    state.judges.forEach(j => {
+      const assigned = j.groups.some(g => g.grade === s.grade && g.stream === s.stream);
+      if (!assigned) return;
+      const sc = getScoreObj(j.id, s.id);
+      const tot = totalOf(sc);
+      judgeScores.push({ judge: j, sc, total: tot });
+      if (tot !== null) { sum += tot; count++; }
+    });
+    const avg = count > 0 ? Math.round(sum / count * 10) / 10 : null;
+    return { student: s, avg, judgeScores };
+  }).sort((a, b) => (b.avg || 0) - (a.avg || 0));
+}
+
+function gradeLabel(avg) {
+  if (avg === null) return { text: '待定', cls: 'grade-na' };
+  if (avg >= 90) return { text: '特优', cls: 'grade-te' };
+  if (avg >= 80) return { text: '优秀', cls: 'grade-ex' };
+  if (avg >= 70) return { text: '良好', cls: 'grade-gd' };
+  if (avg >= 60) return { text: '合格', cls: 'grade-ok' };
+  return { text: '待定', cls: 'grade-na' };
+}
+
+// ── Render all ───────────────────────────────
+function renderAll() {
+  const results = computeResults();
+  renderStats(results);
+  renderProgress();
+  renderFilters();
+  renderResults(results);
+  renderBreakdown(results);
+}
+
+function renderStats(results) {
+  const totalStudents = state.students.length;
+  const scoredStudents = results.filter(r => r.avg !== null).length;
+  const submittedJudges = state.judges.filter(j => {
+    const jStudents = state.students.filter(s => j.groups.some(g => g.grade === s.grade && g.stream === s.stream));
+    return jStudents.length > 0 && jStudents.every(s => {
+      const sc = getScoreObj(j.id, s.id);
+      return sc && sc.submitted;
+    });
+  }).length;
+
+  document.getElementById('stat-row').innerHTML = [
+    [totalStudents, '参赛考生'],
+    [scoredStudents, '已完成评分'],
+    [`${submittedJudges}/${state.judges.length}`, '老师已提交'],
+    [state.judges.length, '评审老师'],
+  ].map(([n, l]) => `<div class="stat-card"><div class="stat-n">${n}</div><div class="stat-l">${l}</div></div>`).join('');
+}
+
+function renderProgress() {
+  document.getElementById('progress-list').innerHTML = state.judges.map(j => {
+    const students = state.students.filter(s =>
+      j.groups.some(g => g.grade === s.grade && g.stream === s.stream));
+    const scored = students.filter(s => {
+      const sc = getScoreObj(j.id, s.id);
+      return sc && sc.content !== null && sc.expression !== null && sc.creativity !== null;
+    }).length;
+    const submitted = students.length > 0 && students.every(s => {
+      const sc = getScoreObj(j.id, s.id);
+      return sc && sc.submitted;
+    });
+    const pct = students.length > 0 ? Math.round(scored / students.length * 100) : 0;
+    return `<div class="progress-row">
+      <div class="prog-avatar">${j.name[0]}</div>
+      <span class="prog-name">${j.name}</span>
+      <div class="prog-track">
+        <div class="prog-fill${submitted ? '' : ' pending'}" style="width:${pct}%"></div>
+      </div>
+      <span class="prog-count">${scored}/${students.length}</span>
+      <span class="prog-status ${submitted ? 'done' : 'pending'}">${submitted ? '已提交' : '评分中'}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderFilters() {
+  const groups = getGroups();
+  if (!resultGroup) resultGroup = groups[0];
+  document.getElementById('result-filters').innerHTML = groups.map(g =>
+    `<button class="filter-pill${resultGroup === g ? ' active' : ''}" onclick="selectGroup('${g}')">${g}</button>`
+  ).join('');
+}
+
+function selectGroup(g) {
+  resultGroup = g;
+  renderFilters();
+  renderResults(computeResults());
+}
+
+function renderResults(results) {
+  const [grade, stream] = (resultGroup || '').split(' ');
+  const filtered = results.filter(r => r.student.grade === grade && r.student.stream === stream);
+  // Rank within group
+  filtered.forEach((r, i) => r.rank = i + 1);
+
+  document.getElementById('result-tbody').innerHTML = filtered.map(r => {
+    const { text: glabel, cls: gcls } = gradeLabel(r.avg);
+    const rankClass = r.rank <= 3 ? `rank-${r.rank}` : '';
+    const judgeList = r.judgeScores.map(js =>
+      `<div class="judge-score-row">${js.judge.name}：<strong>${js.total !== null ? js.total : '—'}</strong>
+       ${js.sc ? `<span class="subscores">（内${js.sc.content} 表${js.sc.expression} 创${js.sc.creativity}）</span>` : ''}</div>`
+    ).join('');
+    return `<tr>
+      <td><span class="rank-num ${rankClass}">${r.rank}</span></td>
+      <td>
+        <div class="student-name">${r.student.name}</div>
+        <span class="group-tag">${r.student.grade} ${r.student.stream}</span>
+      </td>
+      <td><span class="avg-score">${r.avg !== null ? r.avg : '—'}</span></td>
+      <td><div class="judge-scores-list">${judgeList}</div></td>
+      <td><span class="grade-pill ${gcls}">${glabel}</span></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="5" style="padding:1.5rem;text-align:center;color:var(--text-faint);font-size:13px">暂无数据</td></tr>';
+}
+
+function renderBreakdown(results) {
+  document.getElementById('breakdown').innerHTML = state.judges.map(j => {
+    const jStudents = state.students.filter(s =>
+      j.groups.some(g => g.grade === s.grade && g.stream === s.stream));
+
+    const rows = jStudents.map(s => {
+      const sc = getScoreObj(j.id, s.id);
+      const tot = totalOf(sc);
+      // Rank this student among others in same group for this judge
+      const peers = jStudents.filter(p => p.grade === s.grade && p.stream === s.stream);
+      const sorted = peers.map(p => ({ id: p.id, tot: totalOf(getScoreObj(j.id, p.id)) || 0 }))
+        .sort((a, b) => b.tot - a.tot);
+      const rank = sorted.findIndex(p => p.id === s.id) + 1;
+      return `<tr>
+        <td>${s.name}</td>
+        <td><span class="group-tag">${s.grade} ${s.stream}</span></td>
+        <td style="font-family:'Courier New',monospace">${sc ? sc.content ?? '—' : '—'}</td>
+        <td style="font-family:'Courier New',monospace">${sc ? sc.expression ?? '—' : '—'}</td>
+        <td style="font-family:'Courier New',monospace">${sc ? sc.creativity ?? '—' : '—'}</td>
+        <td style="font-family:'Courier New',monospace;font-weight:bold">${tot !== null ? tot : '—'}</td>
+        <td style="color:var(--text-muted);font-size:12px">${sc && tot !== null ? '第 ' + rank + ' 名' : '—'}</td>
+        <td><span style="font-size:11px;color:${sc && sc.submitted ? 'var(--accent)' : 'var(--text-faint)'}">${sc && sc.submitted ? '已提交' : sc ? '已储存' : '未评'}</span></td>
+      </tr>`;
+    }).join('');
+
+    return `<div class="judge-section">
+      <div class="judge-section-header">
+        <div class="judge-section-avatar">${j.name[0]}</div>
+        <span class="judge-section-name">${j.name}</span>
+        <span class="judge-section-sub">${jStudents.length} 位考生</span>
+      </div>
+      <table class="btable">
+        <thead><tr>
+          <th>考生</th><th>组别</th><th>内容</th><th>表达</th><th>创意</th><th>总分</th><th>组内排名</th><th>状态</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+  }).join('');
+}
+
+// ── Export CSV ───────────────────────────────
+function exportCSV() {
+  const results = computeResults();
+  const groups = getGroups();
+  let csv = '组别,考生,综合平均分,等级';
+  state.judges.forEach(j => {
+    csv += `,${j.name}总分,${j.name}内容,${j.name}表达,${j.name}创意`;
+  });
+  csv += ',组内排名\n';
+
+  groups.forEach(grp => {
+    const [grade, stream] = grp.split(' ');
+    const filtered = results.filter(r => r.student.grade === grade && r.student.stream === stream);
+    filtered.forEach((r, i) => {
+      const { text: gl } = gradeLabel(r.avg);
+      let row = `"${grp}","${r.student.name}",${r.avg ?? ''},${gl}`;
+      state.judges.forEach(j => {
+        const assigned = j.groups.some(g => g.grade === r.student.grade && g.stream === r.student.stream);
+        const sc = assigned ? getScoreObj(j.id, r.student.id) : null;
+        const tot = totalOf(sc);
+        row += `,${tot ?? ''},${sc?.content ?? ''},${sc?.expression ?? ''},${sc?.creativity ?? ''}`;
+      });
+      row += `,${i + 1}`;
+      csv += row + '\n';
+    });
+  });
+
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = '作文比赛评分结果.csv'; a.click();
+}
+
+loadData();
+subscribeRealtime();
+
+</body>
+</html>

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>作文比赛评分系统</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.26.0"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f0f0;color:#111;min-height:100vh}
@@ -91,13 +91,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sort-btns{display:flex;gap:4px}
 .sort-btn{padding:2px 9px;border:1px solid #e0e0e0;border-radius:20px;background:transparent;font-size:10px;color:#bbb;cursor:pointer;font-family:inherit}
 .sort-btn.active{background:#1a6fba;color:#fff;border-color:#1a6fba}
-.score-summary-table{width:100%;border-collapse:collapse;font-size:13px}
+.score-summary-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
 .score-summary-table th{padding:6px 10px;text-align:left;font-size:11px;color:#ccc;border-bottom:1px solid #f5f5f5;font-weight:normal;text-transform:uppercase;letter-spacing:.05em}
 .score-summary-table td{padding:8px 10px;border-bottom:1px solid #f7f7f7;color:#222}
 .score-summary-table tr:last-child td{border-bottom:none}
 .score-summary-table tr:hover td{background:#fafafa;cursor:pointer}
 .score-summary-table tr.editing td{background:#eef6ff}
-.ss-code{font-family:'Courier New',monospace;font-size:12px;color:#888}
+.ss-code{font-family:'Courier New',monospace;font-size:12px;color:#888;white-space:nowrap}
 .ss-total{font-family:'Courier New',monospace;font-weight:500}
 .ss-pending{color:#bbb;font-style:italic}
 .seq{font-size:11px;color:#ccc;text-align:center;width:28px}
@@ -168,8 +168,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <table class="score-summary-table">
       <thead><tr>
-        <th class="seq">#</th>
-        <th>编号</th>
+        <th style="width:28px;text-align:center">#</th>
+        <th style="min-width:110px">编号</th>
         <th style="width:70px;text-align:center">内容</th>
         <th style="width:70px;text-align:center">表达</th>
         <th style="width:70px;text-align:center">创意</th>
@@ -722,7 +722,9 @@ function renderScoreSummary() {
   if (!tbody) return;
   tbody.innerHTML = rows.map(function(r) {
     var active = state.currentStudent === r.s.id ? ' class="editing"' : '';
+    var seqNum = _sortMode === 'orig' ? (rows.indexOf(r) + 1) : (rows.indexOf(r) + 1);
     return '<tr' + active + ' onclick="selectStudentFromSummary(&quot;' + r.s.id + '&quot;)" title="点击修改">' +
+      '<td class="seq" style="text-align:center">' + seqNum + '</td>' +
       '<td class="ss-code">' + r.s.name + '</td>' +
       '<td style="text-align:center">' + (r.sc.content!==null&&r.sc.content!==undefined?r.sc.content:'<span class="ss-pending">—</span>') + '</td>' +
       '<td style="text-align:center">' + (r.sc.expression!==null&&r.sc.expression!==undefined?r.sc.expression:'<span class="ss-pending">—</span>') + '</td>' +

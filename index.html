@@ -38,7 +38,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ws-avatar{width:36px;height:36px;border-radius:50%;background:#e8f4fd;color:#1a6fba;display:flex;align-items:center;justify-content:center;font-size:14px;font-style:italic;font-weight:500;flex-shrink:0}
 .ws-info{flex:1}
 .ws-title{font-size:15px;font-weight:500;color:#111}
-.ws-sub{font-size:12px;color:#bbb;margin-top:1px}
+.ws-sub{display:none}
 .ws-actions{display:flex;gap:8px}
 .btn{padding:6px 16px;border:1px solid #ddd;border-radius:7px;background:#f7f7f7;color:#444;cursor:pointer;font-size:13px;font-family:inherit}
 .btn:hover{background:#efefef}
@@ -134,7 +134,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="ws-avatar" id="ws-avatar"></div>
     <div class="ws-info">
       <div class="ws-title" id="ws-title"></div>
-      <div class="ws-sub" id="ws-sub"></div>
     </div>
     <div class="ws-actions">
       <button class="btn" id="btn-save-cur" onclick="saveCurrentScore()">保存</button>
@@ -620,8 +619,7 @@ function renderManuscript(containerId, text) {
 
     const TW = wrap.clientWidth || wrap.parentNode.clientWidth || 400;
     const cW = TW / MS_COLS;
-    const maxCH = Math.floor(957 / 31.8);
-    const cH = Math.min(cW, maxCH);
+    const cH = cW;
     const auxH = Math.round(cH * 0.4);
     const gH = cH + auxH;
     const TH = (MS_ROWS - 1) * gH + cH;

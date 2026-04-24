@@ -147,9 +147,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="score-inline-fields">
         <div class="sif"><span class="sif-lbl">内容</span><input type="number" id="si-content" min="0" max="40" placeholder="" oninput="onScoreInline('content',this.value,40)"/><span class="sif-max">/ 40</span></div>
         <div class="sif-div"></div>
-        <div class="sif"><span class="sif-lbl">表达</span><input type="number" id="si-expression" min="0" max="40" placeholder="" oninput="onScoreInline('expression',this.value,40)"/><span class="sif-max">/ 40</span></div>
+        <div class="sif"><span class="sif-lbl">表达</span><input type="number" id="si-expression" min="0" max="35" placeholder="" oninput="onScoreInline('expression',this.value,35)"/><span class="sif-max">/ 35</span></div>
         <div class="sif-div"></div>
-        <div class="sif"><span class="sif-lbl">创意</span><input type="number" id="si-creativity" min="0" max="20" placeholder="" oninput="onScoreInline('creativity',this.value,20)"/><span class="sif-max">/ 20</span></div>
+        <div class="sif"><span class="sif-lbl">创意</span><input type="number" id="si-creativity" min="0" max="25" placeholder="" oninput="onScoreInline('creativity',this.value,25)"/><span class="sif-max">/ 25</span></div>
         <div class="sif-div"></div>
         <div class="sif-total"><span id="si-total"></span><span class="sif-max">/ 100</span></div>
       </div>
@@ -448,7 +448,7 @@ function saveCurrentScore() {
   const studentId = state.currentStudent;
   if (!studentId) { toast('请先选择考生'); return; }
   // Read values from inline inputs
-  const maxes = { content: 40, expression: 40, creativity: 20 };
+  const maxes = { content: 40, expression: 35, creativity: 25 };
   Object.keys(maxes).forEach(function(field) {
     const inp = document.getElementById('si-' + field);
     if (inp) {
@@ -486,6 +486,10 @@ async function saveScore(studentId) {
     toast('请填写全部三项分数');
     return;
   }
+  // Validate ranges
+  if (sc.content > 40) { toast('内容满分为 40 分'); return; }
+  if (sc.expression > 35) { toast('表达满分为 35 分'); return; }
+  if (sc.creativity > 25) { toast('创意满分为 25 分'); return; }
   try {
     const { error } = await db.from('scores').upsert({
       judge_id: state.currentJudge,
@@ -553,10 +557,9 @@ async function submitAll() {
       '<div class="submitted-banner">您已完成提交，感谢！如需修改请联系管理员。</div>';
     document.getElementById('btn-submit-all').disabled = true;
     document.getElementById('btn-submit-all').style.opacity = '.5';
-    renderStudentList();
-    renderGroupPills();
+    renderStreamSelectors();
   } catch (e) {
-    toast('提交失败，请重试');
+    toast('提交失败：' + e.message);
     console.error(e);
   }
 }

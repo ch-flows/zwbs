@@ -6,301 +6,115 @@
 <title>作文比赛评分系统</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4"></script>
 <style>
-  :root {
-    --bg: #f4f4f4;
-    --surface: #ffffff;
-    --border: #f0f0f0;
-    --border-mid: #e0e0e0;
-    --border-strong: #ddd;
-    --text: #111111;
-    --text-muted: #444444;
-    --text-faint: #bbbbbb;
-    --accent: #1a6fba;
-    --accent-light: #eef6ff;
-    --accent-text: #1a6fba;
-    --radius: 12px;
-    --radius-sm: 7px;
-    --font-mono: 'Courier New', monospace;
-  }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f0f0;color:#111;min-height:100vh}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── Loading ── */
+.loading{position:fixed;inset:0;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:14px;color:#bbb;z-index:100}
+.loading.hidden{display:none}
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
+/* ── Screens ── */
+.screen{padding:20px;max-width:900px;margin:0 auto}
+.screen.active{display:block}
+.screen:not(.active){display:none}
 
-  /* ── Loading ── */
-  .loading {
-    position: fixed; inset: 0;
-    background: var(--bg);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; color: var(--text-faint); z-index: 100;
-  }
-  .loading.hidden { display: none; }
+/* ── Board ── */
+.board{background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e0e0e0}
 
-  /* ── Board wrapper ── */
-  .screen { padding: 20px; max-width: 900px; margin: 0 auto; }
-  .screen.active { display: block; }
-  .screen:not(.active) { display: none; }
+/* ── Judge select ── */
+.welcome-text{text-align:center;margin:2rem 0 1.5rem}
+.welcome-text h1{font-size:22px;font-weight:500;margin-bottom:6px}
+.welcome-text p{font-size:13px;color:#bbb}
+.judge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.judge-card{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:1.1rem 1rem;cursor:pointer;transition:border-color .15s;text-align:center}
+.judge-card:hover{border-color:#1a6fba}
+.judge-avatar{width:44px;height:44px;border-radius:50%;background:#e8f4fd;color:#1a6fba;display:flex;align-items:center;justify-content:center;font-size:15px;font-style:italic;font-weight:500;margin:0 auto 8px}
+.judge-card-name{font-size:14px;margin-bottom:3px;color:#111}
+.judge-card-sub{font-size:12px;color:#bbb}
+.judge-card-progress{margin-top:6px;font-size:12px;color:#1a6fba}
 
-  .board {
-    background: var(--surface);
-    border-radius: var(--radius);
-    border: 1px solid var(--border-mid);
-    overflow: hidden;
-  }
+/* ── Top bar ── */
+.workspace-header{padding:12px 20px;display:flex;align-items:center;gap:11px;border-bottom:1px solid #f0f0f0}
+.ws-avatar{width:36px;height:36px;border-radius:50%;background:#e8f4fd;color:#1a6fba;display:flex;align-items:center;justify-content:center;font-size:14px;font-style:italic;font-weight:500;flex-shrink:0}
+.ws-info{flex:1}
+.ws-title{font-size:15px;font-weight:500;color:#111}
+.ws-sub{font-size:12px;color:#bbb;margin-top:1px}
+.ws-actions{display:flex;gap:8px}
+.btn{padding:6px 16px;border:1px solid #ddd;border-radius:7px;background:#f7f7f7;color:#444;cursor:pointer;font-size:13px;font-family:inherit}
+.btn:hover{background:#efefef}
+.btn-submit{background:#c8960a;color:#fff;border-color:#b8860b;font-weight:500}
+.btn-submit:hover{background:#b07808}
+.btn-submit:disabled{opacity:.5}
 
-  /* ── Judge select screen ── */
-  .welcome-text {
-    text-align: center;
-    margin: 2rem 0 2rem;
-  }
-  .welcome-text h1 { font-size: 22px; font-weight: 500; margin-bottom: 6px; }
-  .welcome-text p { font-size: 13px; color: var(--text-faint); }
+/* ── Submitted banner ── */
+.submitted-banner{background:#fef9e7;border-bottom:1px solid #f0d060;padding:8px 20px;font-size:13px;color:#8b6914;text-align:center}
 
-  .judge-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 10px;
-  }
-  .judge-card {
-    background: var(--surface);
-    border: 1px solid var(--border-mid);
-    border-radius: var(--radius);
-    padding: 1.1rem 1rem;
-    cursor: pointer;
-    transition: border-color .15s;
-    text-align: center;
-  }
-  .judge-card:hover { border-color: var(--accent); }
-  .judge-avatar {
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    background: var(--accent-light);
-    color: var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 15px; font-style: italic; font-weight: 500;
-    margin: 0 auto 8px;
-  }
-  .judge-card-name { font-size: 14px; margin-bottom: 3px; }
-  .judge-card-sub { font-size: 12px; color: var(--text-faint); }
-  .judge-card-progress { margin-top: 6px; font-size: 12px; color: var(--accent); }
+/* ── Stream selectors ── */
+.stream-selectors{padding:8px 20px;display:flex;align-items:center;flex-wrap:wrap;gap:0;border-bottom:1px solid #f0f0f0;overflow-x:auto}
+.stream-group{display:flex;align-items:center;gap:8px}
+.stream-tag{font-size:12px;color:#555;background:#ececec;padding:4px 10px;border-radius:6px;font-weight:500;white-space:nowrap;flex-shrink:0}
+.stream-sel{padding:5px 10px;border:1px solid #e0e0e0;border-radius:7px;background:#fff;font-size:13px;color:#111;min-width:120px}
+.stream-prog{font-size:12px;color:#1a6fba;font-weight:500;white-space:nowrap}
+.stream-sep{width:1px;height:24px;background:#e8e8e8;margin:0 12px;flex-shrink:0}
 
-  /* ── Top bar ── */
-  .workspace-header {
-    padding: 12px 20px;
-    display: flex; align-items: center; gap: 11px;
-    border-bottom: 1px solid var(--border);
-  }
-  .ws-avatar {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background: var(--accent-light);
-    color: var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; font-style: italic; font-weight: 500; flex-shrink: 0;
-  }
-  .ws-title { font-size: 15px; font-weight: 500; color: var(--text); }
-  .ws-sub { font-size: 12px; color: var(--text-faint); margin-top: 1px; }
-  .ws-info { flex: 1; }
-  .ws-actions { display: flex; gap: 8px; }
+/* ── Score bar ── */
+.score-bar-row{padding:10px 20px;display:flex;align-items:center;flex-wrap:wrap;border-bottom:1px solid #f0f0f0}
+.score-inline-fields{display:flex;align-items:center;flex-wrap:wrap;gap:0}
+.sif{display:flex;align-items:center;gap:6px}
+.sif-lbl{font-size:12px;color:#bbb}
+.sif input{width:52px;height:30px;border:1px solid #e0e0e0;border-radius:7px;background:#f7f7f7;font-size:16px;font-family:'Courier New',monospace;font-weight:500;text-align:center;color:#111;outline:none}
+.sif input:focus{border-color:#1a6fba;background:#fff}
+.sif-max{font-size:11px;color:#ccc}
+.sif-div{width:1px;height:20px;background:#eee;margin:0 14px}
+.sif-total{display:flex;align-items:center;gap:6px}
+.sif-total span:first-child{font-size:16px;font-family:'Courier New',monospace;font-weight:500;color:#1a6fba;width:52px;height:30px;border:1px solid #1a6fba;border-radius:7px;background:#eef6ff;display:flex;align-items:center;justify-content:center;min-width:52px}
 
-  /* ── Buttons ── */
-  .btn {
-    padding: 6px 16px;
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    background: #f7f7f7;
-    color: var(--text-muted);
-    cursor: pointer; font-size: 13px;
-    font-family: inherit;
-  }
-  .btn:hover { background: #efefef; }
-  .btn-primary {
-    background: var(--accent);
-    color: #fff; border-color: var(--accent);
-  }
-  .btn-primary:hover { background: #155fa0; }
-  .btn-submit {
-    background: #c8960a;
-    color: #fff; border-color: #b8860b; font-weight: 500;
-  }
-  .btn-submit:hover { background: #b07808; }
+/* ── Essay panel ── */
+.essay-panel{background:#fff}
+.empty-state{display:flex;align-items:center;justify-content:center;min-height:180px;color:#bbb;font-size:13px}
+.essay-student-hdr{padding:12px 20px 0;display:flex;align-items:baseline;gap:8px}
+.essay-student-name{font-size:15px;font-weight:500;color:#111;font-family:'Courier New',monospace}
+.essay-student-meta{font-size:12px;color:#bbb}
+.essay-ms-wrap{padding:12px 20px 16px}
+.submitted-note{font-size:12px;color:#1a6fba;background:#eef6ff;padding:5px 14px;border-radius:7px;margin:0 20px 10px;display:inline-block}
 
-  /* ── Submitted banner ── */
-  .submitted-banner {
-    background: #fef9e7;
-    border-bottom: 1px solid #f0d060;
-    padding: 8px 20px;
-    font-size: 13px; color: #8b6914; text-align: center;
-  }
+/* ── Manuscript ── */
+.ms-grid-wrap{position:relative;background:#fff}
+.ms-grid-canvas{display:block;width:100%}
+.ms-text-layer{position:absolute;top:0;left:0;pointer-events:none;overflow:hidden}
+.ms-page-num{font-size:8pt;color:#aaa;text-align:right;padding-right:4px;margin-top:4px;font-family:sans-serif}
+.manuscript-pages{display:flex;flex-direction:column;gap:16px}
 
-  /* ── Stream selectors ── */
-  .stream-selectors {
-    padding: 8px 20px;
-    display: flex; align-items: center; gap: 10px;
-    flex-wrap: wrap;
-    border-bottom: 1px solid var(--border);
-  }
-  .stream-group { display: flex; align-items: center; gap: 8px; }
-  .stream-tag {
-    font-size: 12px; color: #555;
-    background: #ececec;
-    padding: 4px 10px; border-radius: 6px;
-    font-weight: 500; white-space: nowrap; flex-shrink: 0;
-  }
-  .stream-sel {
-    flex: 1; padding: 6px 10px;
-    border: 1px solid var(--border-mid);
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-    font-size: 13px; color: var(--text);
-    min-width: 130px;
-  }
-  .stream-prog {
-    font-size: 12px; color: var(--accent); font-weight: 500; white-space: nowrap;
-  }
-  .stream-sep {
-    width: 1px; height: 28px; background: var(--border-mid);
-    margin: 0 4px; flex-shrink: 0;
-  }
+/* ── Score summary ── */
+#score-summary-wrap{border-top:1px solid #f0f0f0}
+.score-summary-hdr{padding:10px 20px;display:flex;align-items:center;justify-content:flex-end}
+.sort-btns{display:flex;gap:4px}
+.sort-btn{padding:2px 9px;border:1px solid #e0e0e0;border-radius:20px;background:transparent;font-size:10px;color:#bbb;cursor:pointer;font-family:inherit}
+.sort-btn.active{background:#1a6fba;color:#fff;border-color:#1a6fba}
+.score-summary-table{width:100%;border-collapse:collapse;font-size:13px}
+.score-summary-table th{padding:6px 10px;text-align:left;font-size:11px;color:#ccc;border-bottom:1px solid #f5f5f5;font-weight:normal;text-transform:uppercase;letter-spacing:.05em}
+.score-summary-table td{padding:8px 10px;border-bottom:1px solid #f7f7f7;color:#222}
+.score-summary-table tr:last-child td{border-bottom:none}
+.score-summary-table tr:hover td{background:#fafafa;cursor:pointer}
+.score-summary-table tr.editing td{background:#eef6ff}
+.ss-code{font-family:'Courier New',monospace;font-size:12px;color:#888}
+.ss-total{font-family:'Courier New',monospace;font-weight:500}
+.ss-pending{color:#bbb;font-style:italic}
+.seq{font-size:11px;color:#ccc;text-align:center;width:28px}
 
-  /* ── Score bar ── */
-  #score-bar-wrap { border-bottom: 1px solid var(--border); }
-  .score-bar-row {
-    padding: 10px 20px;
-    display: flex; align-items: center; gap: 0; flex-wrap: wrap;
-  }
-  .score-inline-fields {
-    display: flex; align-items: center; gap: 0; flex-wrap: wrap;
-  }
-  .sif { display: flex; align-items: center; gap: 6px; }
-  .sif-lbl { font-size: 12px; color: var(--text-faint); }
-  .sif input {
-    width: 52px; height: 30px;
-    border: 1px solid var(--border-mid);
-    border-radius: var(--radius-sm);
-    background: #f7f7f7;
-    font-size: 16px; font-family: var(--font-mono);
-    font-weight: 500; text-align: center; color: var(--text);
-    outline: none;
-  }
-  .sif input:focus { border-color: var(--accent); background: var(--surface); }
-  .sif-max { font-size: 11px; color: var(--text-faint); }
-  .sif-div { width: 1px; height: 20px; background: var(--border-mid); margin: 0 14px; }
-  .sif-total { display: flex; align-items: center; gap: 6px; }
-  .sif-total span:first-child {
-    font-size: 16px; font-family: var(--font-mono); font-weight: 500;
-    color: var(--accent);
-    width: 52px; height: 30px;
-    border: 1px solid var(--accent);
-    border-radius: var(--radius-sm);
-    background: var(--accent-light);
-    display: flex; align-items: center; justify-content: center;
-  }
+/* ── Toast ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#111;color:#fff;padding:9px 20px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-  /* ── Essay panel ── */
-  .essay-panel { background: var(--surface); }
-  .empty-state {
-    display: flex; align-items: center; justify-content: center;
-    min-height: 200px; color: var(--text-faint);
-    font-size: 13px;
-  }
-  .essay-student-hdr {
-    padding: 12px 20px 0;
-    display: flex; align-items: baseline; gap: 8px;
-  }
-  .essay-student-name {
-    font-size: 15px; font-weight: 500; color: var(--text);
-    font-family: var(--font-mono);
-  }
-  .essay-student-meta { font-size: 12px; color: var(--text-faint); }
-  .essay-ms-wrap { padding: 12px 20px 20px; }
-  .submitted-note {
-    font-size: 12px; color: var(--accent);
-    background: var(--accent-light);
-    padding: 5px 14px; border-radius: var(--radius-sm);
-    margin: 0 20px 10px; display: inline-block;
-  }
-
-  /* ── Manuscript ── */
-  .ms-grid-wrap { position: relative; background: #fff; }
-  .ms-grid-canvas { display: block; width: 100%; }
-  .ms-text-layer {
-    position: absolute; top: 0; left: 0;
-    pointer-events: none; overflow: hidden;
-  }
-  .ms-page-num {
-    font-size: 8pt; color: #aaa; text-align: right;
-    padding-right: 4px; margin-top: 4px;
-    font-family: sans-serif;
-  }
-  .manuscript-pages { display: flex; flex-direction: column; gap: 16px; }
-
-  /* ── Score summary ── */
-  #score-summary-wrap { border-top: 1px solid var(--border); }
-  .score-summary { background: var(--surface); }
-  .score-summary-hdr {
-    padding: 10px 20px;
-    display: flex; align-items: center; justify-content: flex-end;
-  }
-  .sort-btns { display: flex; gap: 4px; }
-  .sort-btn {
-    padding: 2px 10px;
-    border: 1px solid var(--border-mid);
-    border-radius: 20px; background: transparent;
-    font-size: 10px; color: var(--text-faint); cursor: pointer;
-    font-family: inherit;
-  }
-  .sort-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .score-summary-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .score-summary-table th {
-    padding: 6px 12px; text-align: left;
-    font-size: 11px; color: var(--text-faint);
-    border-bottom: 1px solid #f5f5f5;
-    font-weight: normal; text-transform: uppercase; letter-spacing: .05em;
-  }
-  .score-summary-table td {
-    padding: 8px 12px; border-bottom: 1px solid #f7f7f7;
-    color: var(--text);
-  }
-  .score-summary-table tr:last-child td { border-bottom: none; }
-  .score-summary-table tr:hover td { background: #fafafa; cursor: pointer; }
-  .score-summary-table tr.editing td { background: var(--accent-light); }
-  .ss-code { font-family: var(--font-mono); font-size: 12px; color: #888; }
-  .ss-total { font-family: var(--font-mono); font-weight: 500; color: var(--accent); }
-  .ss-pending { color: var(--text-faint); font-style: italic; }
-  .ss-seq { font-size: 11px; color: var(--text-faint); text-align: center; }
-
-  /* ── Toast ── */
-  .toast {
-    position: fixed; bottom: 24px; left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--text); color: #fff;
-    padding: 9px 20px; border-radius: 20px;
-    font-size: 13px; opacity: 0;
-    transition: opacity .25s, transform .25s;
-    pointer-events: none; z-index: 999; white-space: nowrap;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  @media (max-width: 680px) {
-    .screen { padding: 12px; }
-    .stream-selectors { gap: 8px; }
-  }
+@media(max-width:680px){
+  .screen{padding:12px}
+  .stream-selectors{gap:6px}
+}
 </style>
 </head>
 <body>
 
 <div class="loading" id="loading">连接中…</div>
-
-<div class="header">
-  <div class="header-title">作文比赛 · <span>评分系统</span></div>
-  <div class="header-right" id="header-right"></div>
-</div>
 
 <!-- Screen 1: Judge selection -->
 <div class="screen active" id="screen-select">
@@ -309,7 +123,7 @@
     <p>选择后进入您的评分工作台</p>
   </div>
   <div class="judge-grid" id="judge-grid">
-    <div style="color:var(--text-faint);font-size:13px">加载中…</div>
+    <div style="color:#bbb;font-size:13px">加载中…</div>
   </div>
 </div>
 
@@ -338,7 +152,7 @@
         <div class="sif-div"></div>
         <div class="sif"><span class="sif-lbl">创意</span><input type="number" id="si-creativity" min="0" max="20" placeholder="" oninput="onScoreInline('creativity',this.value,20)"/><span class="sif-max">/ 20</span></div>
         <div class="sif-div"></div>
-        <div class="sif-total"><span id="si-total">—</span><span class="sif-max">/ 100</span></div>
+        <div class="sif-total"><span id="si-total"></span><span class="sif-max">/ 100</span></div>
       </div>
     </div>
   </div>
@@ -346,27 +160,23 @@
     <div class="empty-state">从上方选择考生开始评分</div>
   </div>
   <div id="score-summary-wrap" style="display:none">
-    <div class="score-summary">
-      <div class="score-summary-hdr">
-        <span class="score-summary-title">评分汇总</span>
-        <div class="sort-btns">
-          <button class="sort-btn active" id="sort-orig" onclick="setSortMode('orig')">原顺序</button>
-          <button class="sort-btn" id="sort-score" onclick="setSortMode('score')">按分数</button>
-        </div>
+    <div class="score-summary-hdr">
+      <div class="sort-btns">
+        <button class="sort-btn active" id="sort-orig" onclick="setSortMode('orig')">原顺序</button>
+        <button class="sort-btn" id="sort-score" onclick="setSortMode('score')">按分数</button>
       </div>
-      <table class="score-summary-table">
-        <thead>
-          <tr>
-            <th>编号</th>
-            <th style="width:70px;text-align:center">内容</th>
-            <th style="width:70px;text-align:center">表达</th>
-            <th style="width:70px;text-align:center">创意</th>
-            <th style="width:80px;text-align:center">总分</th>
-          </tr>
-        </thead>
-        <tbody id="score-summary-tbody"></tbody>
-      </table>
     </div>
+    <table class="score-summary-table">
+      <thead><tr>
+        <th class="seq">#</th>
+        <th>编号</th>
+        <th style="width:70px;text-align:center">内容</th>
+        <th style="width:70px;text-align:center">表达</th>
+        <th style="width:70px;text-align:center">创意</th>
+        <th style="width:70px;text-align:center">总分</th>
+      </tr></thead>
+      <tbody id="score-summary-tbody"></tbody>
+    </table>
   </div>
 </div>
 </div>
@@ -374,6 +184,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
+
 // ════════════════════════════════════════════
 // CONFIG — replace these two values
 // ════════════════════════════════════════════
@@ -933,6 +744,7 @@ function selectStudentFromSummary(studentId) {
 
 
 init();
+
 </script>
 </body>
 </html>

@@ -761,6 +761,11 @@ function getGroups(judgeId) {
   return judge ? judge.groups : [];
 }
 
+function gradeLabel(grade) {
+  const map = { '中一':'1', '中二':'2', '中三':'3', '中四':'4' };
+  return map[grade] || grade;
+}
+
 // ── Toast ─────────────────────────────────────
 function toast(msg, duration = 2000) {
   const t = document.getElementById('toast');

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>主控台 — 作文比赛</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4"></script>
 <style>
   :root {
     --bg: #f7f6f2;
@@ -543,12 +543,7 @@ async function loadData() {
   }
 }
 
-function subscribeRealtime() {
-  db.channel('admin-scores').on('postgres_changes',
-    { event: '*', schema: 'public', table: 'scores' },
-    () => loadData()
-  ).subscribe();
-}
+// Realtime disabled
 
 // ── Helpers ──────────────────────────────────
 function getScoreObj(judgeId, studentId) {
@@ -967,7 +962,6 @@ function renderQueryResult(studentId) {
 }
 
 loadData();
-subscribeRealtime();
 </script>
 
 </body>

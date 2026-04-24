@@ -330,9 +330,6 @@ function selectJudge(judgeId) {
 }
 
 function updateWsSub() {
-  const students = getJudgeStudents(state.currentJudge);
-  const scored = students.filter(s => isScored(state.currentJudge, s.id)).length;
-  document.getElementById('ws-sub').textContent = scored + ' / ' + students.length + ' 已完成评分';
   renderStreamSelectors();
 }
 

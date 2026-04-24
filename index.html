@@ -979,7 +979,7 @@ function renderEssayPanel(studentId) {
   panel.innerHTML =
     '<div class="essay-student-hdr">' +
       '<span class="essay-student-name">' + s.name + '</span>' +
-      '<span class="essay-student-meta">' + s.grade + ' · ' + s.stream + '</span>' +
+      '<span class="essay-student-meta">' + (s.title || (s.grade + ' · ' + s.stream)) + '</span>' +
     '</div>' +
     subNote +
     '<div class="essay-ms-wrap">' +

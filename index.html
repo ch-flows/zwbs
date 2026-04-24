@@ -262,37 +262,63 @@
     overflow: hidden;
   }
   .essay-header {
-    padding: 14px 20px;
+    padding: 12px 18px;
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
   }
-  .essay-header-name { font-size: 16px; }
-  .essay-header-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .essay-header-name { font-size: 15px; }
+  .essay-header-meta {
+    font-size: 12px; color: var(--text-muted);
+    background: var(--bg); padding: 2px 10px;
+    border-radius: 20px; border: 1px solid var(--border);
+  }
   .essay-layout {
     display: grid;
-    grid-template-columns: 1fr 260px;
+    grid-template-columns: 1fr 240px;
   }
-  .essay-content {
-    padding: 1.5rem 1.75rem;
-    font-size: 14px;
-    line-height: 1.9;
-    color: var(--text);
+  /* ── 稿纸区域 ── */
+  .essay-manuscript {
     border-right: 1px solid var(--border);
-    min-height: 360px;
-    max-height: 500px;
+    background: #fafaf8;
     overflow-y: auto;
+    max-height: calc(100vh - 210px);
+    min-height: 400px;
+    padding: 20px;
   }
-  .essay-content p { margin-bottom: 1rem; }
-  .essay-content p:last-child { margin-bottom: 0; }
+  .manuscript-pages { display: flex; flex-direction: column; gap: 20px; }
+  .ms-page-block { }
+  .ms-grid-wrap {
+    position: relative;
+    background: #fff;
+    overflow: visible;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .ms-grid-canvas { display: block; width: 100%; }
+  .ms-text-layer {
+    position: absolute;
+    top: 0; left: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .ms-page-num {
+    font-size: 8pt; color: #aaa;
+    text-align: right; padding-right: 4px;
+    margin-top: 4px; line-height: 1; font-family: sans-serif;
+  }
 
   /* ── Scoring panel ── */
   .scoring-panel {
-    padding: 1.25rem;
+    padding: 1.25rem 1rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.875rem;
+    position: sticky;
+    top: 0;
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
   }
   .scoring-title {
     font-size: 11px;
@@ -369,8 +395,9 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    margin-top: 0.25rem;
   }
-  .score-actions .btn { width: 100%; text-align: center; font-size: 13px; }
+  .score-actions .btn { width: 100%; text-align: center; font-size: 13px; padding: 10px; }
 
   /* ── Empty state ── */
   .empty-state {
@@ -430,6 +457,143 @@
     text-align: center;
   }
 
+
+  /* ── Stream selectors bar ── */
+  .stream-selectors {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 20px;
+    flex-wrap: wrap;
+    gap: 0;
+  }
+  .stream-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .stream-tag {
+    font-size: 11px;
+    color: var(--text-faint);
+    background: var(--bg);
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .stream-sel {
+    padding: 6px 28px 6px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text);
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+    min-width: 120px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 9px center;
+  }
+  .stream-prog {
+    font-size: 11px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .stream-sep {
+    width: 1px;
+    height: 28px;
+    background: var(--border);
+    margin: 0 16px;
+    flex-shrink: 0;
+  }
+
+  /* ── Inline score bar ── */
+  .score-bar-row {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 20px;
+  }
+  .score-inline-fields {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+  .sif {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .sif-lbl {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .sif input {
+    width: 56px;
+    height: 32px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    font-size: 16px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-align: center;
+    color: var(--text);
+    outline: none;
+  }
+  .sif input:focus { border-color: var(--accent); background: var(--surface); }
+  .sif-max { font-size: 11px; color: var(--text-faint); }
+  .sif-div {
+    width: 1px;
+    height: 24px;
+    background: var(--border);
+    margin: 0 16px;
+  }
+  .sif-total {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+  .sif-total span:first-child {
+    font-size: 26px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    color: var(--text);
+    line-height: 1;
+    min-width: 44px;
+    text-align: right;
+  }
+
+  /* ── Essay panel (new full-width) ── */
+  .essay-panel {
+    background: var(--bg);
+  }
+  .essay-student-hdr {
+    padding: 12px 20px 0;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .essay-student-name { font-size: 16px; color: var(--text); }
+  .essay-student-meta { font-size: 12px; color: var(--text-muted); }
+  .essay-ms-wrap {
+    padding: 12px 20px 24px;
+  }
+  .submitted-note {
+    font-size: 12px;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    margin: 0 20px 12px;
+    display: inline-block;
+  }
+
   @media (max-width: 680px) {
     .screen { padding: 1rem; }
     .main-layout { grid-template-columns: 1fr; }
@@ -467,20 +631,27 @@
       <div class="ws-sub" id="ws-sub"></div>
     </div>
     <div class="ws-actions">
-      <button class="btn" onclick="backToSelect()">切换</button>
-      <button class="btn btn-submit" id="btn-submit-all" onclick="submitAll()">提交全部评分</button>
+      <button class="btn" id="btn-save-cur" onclick="saveCurrentScore()">保存</button>
+      <button class="btn btn-submit" id="btn-submit-all" onclick="submitAll()">提交</button>
     </div>
   </div>
   <div id="submitted-banner-wrap"></div>
-  <div class="group-pills" id="group-pills"></div>
-  <div class="main-layout">
-    <div class="student-panel">
-      <div class="student-panel-header">考生列表</div>
-      <div id="student-list"></div>
+  <div class="stream-selectors" id="stream-selectors"></div>
+  <div id="score-bar-wrap" style="display:none">
+    <div class="score-bar-row">
+      <div class="score-inline-fields">
+        <div class="sif"><span class="sif-lbl">内容</span><input type="number" id="si-content" min="0" max="40" placeholder="—" oninput="onScoreInline('content',this.value,40)"/><span class="sif-max">/ 40</span></div>
+        <div class="sif-div"></div>
+        <div class="sif"><span class="sif-lbl">表达</span><input type="number" id="si-expression" min="0" max="40" placeholder="—" oninput="onScoreInline('expression',this.value,40)"/><span class="sif-max">/ 40</span></div>
+        <div class="sif-div"></div>
+        <div class="sif"><span class="sif-lbl">创意</span><input type="number" id="si-creativity" min="0" max="20" placeholder="—" oninput="onScoreInline('creativity',this.value,20)"/><span class="sif-max">/ 20</span></div>
+        <div class="sif-div"></div>
+        <div class="sif-total"><span id="si-total">—</span><span class="sif-max">/ 100</span></div>
+      </div>
     </div>
-    <div class="essay-panel" id="essay-panel">
-      <div class="empty-state">← 选择考生开始评分</div>
-    </div>
+  </div>
+  <div class="essay-panel" id="essay-panel">
+    <div class="empty-state">← 从上方选择考生开始评分</div>
   </div>
 </div>
 
@@ -623,9 +794,6 @@ function renderJudgeGrid() {
 function selectJudge(judgeId) {
   state.currentJudge = judgeId;
   const judge = state.judges.find(j => j.id === judgeId);
-  const students = getJudgeStudents(judgeId);
-  const groups = getGroups(judgeId);
-  state.currentGroup = groups[0] ? `${groups[0].grade} ${groups[0].stream}` : null;
   state.currentStudent = null;
 
   document.getElementById('ws-avatar').textContent = judge.name[0];
@@ -641,15 +809,15 @@ function selectJudge(judgeId) {
   document.getElementById('btn-submit-all').disabled = sub;
   document.getElementById('btn-submit-all').style.opacity = sub ? '.5' : '1';
 
-  renderGroupPills();
-  renderStudentList();
+  renderStreamSelectors();
   renderEssayPanel(null);
 }
 
 function updateWsSub() {
   const students = getJudgeStudents(state.currentJudge);
   const scored = students.filter(s => isScored(state.currentJudge, s.id)).length;
-  document.getElementById('ws-sub').textContent = `${scored} / ${students.length} 已完成评分`;
+  document.getElementById('ws-sub').textContent = scored + ' / ' + students.length + ' 已完成评分';
+  renderStreamSelectors();
 }
 
 function backToSelect() {
@@ -657,111 +825,87 @@ function backToSelect() {
   state.currentStudent = null;
   document.getElementById('screen-workspace').classList.remove('active');
   document.getElementById('screen-select').classList.add('active');
+  const sb = document.getElementById('score-bar-wrap');
+  if (sb) sb.style.display = 'none';
   renderJudgeGrid();
 }
 
-// ── Group Pills ──────────────────────────────
-function renderGroupPills() {
+// ── Stream Selectors ─────────────────────────
+function renderStreamSelectors() {
   const groups = getGroups(state.currentJudge);
-  const pills = document.getElementById('group-pills');
-  pills.innerHTML = groups.map(g => {
-    const label = `${g.grade} ${g.stream}`;
-    const students = state.students.filter(s => s.grade === g.grade && s.stream === g.stream);
+  const container = document.getElementById('stream-selectors');
+  if (!groups.length) { container.innerHTML = ''; return; }
+  container.innerHTML = groups.map((g, gi) => {
+    const label = g.grade + ' ' + g.stream;
+    const students = getJudgeStudents(state.currentJudge)
+      .filter(s => s.grade === g.grade && s.stream === g.stream);
     const scored = students.filter(s => isScored(state.currentJudge, s.id)).length;
-    return `<button class="group-pill${state.currentGroup === label ? ' active' : ''}"
-      onclick="selectGroup('${label}')">${label}<span class="group-pill-count">${scored}/${students.length}</span></button>`;
+    const sep = gi < groups.length - 1 ? '<div class="stream-sep"></div>' : '';
+    const opts = students.map(s => {
+      const sc = isScored(state.currentJudge, s.id) ? ' ✓' : '';
+      const sel = state.currentStudent === s.id ? ' selected' : '';
+      return '<option value="' + s.id + '"' + sel + '>' + s.name + sc + '</option>';
+    }).join('');
+    return '<div class="stream-group">' +
+      '<span class="stream-tag">' + label + '</span>' +
+      '<select class="stream-sel" onchange="selectStudentFromDrop(this.value)">' +
+      '<option value="">— 选择考生 —</option>' + opts + '</select>' +
+      '<span class="stream-prog">' + scored + '/' + students.length + ' 已评</span>' +
+      '</div>' + sep;
   }).join('');
 }
 
-function selectGroup(label) {
-  state.currentGroup = label;
-  state.currentStudent = null;
-  renderGroupPills();
-  renderStudentList();
-  renderEssayPanel(null);
-}
-
-// ── Student List ─────────────────────────────
-function renderStudentList() {
-  const [grade, stream] = (state.currentGroup || '').split(' ');
-  const students = getJudgeStudents(state.currentJudge)
-    .filter(s => s.grade === grade && s.stream === stream);
-  const list = document.getElementById('student-list');
-  list.innerHTML = students.map(s => {
-    const scored = isScored(state.currentJudge, s.id);
-    const active = state.currentStudent === s.id;
-    return `<div class="student-item${scored ? ' scored' : ''}${active ? ' active' : ''}"
-      onclick="selectStudent('${s.id}')">
-      <div class="s-dot"></div>
-      <span class="s-name">${s.name}</span>
-      <span class="s-status">${scored ? '已评' : '待评'}</span>
-    </div>`;
-  }).join('') || '<div style="padding:1rem;font-size:13px;color:var(--text-faint)">暂无考生</div>';
+function selectStudentFromDrop(studentId) {
+  if (!studentId) return;
+  // Sync all other dropdowns to deselect
+  state.currentStudent = studentId;
+  renderStreamSelectors();
+  renderEssayPanel(studentId);
+  // Re-select the correct option after re-render
 }
 
 // ── Essay Panel ──────────────────────────────
 function renderEssayPanel(studentId) {
   const panel = document.getElementById('essay-panel');
+  const scoreBarWrap = document.getElementById('score-bar-wrap');
   if (!studentId) {
-    panel.innerHTML = '<div class="empty-state">← 选择考生开始评分</div>';
+    panel.innerHTML = '<div class="empty-state">从上方选择考生开始评分</div>';
+    scoreBarWrap.style.display = 'none';
     return;
   }
   const s = state.students.find(x => x.id === studentId);
   const sc = getScore(state.currentJudge, studentId) || {};
   const sub = isSubmitted(state.currentJudge);
-
-  const maxes = { content: 40, expression: 40, creativity: 20 };
-  const labels = { content: '内容', expression: '表达', creativity: '创意' };
   const tot = totalScore(sc);
 
-  // ── build manuscript pages ──
+  // populate inline score bar
+  scoreBarWrap.style.display = 'block';
+  ['content','expression','creativity'].forEach(function(field) {
+    const inp = document.getElementById('si-' + field);
+    if (inp) {
+      inp.value = (sc[field] !== null && sc[field] !== undefined) ? sc[field] : '';
+      inp.disabled = sub;
+    }
+  });
+  const totEl = document.getElementById('si-total');
+  if (totEl) totEl.textContent = (tot !== null && !isNaN(tot)) ? tot : '—';
+
+  // store current student for save
+  state.currentStudent = studentId;
+
   const msHtml = buildManuscriptHtml(s.essay || '');
+  const subNote = sub ? '<div class="submitted-note">已提交，如需修改请联系管理员</div>' : '';
 
-  const scoreFields = Object.keys(maxes).map(field => {
-    const val = sc[field] !== null && sc[field] !== undefined ? sc[field] : '';
-    const pct = val !== '' ? Math.round(val / maxes[field] * 100) : 0;
-    return `<div class="score-item">
-      <div class="score-item-label">
-        <span class="score-item-name">${labels[field]}</span>
-        <span class="score-item-max">满分 ${maxes[field]}</span>
-      </div>
-      <div class="score-input-wrap">
-        <input type="number" class="score-input" min="0" max="${maxes[field]}"
-          value="${val}" placeholder="—"
-          ${sub ? 'disabled' : ''}
-          oninput="onScoreChange('${studentId}','${field}',this.value,${maxes[field]})"
-          id="input-${field}"/>
-        <div class="score-bar-track">
-          <div class="score-bar-fill" id="bar-${field}" style="width:${pct}%"></div>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+  panel.innerHTML =
+    '<div class="essay-student-hdr">' +
+      '<span class="essay-student-name">' + s.name + '</span>' +
+      '<span class="essay-student-meta">' + s.grade + ' · ' + s.stream + '</span>' +
+    '</div>' +
+    subNote +
+    '<div class="essay-ms-wrap">' +
+      '<div class="manuscript-pages" id="ms-pages-' + studentId + '">' + msHtml + '</div>' +
+    '</div>';
 
-  panel.innerHTML = `
-    <div class="essay-header">
-      <div>
-        <div class="essay-header-name">${s.name}</div>
-        <div class="essay-header-meta">${s.grade} · ${s.stream}</div>
-      </div>
-    </div>
-    <div class="essay-layout">
-      <div class="essay-manuscript" id="ms-container-${studentId}">
-        <div class="manuscript-pages" id="ms-pages-${studentId}">${msHtml}</div>
-      </div>
-      <div class="scoring-panel">
-        <div class="scoring-title">评分</div>
-        ${scoreFields}
-        <hr class="score-divider"/>
-        <div class="total-display">
-          <div class="total-num" id="total-num">${tot !== null ? tot : '—'}</div>
-          <div class="total-denom">/ 100 总分</div>
-        </div>
-        <div class="score-actions">
-          ${!sub ? '<button class="btn btn-primary" onclick="saveScore(\'' + studentId + '\')">储存评分</button><button class="btn" onclick="nextStudent(\'' + studentId + '\')">下一位 →</button>' : ''}
-        </div>
-      </div>
-    </div>`;
   initManuscriptForStudent(studentId);
 }
 
@@ -769,6 +913,38 @@ function selectStudent(studentId) {
   state.currentStudent = studentId;
   renderStudentList();
   renderEssayPanel(studentId);
+}
+
+function onScoreInline(field, val, max) {
+  const studentId = state.currentStudent;
+  if (!studentId) return;
+  let n = parseInt(val);
+  if (isNaN(n)) n = null;
+  else if (n < 0) n = 0;
+  else if (n > max) n = max;
+  if (!state.scores[state.currentJudge]) state.scores[state.currentJudge] = {};
+  if (!state.scores[state.currentJudge][studentId]) state.scores[state.currentJudge][studentId] = {};
+  state.scores[state.currentJudge][studentId][field] = n;
+  const sc = state.scores[state.currentJudge][studentId];
+  const tot = totalScore(sc);
+  const totEl = document.getElementById('si-total');
+  if (totEl) totEl.textContent = (tot !== null && !isNaN(tot)) ? tot : '—';
+}
+
+function saveCurrentScore() {
+  const studentId = state.currentStudent;
+  if (!studentId) { toast('请先选择考生'); return; }
+  // Read values from inline inputs
+  const maxes = { content: 40, expression: 40, creativity: 20 };
+  Object.keys(maxes).forEach(function(field) {
+    const inp = document.getElementById('si-' + field);
+    if (inp) {
+      let n = parseInt(inp.value);
+      if (isNaN(n)) n = null;
+      onScoreInline(field, inp.value, maxes[field]);
+    }
+  });
+  saveScore(studentId);
 }
 
 function onScoreChange(studentId, field, val, max) {
@@ -810,9 +986,8 @@ async function saveScore(studentId) {
     if (error) throw error;
     if (!state.scores[state.currentJudge]) state.scores[state.currentJudge] = {};
     state.scores[state.currentJudge][studentId] = { ...sc, submitted: false };
-    renderStudentList();
-    renderGroupPills();
     updateWsSub();
+    renderStreamSelectors();
     toast('已储存 ✓');
   } catch (e) {
     toast('储存失败，请重试');

@@ -6,666 +6,290 @@
 <title>作文比赛评分系统</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4"></script>
 <style>
-  /* ── CONFIG: Replace with your Supabase values ── */
-  /* See README.md for setup instructions           */
-
   :root {
-    --bg: #f7f6f2;
+    --bg: #f4f4f4;
     --surface: #ffffff;
-    --border: #e8e6df;
-    --border-strong: #c8c5bc;
-    --text: #1a1917;
-    --text-muted: #6b6860;
-    --text-faint: #a09e99;
-    --accent: #2d5a3d;
-    --accent-light: #eaf2ec;
-    --accent-text: #1a3d27;
-    --warn: #8b4513;
-    --warn-light: #fdf0e8;
-    --gold: #b8860b;
-    --gold-light: #fef9e7;
-    --radius: 10px;
-    --radius-sm: 6px;
+    --border: #f0f0f0;
+    --border-mid: #e0e0e0;
+    --border-strong: #ddd;
+    --text: #111111;
+    --text-muted: #444444;
+    --text-faint: #bbbbbb;
+    --accent: #1a6fba;
+    --accent-light: #eef6ff;
+    --accent-text: #1a6fba;
+    --radius: 12px;
+    --radius-sm: 7px;
+    --font-mono: 'Courier New', monospace;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Georgia', 'Noto Serif SC', serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
-  }
-
-  /* ── Header ── */
-  .header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 1rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .header-title {
-    font-size: 17px;
-    font-weight: normal;
-    letter-spacing: .03em;
-    color: var(--text);
-  }
-  .header-title span {
-    color: var(--accent);
-    font-style: italic;
-  }
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 13px;
-    color: var(--text-muted);
-  }
-
-  /* ── Screens ── */
-  .screen { display: none; padding: 2rem; max-width: 900px; margin: 0 auto; }
-  .screen.active { display: block; }
-
-  /* ── Judge Select ── */
-  .welcome-text {
-    text-align: center;
-    margin: 2rem 0 2.5rem;
-  }
-  .welcome-text h1 {
-    font-size: 26px;
-    font-weight: normal;
-    margin-bottom: 0.5rem;
-    color: var(--text);
-  }
-  .welcome-text p {
-    font-size: 14px;
-    color: var(--text-muted);
-  }
-  .judge-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 12px;
-  }
-  .judge-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem 1rem;
-    cursor: pointer;
-    transition: border-color .15s, transform .1s;
-    text-align: center;
-  }
-  .judge-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-1px);
-  }
-  .judge-card:active { transform: scale(.98); }
-  .judge-avatar {
-    width: 48px; height: 48px;
-    border-radius: 50%;
-    background: var(--accent-light);
-    color: var(--accent-text);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
-    margin: 0 auto 10px;
-    font-style: italic;
-  }
-  .judge-card-name { font-size: 15px; margin-bottom: 4px; }
-  .judge-card-sub { font-size: 12px; color: var(--text-faint); }
-  .judge-card-progress {
-    margin-top: 8px;
-    font-size: 12px;
-    color: var(--accent);
-    font-family: 'Courier New', monospace;
-  }
-
-  /* ── Workspace ── */
-  .workspace-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border);
-  }
-  .ws-avatar {
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    background: var(--accent-light);
-    color: var(--accent-text);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; font-style: italic; flex-shrink: 0;
-  }
-  .ws-title { font-size: 16px; }
-  .ws-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-  .ws-actions { margin-left: auto; display: flex; gap: 8px; }
-
-  .btn {
-    padding: 7px 16px;
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-    color: var(--text);
-    cursor: pointer;
-    font-size: 13px;
-    font-family: inherit;
-    transition: background .1s;
-  }
-  .btn:hover { background: var(--bg); }
-  .btn-primary {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-  }
-  .btn-primary:hover { background: #234a31; }
-  .btn-submit {
-    background: var(--gold);
-    color: #fff;
-    border-color: var(--gold);
-  }
-  .btn-submit:hover { background: #9a7008; }
-
-  /* ── Group Pills ── */
-  .group-pills {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 1.25rem;
-  }
-  .group-pill {
-    padding: 5px 14px;
-    border: 1px solid var(--border-strong);
-    border-radius: 20px;
-    background: var(--surface);
-    color: var(--text-muted);
-    cursor: pointer;
-    font-size: 13px;
-    font-family: inherit;
-    transition: all .15s;
-  }
-  .group-pill.active {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-  }
-  .group-pill-count {
-    font-size: 11px;
-    opacity: .75;
-    margin-left: 4px;
-  }
-
-  /* ── Main layout ── */
-  .main-layout {
-    display: grid;
-    grid-template-columns: 210px 1fr;
-    gap: 1rem;
-    align-items: start;
-  }
-
-  /* ── Student list ── */
-  .student-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-  .student-panel-header {
-    padding: 10px 14px;
-    font-size: 11px;
-    color: var(--text-faint);
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    border-bottom: 1px solid var(--border);
-  }
-  .student-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    cursor: pointer;
-    border-bottom: 1px solid var(--border);
-    transition: background .1s;
-    font-size: 13px;
-  }
-  .student-item:last-child { border-bottom: none; }
-  .student-item:hover { background: var(--bg); }
-  .student-item.active {
-    background: var(--accent-light);
-    border-left: 3px solid var(--accent);
-    padding-left: 11px;
-  }
-  .student-item.scored .s-dot {
-    background: var(--accent);
-  }
-  .s-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--border-strong);
-    flex-shrink: 0;
-  }
-  .s-name { flex: 1; color: var(--text); }
-  .s-status {
-    font-size: 11px;
-    color: var(--text-faint);
-  }
-  .student-item.scored .s-status {
-    color: var(--accent);
-  }
-
-  /* ── Essay panel ── */
-  .essay-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-  .essay-header {
-    padding: 12px 18px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  .essay-header-name { font-size: 15px; }
-  .essay-header-meta {
-    font-size: 12px; color: var(--text-muted);
-    background: var(--bg); padding: 2px 10px;
-    border-radius: 20px; border: 1px solid var(--border);
-  }
-  .essay-layout {
-    display: grid;
-    grid-template-columns: 1fr 240px;
-  }
-  /* ── 稿纸区域 ── */
-  .essay-manuscript {
-    border-right: 1px solid var(--border);
-    background: #fafaf8;
-    overflow-y: auto;
-    max-height: calc(100vh - 210px);
-    min-height: 400px;
-    padding: 20px;
-  }
-  .manuscript-pages { display: flex; flex-direction: column; gap: 20px; }
-  .ms-page-block { }
-  .ms-grid-wrap {
-    position: relative;
-    background: #fff;
-    overflow: visible;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  }
-  .ms-grid-canvas { display: block; width: 100%; }
-  .ms-text-layer {
-    position: absolute;
-    top: 0; left: 0;
-    pointer-events: none;
-    overflow: hidden;
-  }
-  .ms-page-num {
-    font-size: 8pt; color: #aaa;
-    text-align: right; padding-right: 4px;
-    margin-top: 4px; line-height: 1; font-family: sans-serif;
-  }
-
-  /* ── Scoring panel ── */
-  .scoring-panel {
-    padding: 1.25rem 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.875rem;
-    position: sticky;
-    top: 0;
-    max-height: calc(100vh - 220px);
-    overflow-y: auto;
-  }
-  .scoring-title {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    color: var(--text-faint);
-    margin-bottom: 0.25rem;
-  }
-  .score-item { }
-  .score-item-label {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 6px;
-  }
-  .score-item-name { font-size: 13px; color: var(--text); }
-  .score-item-max { font-size: 11px; color: var(--text-faint); }
-  .score-input-wrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .score-input {
-    width: 72px;
-    padding: 6px 10px;
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    font-size: 18px;
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    text-align: center;
-    background: var(--bg);
-    color: var(--text);
-    transition: border-color .15s;
-  }
-  .score-input:focus {
-    outline: none;
-    border-color: var(--accent);
-    background: var(--surface);
-  }
-  .score-bar-track {
-    flex: 1;
-    height: 5px;
-    background: var(--border);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-  .score-bar-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 3px;
-    transition: width .2s;
-  }
-
-  .score-divider { border: none; border-top: 1px solid var(--border); }
-
-  .total-display {
-    text-align: center;
-    padding: 1rem 0;
-  }
-  .total-num {
-    font-size: 38px;
-    font-family: 'Courier New', monospace;
-    color: var(--text);
-    line-height: 1;
-  }
-  .total-denom {
-    font-size: 12px;
-    color: var(--text-faint);
-    margin-top: 4px;
-  }
-
-  .score-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 0.25rem;
-  }
-  .score-actions .btn { width: 100%; text-align: center; font-size: 13px; padding: 10px; }
-
-  /* ── Empty state ── */
-  .empty-state {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 300px;
-    color: var(--text-faint);
-    font-size: 13px;
-    font-style: italic;
-  }
-
-  /* ── Toast ── */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--text);
-    color: #fff;
-    padding: 10px 22px;
-    border-radius: 20px;
-    font-size: 13px;
-    opacity: 0;
-    transition: opacity .25s, transform .25s;
-    pointer-events: none;
-    z-index: 999;
-    white-space: nowrap;
-  }
-  .toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
   }
 
   /* ── Loading ── */
   .loading {
     position: fixed; inset: 0;
     background: var(--bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    color: var(--text-muted);
-    z-index: 100;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: var(--text-faint); z-index: 100;
   }
   .loading.hidden { display: none; }
 
-  /* ── Submitted state ── */
-  .submitted-banner {
-    background: var(--gold-light);
-    border: 1px solid #e8d080;
+  /* ── Board wrapper ── */
+  .screen { padding: 20px; max-width: 900px; margin: 0 auto; }
+  .screen.active { display: block; }
+  .screen:not(.active) { display: none; }
+
+  .board {
+    background: var(--surface);
     border-radius: var(--radius);
-    padding: 1rem 1.25rem;
-    margin-bottom: 1.25rem;
-    font-size: 13px;
-    color: var(--gold);
+    border: 1px solid var(--border-mid);
+    overflow: hidden;
+  }
+
+  /* ── Judge select screen ── */
+  .welcome-text {
+    text-align: center;
+    margin: 2rem 0 2rem;
+  }
+  .welcome-text h1 { font-size: 22px; font-weight: 500; margin-bottom: 6px; }
+  .welcome-text p { font-size: 13px; color: var(--text-faint); }
+
+  .judge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+  }
+  .judge-card {
+    background: var(--surface);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius);
+    padding: 1.1rem 1rem;
+    cursor: pointer;
+    transition: border-color .15s;
     text-align: center;
   }
+  .judge-card:hover { border-color: var(--accent); }
+  .judge-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-style: italic; font-weight: 500;
+    margin: 0 auto 8px;
+  }
+  .judge-card-name { font-size: 14px; margin-bottom: 3px; }
+  .judge-card-sub { font-size: 12px; color: var(--text-faint); }
+  .judge-card-progress { margin-top: 6px; font-size: 12px; color: var(--accent); }
 
-
-  /* ── Stream selectors bar ── */
-  .stream-selectors {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    background: var(--surface);
+  /* ── Top bar ── */
+  .workspace-header {
+    padding: 12px 20px;
+    display: flex; align-items: center; gap: 11px;
     border-bottom: 1px solid var(--border);
-    padding: 10px 20px;
+  }
+  .ws-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-style: italic; font-weight: 500; flex-shrink: 0;
+  }
+  .ws-title { font-size: 15px; font-weight: 500; color: var(--text); }
+  .ws-sub { font-size: 12px; color: var(--text-faint); margin-top: 1px; }
+  .ws-info { flex: 1; }
+  .ws-actions { display: flex; gap: 8px; }
+
+  /* ── Buttons ── */
+  .btn {
+    padding: 6px 16px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: #f7f7f7;
+    color: var(--text-muted);
+    cursor: pointer; font-size: 13px;
+    font-family: inherit;
+  }
+  .btn:hover { background: #efefef; }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff; border-color: var(--accent);
+  }
+  .btn-primary:hover { background: #155fa0; }
+  .btn-submit {
+    background: #c8960a;
+    color: #fff; border-color: #b8860b; font-weight: 500;
+  }
+  .btn-submit:hover { background: #b07808; }
+
+  /* ── Submitted banner ── */
+  .submitted-banner {
+    background: #fef9e7;
+    border-bottom: 1px solid #f0d060;
+    padding: 8px 20px;
+    font-size: 13px; color: #8b6914; text-align: center;
+  }
+
+  /* ── Stream selectors ── */
+  .stream-selectors {
+    padding: 8px 20px;
+    display: flex; align-items: center; gap: 10px;
     flex-wrap: wrap;
-    gap: 0;
+    border-bottom: 1px solid var(--border);
   }
-  .stream-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+  .stream-group { display: flex; align-items: center; gap: 8px; }
   .stream-tag {
-    font-size: 11px;
-    color: var(--text-faint);
-    background: var(--bg);
-    padding: 2px 8px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    white-space: nowrap;
+    font-size: 12px; color: #555;
+    background: #ececec;
+    padding: 4px 10px; border-radius: 6px;
+    font-weight: 500; white-space: nowrap; flex-shrink: 0;
   }
   .stream-sel {
-    padding: 6px 28px 6px 10px;
-    border: 1px solid var(--border-strong);
+    flex: 1; padding: 6px 10px;
+    border: 1px solid var(--border-mid);
     border-radius: var(--radius-sm);
-    background: var(--bg);
-    font-size: 13px;
-    font-family: inherit;
-    color: var(--text);
-    appearance: none;
-    cursor: pointer;
-    outline: none;
-    min-width: 120px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 9px center;
+    background: var(--surface);
+    font-size: 13px; color: var(--text);
+    min-width: 130px;
   }
   .stream-prog {
-    font-size: 11px;
-    color: var(--accent);
-    white-space: nowrap;
+    font-size: 12px; color: var(--accent); font-weight: 500; white-space: nowrap;
   }
   .stream-sep {
-    width: 1px;
-    height: 28px;
-    background: var(--border);
-    margin: 0 16px;
-    flex-shrink: 0;
+    width: 1px; height: 28px; background: var(--border-mid);
+    margin: 0 4px; flex-shrink: 0;
   }
 
-  /* ── Inline score bar ── */
+  /* ── Score bar ── */
+  #score-bar-wrap { border-bottom: 1px solid var(--border); }
   .score-bar-row {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
     padding: 10px 20px;
+    display: flex; align-items: center; gap: 0; flex-wrap: wrap;
   }
   .score-inline-fields {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    flex-wrap: wrap;
+    display: flex; align-items: center; gap: 0; flex-wrap: wrap;
   }
-  .sif {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-  }
-  .sif-lbl {
-    font-size: 12px;
-    color: var(--text-muted);
-  }
+  .sif { display: flex; align-items: center; gap: 6px; }
+  .sif-lbl { font-size: 12px; color: var(--text-faint); }
   .sif input {
-    width: 56px;
-    height: 32px;
-    border: 1px solid var(--border-strong);
+    width: 52px; height: 30px;
+    border: 1px solid var(--border-mid);
     border-radius: var(--radius-sm);
-    background: var(--bg);
-    font-size: 16px;
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    text-align: center;
-    color: var(--text);
+    background: #f7f7f7;
+    font-size: 16px; font-family: var(--font-mono);
+    font-weight: 500; text-align: center; color: var(--text);
     outline: none;
   }
   .sif input:focus { border-color: var(--accent); background: var(--surface); }
   .sif-max { font-size: 11px; color: var(--text-faint); }
-  .sif-div {
-    width: 1px;
-    height: 24px;
-    background: var(--border);
-    margin: 0 16px;
-  }
-  .sif-total {
-    display: flex;
-    align-items: baseline;
-    gap: 4px;
-  }
+  .sif-div { width: 1px; height: 20px; background: var(--border-mid); margin: 0 14px; }
+  .sif-total { display: flex; align-items: center; gap: 6px; }
   .sif-total span:first-child {
-    font-size: 26px;
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    color: var(--text);
-    line-height: 1;
-    min-width: 44px;
-    text-align: right;
+    font-size: 16px; font-family: var(--font-mono); font-weight: 500;
+    color: var(--accent);
+    width: 52px; height: 30px;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    background: var(--accent-light);
+    display: flex; align-items: center; justify-content: center;
   }
 
-  /* ── Score summary table ── */
-  .score-summary {
-    margin: 0 20px 20px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-  .score-summary-hdr {
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-  }
-  .score-summary-title {
-    font-size: 12px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: .07em;
-  }
-  .sort-btns { display: flex; gap: 6px; }
-  .sort-btn {
-    padding: 3px 10px;
-    border: 1px solid var(--border-strong);
-    border-radius: 20px;
-    background: transparent;
-    font-size: 11px;
-    font-family: inherit;
-    color: var(--text-muted);
-    cursor: pointer;
-  }
-  .sort-btn.active {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-  }
-  .score-summary-table {
-    width: 100%;
-    border-collapse: collapse;
+  /* ── Essay panel ── */
+  .essay-panel { background: var(--surface); }
+  .empty-state {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 200px; color: var(--text-faint);
     font-size: 13px;
-  }
-  .score-summary-table th {
-    padding: 7px 14px;
-    text-align: left;
-    font-size: 11px;
-    font-weight: normal;
-    color: var(--text-faint);
-    text-transform: uppercase;
-    letter-spacing: .07em;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg);
-  }
-  .score-summary-table td {
-    padding: 9px 14px;
-    border-bottom: 1px solid var(--border);
-    color: var(--text);
-    vertical-align: middle;
-  }
-  .score-summary-table tr:last-child td { border-bottom: none; }
-  .score-summary-table tr:hover td { background: var(--bg); cursor: pointer; }
-  .score-summary-table tr.editing td { background: var(--accent-light); }
-  .ss-code { font-family: 'Courier New', monospace; font-size: 13px; }
-  .ss-total { font-size: 16px; font-family: 'Courier New', monospace; font-weight: bold; }
-  .ss-pending { color: var(--text-faint); font-style: italic; font-size: 12px; }
-
-  /* ── Essay panel (new full-width) ── */
-  .essay-panel {
-    background: var(--bg);
   }
   .essay-student-hdr {
     padding: 12px 20px 0;
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
+    display: flex; align-items: baseline; gap: 8px;
   }
-  .essay-student-name { font-size: 16px; color: var(--text); }
-  .essay-student-meta { font-size: 12px; color: var(--text-muted); }
-  .essay-ms-wrap {
-    padding: 12px 20px 24px;
+  .essay-student-name {
+    font-size: 15px; font-weight: 500; color: var(--text);
+    font-family: var(--font-mono);
   }
+  .essay-student-meta { font-size: 12px; color: var(--text-faint); }
+  .essay-ms-wrap { padding: 12px 20px 20px; }
   .submitted-note {
-    font-size: 12px;
-    color: var(--accent);
+    font-size: 12px; color: var(--accent);
     background: var(--accent-light);
-    padding: 6px 14px;
-    border-radius: var(--radius-sm);
-    margin: 0 20px 12px;
-    display: inline-block;
+    padding: 5px 14px; border-radius: var(--radius-sm);
+    margin: 0 20px 10px; display: inline-block;
   }
 
+  /* ── Manuscript ── */
+  .ms-grid-wrap { position: relative; background: #fff; }
+  .ms-grid-canvas { display: block; width: 100%; }
+  .ms-text-layer {
+    position: absolute; top: 0; left: 0;
+    pointer-events: none; overflow: hidden;
+  }
+  .ms-page-num {
+    font-size: 8pt; color: #aaa; text-align: right;
+    padding-right: 4px; margin-top: 4px;
+    font-family: sans-serif;
+  }
+  .manuscript-pages { display: flex; flex-direction: column; gap: 16px; }
+
+  /* ── Score summary ── */
+  #score-summary-wrap { border-top: 1px solid var(--border); }
+  .score-summary { background: var(--surface); }
+  .score-summary-hdr {
+    padding: 10px 20px;
+    display: flex; align-items: center; justify-content: flex-end;
+  }
+  .sort-btns { display: flex; gap: 4px; }
+  .sort-btn {
+    padding: 2px 10px;
+    border: 1px solid var(--border-mid);
+    border-radius: 20px; background: transparent;
+    font-size: 10px; color: var(--text-faint); cursor: pointer;
+    font-family: inherit;
+  }
+  .sort-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .score-summary-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .score-summary-table th {
+    padding: 6px 12px; text-align: left;
+    font-size: 11px; color: var(--text-faint);
+    border-bottom: 1px solid #f5f5f5;
+    font-weight: normal; text-transform: uppercase; letter-spacing: .05em;
+  }
+  .score-summary-table td {
+    padding: 8px 12px; border-bottom: 1px solid #f7f7f7;
+    color: var(--text);
+  }
+  .score-summary-table tr:last-child td { border-bottom: none; }
+  .score-summary-table tr:hover td { background: #fafafa; cursor: pointer; }
+  .score-summary-table tr.editing td { background: var(--accent-light); }
+  .ss-code { font-family: var(--font-mono); font-size: 12px; color: #888; }
+  .ss-total { font-family: var(--font-mono); font-weight: 500; color: var(--accent); }
+  .ss-pending { color: var(--text-faint); font-style: italic; }
+  .ss-seq { font-size: 11px; color: var(--text-faint); text-align: center; }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text); color: #fff;
+    padding: 9px 20px; border-radius: 20px;
+    font-size: 13px; opacity: 0;
+    transition: opacity .25s, transform .25s;
+    pointer-events: none; z-index: 999; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
   @media (max-width: 680px) {
-    .screen { padding: 1rem; }
-    .main-layout { grid-template-columns: 1fr; }
-    .essay-layout { grid-template-columns: 1fr; }
-    .essay-content { border-right: none; border-bottom: 1px solid var(--border); }
+    .screen { padding: 12px; }
+    .stream-selectors { gap: 8px; }
   }
 </style>
 </head>
@@ -691,9 +315,10 @@
 
 <!-- Screen 2: Judge workspace -->
 <div class="screen" id="screen-workspace">
+<div class="board">
   <div class="workspace-header">
     <div class="ws-avatar" id="ws-avatar"></div>
-    <div>
+    <div class="ws-info">
       <div class="ws-title" id="ws-title"></div>
       <div class="ws-sub" id="ws-sub"></div>
     </div>
@@ -743,6 +368,7 @@
       </table>
     </div>
   </div>
+</div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -1097,7 +723,7 @@ async function submitAll() {
     toast(`还有 ${unscored.length} 位考生未完成评分`);
     return;
   }
-  if (!confirm('确认提交全部评分？提交后无法修改。')) return;
+  // confirm removed - direct submit
   try {
     for (const s of students) {
       const sc = state.scores[state.currentJudge][s.id];

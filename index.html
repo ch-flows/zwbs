@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>作文比赛评分系统</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4"></script>
 <style>
   /* ── CONFIG: Replace with your Supabase values ── */
   /* See README.md for setup instructions           */
@@ -569,6 +569,73 @@
     text-align: right;
   }
 
+  /* ── Score summary table ── */
+  .score-summary {
+    margin: 0 20px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .score-summary-hdr {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .score-summary-title {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+  }
+  .sort-btns { display: flex; gap: 6px; }
+  .sort-btn {
+    padding: 3px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: 20px;
+    background: transparent;
+    font-size: 11px;
+    font-family: inherit;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  .sort-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .score-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .score-summary-table th {
+    padding: 7px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: normal;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .score-summary-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: middle;
+  }
+  .score-summary-table tr:last-child td { border-bottom: none; }
+  .score-summary-table tr:hover td { background: var(--bg); cursor: pointer; }
+  .score-summary-table tr.editing td { background: var(--accent-light); }
+  .ss-code { font-family: 'Courier New', monospace; font-size: 13px; }
+  .ss-total { font-size: 16px; font-family: 'Courier New', monospace; font-weight: bold; }
+  .ss-pending { color: var(--text-faint); font-style: italic; font-size: 12px; }
+
   /* ── Essay panel (new full-width) ── */
   .essay-panel {
     background: var(--bg);
@@ -640,18 +707,41 @@
   <div id="score-bar-wrap" style="display:none">
     <div class="score-bar-row">
       <div class="score-inline-fields">
-        <div class="sif"><span class="sif-lbl">内容</span><input type="number" id="si-content" min="0" max="40" placeholder="—" oninput="onScoreInline('content',this.value,40)"/><span class="sif-max">/ 40</span></div>
+        <div class="sif"><span class="sif-lbl">内容</span><input type="number" id="si-content" min="0" max="40" placeholder="" oninput="onScoreInline('content',this.value,40)"/><span class="sif-max">/ 40</span></div>
         <div class="sif-div"></div>
-        <div class="sif"><span class="sif-lbl">表达</span><input type="number" id="si-expression" min="0" max="40" placeholder="—" oninput="onScoreInline('expression',this.value,40)"/><span class="sif-max">/ 40</span></div>
+        <div class="sif"><span class="sif-lbl">表达</span><input type="number" id="si-expression" min="0" max="40" placeholder="" oninput="onScoreInline('expression',this.value,40)"/><span class="sif-max">/ 40</span></div>
         <div class="sif-div"></div>
-        <div class="sif"><span class="sif-lbl">创意</span><input type="number" id="si-creativity" min="0" max="20" placeholder="—" oninput="onScoreInline('creativity',this.value,20)"/><span class="sif-max">/ 20</span></div>
+        <div class="sif"><span class="sif-lbl">创意</span><input type="number" id="si-creativity" min="0" max="20" placeholder="" oninput="onScoreInline('creativity',this.value,20)"/><span class="sif-max">/ 20</span></div>
         <div class="sif-div"></div>
         <div class="sif-total"><span id="si-total">—</span><span class="sif-max">/ 100</span></div>
       </div>
     </div>
   </div>
   <div class="essay-panel" id="essay-panel">
-    <div class="empty-state">← 从上方选择考生开始评分</div>
+    <div class="empty-state">从上方选择考生开始评分</div>
+  </div>
+  <div id="score-summary-wrap" style="display:none">
+    <div class="score-summary">
+      <div class="score-summary-hdr">
+        <span class="score-summary-title">评分汇总</span>
+        <div class="sort-btns">
+          <button class="sort-btn active" id="sort-orig" onclick="setSortMode('orig')">原顺序</button>
+          <button class="sort-btn" id="sort-score" onclick="setSortMode('score')">按分数</button>
+        </div>
+      </div>
+      <table class="score-summary-table">
+        <thead>
+          <tr>
+            <th>编号</th>
+            <th style="width:70px;text-align:center">内容</th>
+            <th style="width:70px;text-align:center">表达</th>
+            <th style="width:70px;text-align:center">创意</th>
+            <th style="width:80px;text-align:center">总分</th>
+          </tr>
+        </thead>
+        <tbody id="score-summary-tbody"></tbody>
+      </table>
+    </div>
   </div>
 </div>
 
@@ -697,7 +787,6 @@ async function init() {
       state.scores[s.judge_id][s.student_id] = s;
     });
     renderJudgeGrid();
-    subscribeRealtime();
     loadingEl.classList.add('hidden');
   } catch(e) {
     loadingEl.textContent = '错误：' + e.message;
@@ -708,22 +797,7 @@ async function init() {
   }
 }
 
-// ── Realtime ─────────────────────────────────
-function subscribeRealtime() {
-  db.channel('scores').on('postgres_changes',
-    { event: '*', schema: 'public', table: 'scores' },
-    payload => {
-      const s = payload.new || payload.old;
-      if (!s) return;
-      if (!state.scores[s.judge_id]) state.scores[s.judge_id] = {};
-      if (payload.eventType === 'DELETE') {
-        delete state.scores[s.judge_id][s.student_id];
-      } else {
-        state.scores[s.judge_id][s.student_id] = s;
-      }
-    }
-  ).subscribe();
-}
+// Realtime disabled
 
 // ── Helpers ──────────────────────────────────
 function getJudgeStudents(judgeId) {
@@ -816,6 +890,7 @@ function selectJudge(judgeId) {
 
   renderStreamSelectors();
   renderEssayPanel(null);
+  renderScoreSummary();
 }
 
 function updateWsSub() {
@@ -893,7 +968,7 @@ function renderEssayPanel(studentId) {
     }
   });
   const totEl = document.getElementById('si-total');
-  if (totEl) totEl.textContent = (tot !== null && !isNaN(tot)) ? tot : '—';
+  if (totEl) totEl.textContent = (tot !== null && !isNaN(tot)) ? tot : '';
 
   // store current student for save
   state.currentStudent = studentId;
@@ -993,6 +1068,7 @@ async function saveScore(studentId) {
     state.scores[state.currentJudge][studentId] = { ...sc, submitted: false };
     updateWsSub();
     renderStreamSelectors();
+    renderScoreSummary();
     toast('已储存 ✓');
   } catch (e) {
     toast('储存失败，请重试');
@@ -1023,19 +1099,23 @@ async function submitAll() {
   }
   if (!confirm('确认提交全部评分？提交后无法修改。')) return;
   try {
-    const updates = students.map(s => ({
-      judge_id: state.currentJudge,
-      student_id: s.id,
-      ...state.scores[state.currentJudge][s.id],
-      submitted: true,
-      updated_at: new Date().toISOString(),
-    }));
-    const { error } = await db.from('scores').upsert(updates, { onConflict: 'judge_id,student_id' });
-    if (error) throw error;
+    for (const s of students) {
+      const sc = state.scores[state.currentJudge][s.id];
+      const { error } = await db.from('scores').upsert({
+        judge_id: state.currentJudge,
+        student_id: s.id,
+        content: sc.content,
+        expression: sc.expression,
+        creativity: sc.creativity,
+        submitted: true,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'judge_id,student_id' });
+      if (error) { toast('提交失败：' + error.message); return; }
+    }
     students.forEach(s => {
       state.scores[state.currentJudge][s.id].submitted = true;
     });
-    toast('评分已提交！感谢您的辛苦 ✓', 3000);
+    toast('评分已提交！感谢 ✓', 3000);
     document.getElementById('submitted-banner-wrap').innerHTML =
       '<div class="submitted-banner">您已完成提交，感谢！如需修改请联系管理员。</div>';
     document.getElementById('btn-submit-all').disabled = true;
@@ -1171,6 +1251,59 @@ function initManuscriptForStudent(studentId) {
   });
 }
 // ════════════════════════════════════════════
+
+
+// ── Score Summary ─────────────────────────────
+var _sortMode = 'orig';
+
+function setSortMode(mode) {
+  _sortMode = mode;
+  document.getElementById('sort-orig').className = 'sort-btn' + (mode==='orig'?' active':'');
+  document.getElementById('sort-score').className = 'sort-btn' + (mode==='score'?' active':'');
+  renderScoreSummary();
+}
+
+function renderScoreSummary() {
+  if (!state.currentJudge) return;
+  const students = getJudgeStudents(state.currentJudge);
+  const scored = students.filter(s => isScored(state.currentJudge, s.id));
+  const wrap = document.getElementById('score-summary-wrap');
+  if (!scored.length) { if(wrap) wrap.style.display='none'; return; }
+  if(wrap) wrap.style.display='block';
+
+  var rows = scored.map(function(s) {
+    var sc = getScore(state.currentJudge, s.id) || {};
+    var tot = totalScore(sc);
+    return { s: s, sc: sc, tot: tot };
+  });
+
+  if (_sortMode === 'score') {
+    rows.sort(function(a,b) { return (b.tot||0)-(a.tot||0); });
+  }
+
+  var tbody = document.getElementById('score-summary-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = rows.map(function(r) {
+    var active = state.currentStudent === r.s.id ? ' class="editing"' : '';
+    return '<tr' + active + ' onclick="selectStudentFromSummary(&quot;' + r.s.id + '&quot;)" title="点击修改">' +
+      '<td class="ss-code">' + r.s.name + '</td>' +
+      '<td style="text-align:center">' + (r.sc.content!==null&&r.sc.content!==undefined?r.sc.content:'<span class="ss-pending">—</span>') + '</td>' +
+      '<td style="text-align:center">' + (r.sc.expression!==null&&r.sc.expression!==undefined?r.sc.expression:'<span class="ss-pending">—</span>') + '</td>' +
+      '<td style="text-align:center">' + (r.sc.creativity!==null&&r.sc.creativity!==undefined?r.sc.creativity:'<span class="ss-pending">—</span>') + '</td>' +
+      '<td style="text-align:center"><span class="ss-total">' + (r.tot!==null?r.tot:'—') + '</span></td>' +
+    '</tr>';
+  }).join('');
+}
+
+function selectStudentFromSummary(studentId) {
+  // sync dropdown
+  state.currentStudent = studentId;
+  renderStreamSelectors();
+  renderEssayPanel(studentId);
+  renderScoreSummary();
+  // scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
 
 init();

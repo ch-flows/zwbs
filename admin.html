@@ -358,7 +358,70 @@
     font-style: italic;
   }
 
-  @media (max-width: 680px) {
+
+  .query-sel {
+    padding: 7px 32px 7px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+    min-width: 180px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
+  .query-result { margin-top: 1.25rem; }
+  .query-student-hdr {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+  .query-student-name { font-size: 18px; color: var(--text); }
+  .query-student-meta { font-size: 13px; color: var(--text-muted); }
+  .score-compare-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+  .score-compare-card {
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 1rem;
+    text-align: center;
+  }
+  .scc-judge { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+  .scc-total { font-size: 28px; font-family: 'Courier New', monospace; font-weight: bold; color: var(--text); line-height: 1; }
+  .scc-denom { font-size: 12px; color: var(--text-faint); }
+  .scc-breakdown { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+  .scc-avg-card {
+    background: var(--accent-light);
+    border-radius: var(--radius);
+    padding: 1rem;
+    text-align: center;
+  }
+  .scc-avg-card .scc-judge { color: var(--accent-text); }
+  .scc-avg-card .scc-total { color: var(--accent-text); }
+  .query-ms-label { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px; }
+  .query-ms-paper {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    overflow-x: auto;
+  }
+  .ms-grid-wrap { position: relative; background: #fff; }
+  .ms-grid-canvas { display: block; width: 100%; }
+  .ms-text-layer { position: absolute; top: 0; left: 0; pointer-events: none; overflow: hidden; }
+  .ms-page-num { font-size: 8pt; color: #aaa; text-align: right; padding-right: 4px; margin-top: 4px; font-family: sans-serif; }
+
+    @media (max-width: 680px) {
     .admin-wrap { padding: 1rem; }
   }
 </style>
@@ -409,6 +472,24 @@
           </thead>
           <tbody id="result-tbody"></tbody>
         </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">篇章评分查询</span>
+      </div>
+      <div class="section-body">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <input id="query-search" type="text" placeholder="输入姓名搜索…"
+            oninput="onQuerySearch(this.value)"
+            style="padding:7px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;background:var(--bg);color:var(--text);outline:none;width:160px;"/>
+          <span style="font-size:13px;color:var(--text-muted)">或选择</span>
+          <select class="query-sel" id="query-student-sel" onchange="onQuerySelect(this.value)">
+            <option value="">— 请选择 —</option>
+          </select>
+        </div>
+        <div id="query-result"></div>
       </div>
     </div>
 
@@ -519,6 +600,7 @@ function renderAll() {
   renderFilters();
   renderResults(results);
   renderBreakdown(results);
+  populateQuerySelect();
 }
 
 function renderStats(results) {
@@ -677,6 +759,211 @@ function exportCSV() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = '作文比赛评分结果.csv'; a.click();
+}
+
+// ── Manuscript rendering (same engine as index.html) ──────
+var MS_COLS = 20, MS_ROWS = 22, MS_G = '#4caf50';
+
+function paginateText(text) {
+  var pages = [], row = 0, col = 0, page = [];
+  var NL = '\n';
+  for (var i = 0; i < text.length; i++) {
+    var ch = text[i];
+    if (ch === NL) { row++; col = 0; }
+    else {
+      page.push({ ch: ch, row: row % MS_ROWS, col: col });
+      col++;
+      if (col >= MS_COLS) { row++; col = 0; }
+    }
+    if (row >= MS_ROWS) { pages.push(page); page = []; row = 0; col = 0; }
+  }
+  if (page.length || !pages.length) pages.push(page);
+  return pages;
+}
+
+function buildMsHtml(text) {
+  var pages = paginateText(text || '');
+  if (!pages.length) pages.push([]);
+  return pages.map(function(pg, pi) {
+    var pageNum = pages.length > 1 ? '<div class="ms-page-num">第 ' + (pi+1) + ' 页</div>' : '';
+    return '<div class="ms-page-block" data-page="' + pi + '">' +
+      '<div class="ms-grid-wrap"><canvas class="ms-grid-canvas"></canvas>' +
+      '<div class="ms-text-layer"></div></div>' + pageNum + '</div>';
+  }).join('');
+}
+
+function renderMsInContainer(containerId, text) {
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  var dpr = window.devicePixelRatio || 1;
+  var pages = paginateText(text || '');
+  container.querySelectorAll('.ms-page-block').forEach(function(block, pi) {
+    var wrap = block.querySelector('.ms-grid-wrap');
+    var cv = block.querySelector('.ms-grid-canvas');
+    var tl = block.querySelector('.ms-text-layer');
+    if (!wrap || !cv || !tl) return;
+    var TW = wrap.clientWidth || 600;
+    var cW = TW / MS_COLS;
+    var cH = Math.min(cW, Math.floor(957/31.8));
+    var auxH = Math.round(cH * 0.4);
+    var gH = cH + auxH;
+    var TH = (MS_ROWS - 1) * gH + cH;
+    var BOT = 2;
+    cv.width = Math.round(TW * dpr);
+    cv.height = Math.round((TH + BOT) * dpr);
+    cv.style.width = TW + 'px';
+    cv.style.height = (TH + BOT) + 'px';
+    wrap.style.height = (TH + BOT) + 'px';
+    var ctx = cv.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, TW, TH + BOT);
+    ctx.strokeStyle = MS_G; ctx.lineWidth = 0.7;
+    for (var r = 0; r < MS_ROWS; r++) {
+      var base = r * gH, wb = base + cH, ab = wb + auxH;
+      if (r < MS_ROWS - 1) {
+        ctx.beginPath(); ctx.moveTo(0, wb); ctx.lineTo(TW, wb); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, ab); ctx.lineTo(TW, ab); ctx.stroke();
+      }
+      for (var c = 1; c < MS_COLS; c++) {
+        ctx.beginPath(); ctx.moveTo(c*cW, base); ctx.lineTo(c*cW, wb); ctx.stroke();
+      }
+    }
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(0.75, 0.75, TW - 1.5, TH + BOT - 1.5);
+    tl.innerHTML = '';
+    tl.style.width = TW + 'px';
+    tl.style.height = TH + 'px';
+    var fs = Math.round(cH * 0.60);
+    var topOff = Math.round((cH - fs) / 2);
+    var ty = Math.round(fs * 0.08);
+    var pageChars = pages[pi] || [];
+    pageChars.forEach(function(item) {
+      var span = document.createElement('span');
+      span.textContent = item.ch;
+      span.style.cssText = 'position:absolute;left:' + (item.col*cW) + 'px;top:' + (item.row*gH+topOff) + 'px;' +
+        'width:' + cW + 'px;height:' + fs + 'px;display:flex;align-items:center;justify-content:center;' +
+        'font-size:' + fs + 'px;font-weight:100;line-height:1;color:#1a2a3a;' +
+        'font-family:"SimSun","宋体","STSong",serif;box-sizing:border-box;-webkit-font-smoothing:antialiased;' +
+        'transform:translateY(-' + ty + 'px);';
+      tl.appendChild(span);
+    });
+  });
+}
+
+// ── Query functions ────────────────────────────────────────
+function onQuerySearch(val) {
+  val = val.trim();
+  if (!val) { document.getElementById('query-result').innerHTML = ''; return; }
+  var matched = state.students.filter(function(s) {
+    return s.name.includes(val);
+  });
+  if (matched.length === 0) {
+    document.getElementById('query-result').innerHTML =
+      '<p style="font-size:13px;color:var(--text-muted);margin-top:1rem">找不到"' + val + '"</p>';
+    return;
+  }
+  if (matched.length === 1) {
+    // sync dropdown
+    var sel = document.getElementById('query-student-sel');
+    if (sel) sel.value = matched[0].id;
+    renderQueryResult(matched[0].id);
+  } else {
+    // show list to pick from
+    var html = '<div style="margin-top:1rem;display:flex;flex-direction:column;gap:6px">';
+    matched.forEach(function(s) {
+      html += '<button onclick="onQueryPick(&quot;' + s.id + '&quot;)" style="text-align:left;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);cursor:pointer;font-size:13px;font-family:inherit;color:var(--text)">' +
+        s.name + ' <span style="font-size:11px;color:var(--text-muted)">— ' + s.grade + ' ' + s.stream + '</span></button>';
+    });
+    html += '</div>';
+    document.getElementById('query-result').innerHTML = html;
+  }
+}
+
+function onQueryPick(studentId) {
+  var sel = document.getElementById('query-student-sel');
+  if (sel) sel.value = studentId;
+  var inp = document.getElementById('query-search');
+  var s = state.students.find(function(x) { return x.id === studentId; });
+  if (inp && s) inp.value = s.name;
+  renderQueryResult(studentId);
+}
+
+function onQuerySelect(studentId) {
+  var inp = document.getElementById('query-search');
+  var s = state.students.find(function(x) { return x.id === studentId; });
+  if (inp && s) inp.value = s.name;
+  renderQueryResult(studentId);
+}
+
+function populateQuerySelect() {
+  var sel = document.getElementById('query-student-sel');
+  if (!sel) return;
+  var current = sel.value;
+  var groups = getGroups();
+  sel.innerHTML = '<option value="">— 请选择 —</option>';
+  groups.forEach(function(grp) {
+    var grpEl = document.createElement('optgroup');
+    grpEl.label = grp;
+    var parts = grp.split(' ');
+    var grade = parts[0], stream = parts[1];
+    state.students.filter(function(s) { return s.grade === grade && s.stream === stream; })
+      .forEach(function(s) {
+        var opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = s.name;
+        if (s.id === current) opt.selected = true;
+        grpEl.appendChild(opt);
+      });
+    sel.appendChild(grpEl);
+  });
+}
+
+function renderQueryResult(studentId) {
+  var container = document.getElementById('query-result');
+  if (!studentId) { container.innerHTML = ''; return; }
+  var s = state.students.find(function(x) { return x.id === studentId; });
+  if (!s) return;
+
+  // Find judges assigned to this student
+  var assignedJudges = state.judges.filter(function(j) {
+    return j.groups.some(function(g) { return g.grade === s.grade && g.stream === s.stream; });
+  });
+
+  // Build score cards
+  var cards = assignedJudges.map(function(j) {
+    var sc = getScoreObj(j.id, s.id);
+    var tot = totalOf(sc);
+    var breakdown = sc ? '内' + (sc.content||'—') + ' 表' + (sc.expression||'—') + ' 创' + (sc.creativity||'—') : '未评分';
+    return '<div class="score-compare-card">' +
+      '<div class="scc-judge">' + j.name + '</div>' +
+      '<div class="scc-total">' + (tot !== null ? tot : '—') + '</div>' +
+      '<div class="scc-denom">/ 100</div>' +
+      '<div class="scc-breakdown">' + breakdown + '</div>' +
+    '</div>';
+  }).join('');
+
+  // Average card
+  var totals = assignedJudges.map(function(j) { return totalOf(getScoreObj(j.id, s.id)); }).filter(function(t) { return t !== null; });
+  var avg = totals.length > 0 ? (totals.reduce(function(a,b){return a+b;},0) / totals.length).toFixed(1) : '—';
+  var avgCard = '<div class="scc-avg-card">' +
+    '<div class="scc-judge">综合平均</div>' +
+    '<div class="scc-total">' + avg + '</div>' +
+    '<div class="scc-denom">/ 100</div>' +
+    '<div class="scc-breakdown">' + totals.length + ' 位老师已评</div>' +
+  '</div>';
+
+  // Manuscript
+  var msId = 'qms-' + studentId;
+  var msHtml = buildMsHtml(s.essay || '');
+
+  container.innerHTML =
+    '<div class="query-result">' +
+      '<div class="query-student-hdr">' +
+        '<span class="query-student-name">' + s.name + '</span>' +
+        '<span class="query-student-meta">' + s.grade + ' · ' + s.stream + '</span>' +
+      '</div>' +
+      '<div class="score-compare-grid">' + cards + avgCard + '</div>' +
+    '</div>';
 }
 
 loadData();

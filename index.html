@@ -49,6 +49,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* ── Submitted banner ── */
 .submitted-banner{background:#fef9e7;border-bottom:1px solid #f0d060;padding:8px 20px;font-size:13px;color:#8b6914;text-align:center}
 
+/* ── Custom dropdown ── */
+.custom-dd-wrap{position:relative}
+.custom-dd-btn{width:100%;padding:8px 32px 8px 12px;font-family:inherit;font-size:14px;border:0.5px solid #d0d0d0;border-radius:8px;background:#faf9f7;color:#1a1a1a;cursor:pointer;outline:none;text-align:left;display:flex;justify-content:space-between;align-items:center;min-width:150px}
+.custom-dd-btn .arrow{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #888;flex-shrink:0;margin-left:8px}
+.custom-dd-menu{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:0.5px solid #d0d0d0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.08);z-index:200;overflow:hidden;min-width:180px}
+.custom-dd-menu.open{display:block}
+.custom-dd-item{padding:10px 14px;font-size:14px;font-family:inherit;cursor:pointer;border-bottom:0.5px solid #f0f0f0;color:#1a1a1a;display:flex;align-items:center;gap:8px}
+.custom-dd-item:last-child{border-bottom:none}
+.custom-dd-item:hover,.custom-dd-item.selected{background:#edf4fb;color:#1a6fba}
+.custom-dd-item .dd-check{font-size:12px;color:#1a6fba;width:16px}
+.custom-dd-item .dd-scored{font-size:11px;color:#3d9a50;margin-left:auto}
+
 /* ── Stream selectors ── */
 .stream-selectors{padding:8px 20px;display:flex;align-items:center;flex-wrap:wrap;gap:0;border-bottom:1px solid #f0f0f0;overflow-x:auto}
 .stream-group{display:flex;align-items:center;gap:8px}
@@ -345,36 +357,65 @@ function backToSelect() {
 
 // ── Stream Selectors ─────────────────────────
 function renderStreamSelectors() {
-  const groups = getGroups(state.currentJudge);
-  const container = document.getElementById('stream-selectors');
+  var groups = getGroups(state.currentJudge);
+  var container = document.getElementById('stream-selectors');
   if (!groups.length) { container.innerHTML = ''; return; }
-  container.innerHTML = groups.map((g, gi) => {
-    const label = g.grade + ' ' + g.stream;
-    const students = getJudgeStudents(state.currentJudge)
-      .filter(s => s.grade === g.grade && s.stream === g.stream);
-    const scored = students.filter(s => isScored(state.currentJudge, s.id)).length;
-    const sep = gi < groups.length - 1 ? '<div class="stream-sep"></div>' : '';
-    const opts = students.map(s => {
-      const sc = isScored(state.currentJudge, s.id) ? ' ✓' : '';
-      const sel = state.currentStudent === s.id ? ' selected' : '';
-      return '<option value="' + s.id + '"' + sel + '>' + s.name + sc + '</option>';
+  container.innerHTML = groups.map(function(g, gi) {
+    var label = g.grade + ' ' + g.stream;
+    var students = getJudgeStudents(state.currentJudge)
+      .filter(function(s) { return s.grade === g.grade && s.stream === g.stream; });
+    var scored = students.filter(function(s) { return isScored(state.currentJudge, s.id); }).length;
+    var sep = gi < groups.length - 1 ? '<div class="stream-sep"></div>' : '';
+    var ddId = 'dd' + gi;
+    var current = students.find(function(s) { return s.id === state.currentStudent; });
+    var btnLabel = current ? current.name : '— 选择考生 —';
+    var items = students.map(function(s) {
+      var sc = isScored(state.currentJudge, s.id);
+      var isCur = state.currentStudent === s.id;
+      return '<div class="custom-dd-item" onclick="selectStudentFromDrop(\''+s.id+'\',\''+ddId+'\')">'+
+        '<span class="dd-check">'+(isCur?'✓':'')+'</span>'+
+        s.name+
+        (sc?'<span class="dd-scored">已评</span>':'')+
+        '</div>';
     }).join('');
-    return '<div class="stream-group">' +
-      '<span class="stream-tag">' + label + '</span>' +
-      '<select class="stream-sel" onchange="selectStudentFromDrop(this.value)">' +
-      '<option value="">— 选择考生 —</option>' + opts + '</select>' +
-      '<span class="stream-prog">' + scored + '/' + students.length + ' 已评</span>' +
-      '</div>' + sep;
+    return '<div class="stream-group">'+
+      '<span class="stream-tag">'+label+'</span>'+
+      '<div class="custom-dd-wrap">'+
+        '<button class="custom-dd-btn" onclick="toggleDrop(\''+ddId+'\',event)" type="button">'+
+          '<span id="'+ddId+'-label">'+btnLabel+'</span>'+
+          '<span class="arrow"></span>'+
+        '</button>'+
+        '<div class="custom-dd-menu" id="'+ddId+'">'+items+'</div>'+
+      '</div>'+
+      '<span class="stream-prog">'+scored+'/'+students.length+' 已评</span>'+
+    '</div>'+sep;
   }).join('');
 }
 
-function selectStudentFromDrop(studentId) {
+function toggleDrop(ddId, e) {
+  if (e) e.stopPropagation();
+  var menu = document.getElementById(ddId);
+  var isOpen = menu.classList.contains('open');
+  document.querySelectorAll('.custom-dd-menu.open').forEach(function(m){m.classList.remove('open');});
+  if (!isOpen) menu.classList.add('open');
+}
+
+document.addEventListener('click', function(){
+  document.querySelectorAll('.custom-dd-menu.open').forEach(function(m){m.classList.remove('open');});
+});
+
+
+function selectStudentFromDrop(studentId, ddId) {
   if (!studentId) return;
-  // Sync all other dropdowns to deselect
   state.currentStudent = studentId;
+  // Close dropdown
+  if (ddId) {
+    var menu = document.getElementById(ddId);
+    if (menu) menu.classList.remove('open');
+  }
   renderStreamSelectors();
   renderEssayPanel(studentId);
-  // Re-select the correct option after re-render
+  renderScoreSummary();
 }
 
 // ── Essay Panel ──────────────────────────────
@@ -656,9 +697,9 @@ function renderManuscript(containerId, text) {
     textLayer.style.width = TW + 'px';
     textLayer.style.height = TH + 'px';
 
-    const fs = Math.round(cH * 0.60);
-    const topOffset = Math.round((cH - fs) / 2);
-    const translateY = Math.round(fs * 0.08);
+    const fs = Math.round(cH * 0.62);
+    const topOffset = Math.round((cH - fs) / 2) + Math.round(cH * 0.03);
+    const translateY = 0;
 
     // Re-paginate to get this page's chars
     const pages = paginateText(text);
@@ -670,7 +711,7 @@ function renderManuscript(containerId, text) {
       span.style.cssText = `position:absolute;left:${c*cW}px;top:${r*gH+topOffset}px;` +
         `width:${cW}px;height:${fs}px;display:flex;align-items:center;justify-content:center;` +
         `font-size:${fs}px;font-weight:100;line-height:1;color:#1a2a3a;` +
-        `font-family:"SimSun","宋体","STSong",serif;box-sizing:border-box;` +
+        `font-family:"SimSun","宋体","STSong","Songti SC","Source Han Serif",serif;box-sizing:border-box;` +
         `-webkit-font-smoothing:antialiased;transform:translateY(-${translateY}px);`;
       textLayer.appendChild(span);
     });

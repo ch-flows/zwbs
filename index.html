@@ -38,7 +38,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .workspace-header{padding:12px 20px;display:flex;align-items:center;gap:11px;border-bottom:1px solid #f0f0f0}
 .ws-avatar{width:36px;height:36px;border-radius:50%;background:#e8f4fd;color:#1a6fba;display:flex;align-items:center;justify-content:center;font-size:14px;font-style:italic;font-weight:500;flex-shrink:0}
 .ws-info{flex:1}
-.ws-title{font-size:15px;font-weight:500;color:#111}
+.ws-title{font-size:14px;font-weight:400;color:#444}
 .ws-sub{display:none}
 .ws-actions{display:flex;gap:8px}
 .btn{padding:6px 16px;border:1px solid #ddd;border-radius:7px;background:#f7f7f7;color:#444;cursor:pointer;font-size:13px;font-family:inherit}
@@ -75,12 +75,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .score-inline-fields{display:flex;align-items:center;flex-wrap:nowrap;gap:8px;flex:1}
 .sif{display:flex;align-items:center;gap:4px;flex:1;min-width:0}
 .sif-lbl{font-size:11px;color:#bbb;white-space:nowrap}
-.sif input{flex:1;min-width:0;width:0;height:34px;border:1px solid #e0e0e0;border-radius:7px;background:#fff;font-size:15px;font-family:inherit;font-weight:400;text-align:center;color:#111;outline:none}
+.sif input{flex:1;min-width:0;width:0;height:30px;border:1px solid #e0e0e0;border-radius:6px;background:#fff;font-size:13px;font-family:inherit;font-weight:400;text-align:center;color:#333;outline:none}
 .sif input:focus{border-color:#1a6fba;background:#fff}
 .sif-max{font-size:11px;color:#ccc;white-space:nowrap}
 .sif-div{width:1px;height:20px;background:#eee;flex-shrink:0}
 .sif-total{display:flex;align-items:center;gap:4px;flex-shrink:0}
-.sif-total span:first-child{font-size:15px;font-family:inherit;font-weight:400;color:#1a6fba;width:44px;height:34px;border:1px solid #1a6fba;border-radius:7px;background:#fff;display:flex;align-items:center;justify-content:center}
+.sif-total span:first-child{font-size:13px;font-family:inherit;font-weight:400;color:#1a6fba;width:44px;height:30px;border:1px solid #c0d8f0;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center}
 
 /* ── Essay panel ── */
 .essay-panel{background:#fff}
@@ -106,12 +106,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sort-btn.active{background:#1a6fba;color:#fff;border-color:#1a6fba}
 .score-summary-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
 .score-summary-table th{padding:7px 12px;text-align:left;font-size:12px;color:#bbb;border-bottom:1px solid #f5f5f5;font-weight:normal;text-transform:uppercase;letter-spacing:.05em}
-.score-summary-table td{padding:10px 12px;border-bottom:1px solid #f7f7f7;color:#222;font-size:14px}
+.score-summary-table td{padding:8px 12px;border-bottom:1px solid #f7f7f7;color:#444;font-size:13px;font-weight:400}
 .score-summary-table tr:last-child td{border-bottom:none}
 .score-summary-table tr:hover td{background:#fafafa;cursor:pointer}
 .score-summary-table tr.editing td{background:#eef6ff}
 .ss-code{font-family:inherit;font-size:14px;color:#555;white-space:nowrap}
-.ss-total{font-family:inherit;font-weight:500}
+.ss-total{font-family:inherit;font-weight:400}
 .ss-pending{color:#bbb;font-style:italic}
 .seq{font-size:11px;color:#ccc;text-align:center;width:28px}
 
@@ -610,7 +610,7 @@ async function submitAll() {
 // 稿纸渲染引擎（改编自竞赛稿纸模块）
 // ════════════════════════════════════════════
 const MS_COLS = 20, MS_ROWS = 22;
-const MS_GRID_COLOR = '#4caf50';
+const MS_GRID_COLOR = '#8dcc8d';
 
 function buildManuscriptHtml(text) {
   const pages = paginateText(text);
@@ -662,7 +662,7 @@ function renderManuscript(containerId, text) {
     const TW = wrap.clientWidth || wrap.parentNode.clientWidth || 400;
     const cW = TW / MS_COLS;
     const cH = cW;
-    const auxH = Math.round(cH * 0.4);
+    const auxH = Math.round(cH * 0.3);
     const gH = cH + auxH;
     const TH = (MS_ROWS - 1) * gH + cH;
     const BOT = 2;
@@ -678,7 +678,7 @@ function renderManuscript(containerId, text) {
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, TW, TH + BOT);
     ctx.strokeStyle = MS_GRID_COLOR;
-    ctx.lineWidth = 0.7;
+    ctx.lineWidth = 0.4;
 
     for (let r = 0; r < MS_ROWS; r++) {
       const base = r * gH, wb = base + cH, ab = wb + auxH;

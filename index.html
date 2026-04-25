@@ -111,10 +111,13 @@ html{zoom:1;-ms-zoom:1;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .sif-lbl{font-size:12px;color:#5a9070;font-weight:500;white-space:nowrap}
 .sif input{width:100%;height:44px;border:0.5px solid #d4e4d4;border-radius:6px;background:#fff;font-size:15px;font-family:'Courier New',monospace;text-align:center;color:#5a9070;outline:none}
 .sif input:focus{border-color:#7ab89a}
-.sif-max{font-size:10px;color:#b0c8b8;text-align:center}
+.sif-wrap{width:100%;height:44px;border:0.5px solid #d4e4d4;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;gap:4px;padding:0 8px}
+.sif-wrap input{border:none;background:transparent;font-family:'Courier New',monospace;font-size:15px;color:#5a9070;text-align:right;width:50%;outline:none;padding:0}
+.sif-wrap input::-webkit-inner-spin-button,.sif-wrap input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.sif-max{font-size:12px;color:#b0c8b8;white-space:nowrap}
+.sif-total-box{font-family:'Courier New',monospace;font-size:15px;color:#5a9070}
 .sif-div{width:0.5px;background:#d8e8d8;align-self:stretch;margin-top:20px;flex-shrink:0}
 .sif-total{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1}
-.sif-total span:first-child{width:100%;height:44px;border:0.5px solid #d4e4d4;border-radius:6px;background:#fff;font-family:'Courier New',monospace;font-size:15px;color:#5a9070;display:flex;align-items:center;justify-content:center}
 
 /* ── Essay panel ── */
 .essay-panel{background:#fff}
@@ -200,25 +203,31 @@ html{zoom:1;-ms-zoom:1;-webkit-text-size-adjust:100%;text-size-adjust:100%}
       <div class="score-inline-fields">
         <div class="sif">
           <span class="sif-lbl">内容</span>
-          <input type="number" id="si-content" min="0" max="40" placeholder="—" oninput="onScoreInline('content',this.value,40)"/>
-          <span class="sif-max">/ 40</span>
+          <div class="sif-wrap">
+            <input type="number" id="si-content" min="0" max="40" placeholder="—" oninput="onScoreInline('content',this.value,40)"/>
+            <span class="sif-max">/ 40</span>
+          </div>
         </div>
         <div class="sif-div"></div>
         <div class="sif">
           <span class="sif-lbl">表达</span>
-          <input type="number" id="si-expression" min="0" max="35" placeholder="—" oninput="onScoreInline('expression',this.value,35)"/>
-          <span class="sif-max">/ 35</span>
+          <div class="sif-wrap">
+            <input type="number" id="si-expression" min="0" max="35" placeholder="—" oninput="onScoreInline('expression',this.value,35)"/>
+            <span class="sif-max">/ 35</span>
+          </div>
         </div>
         <div class="sif-div"></div>
         <div class="sif">
           <span class="sif-lbl">创意</span>
-          <input type="number" id="si-creativity" min="0" max="25" placeholder="—" oninput="onScoreInline('creativity',this.value,25)"/>
-          <span class="sif-max">/ 25</span>
+          <div class="sif-wrap">
+            <input type="number" id="si-creativity" min="0" max="25" placeholder="—" oninput="onScoreInline('creativity',this.value,25)"/>
+            <span class="sif-max">/ 25</span>
+          </div>
         </div>
         <div class="sif-div"></div>
-        <div class="sif-total">
-          <span class="sif-lbl" style="font-size:12px;color:#5a9070;font-weight:500">总分</span>
-          <span id="si-total" style="width:100%;height:44px;border:0.5px solid #d4e4d4;border-radius:6px;background:#fff;font-family:'Courier New',monospace;font-size:15px;color:#5a9070;display:flex;align-items:center;justify-content:center">—/100</span>
+        <div class="sif">
+          <span class="sif-lbl">总分</span>
+          <span id="si-total" class="sif-wrap sif-total-box">—/100</span>
         </div>
       </div>
     </div>

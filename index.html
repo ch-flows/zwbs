@@ -400,8 +400,7 @@ function selectJudge(judgeId) {
   document.getElementById('screen-workspace').classList.add('active');
 
   const sub = isSubmitted(judgeId);
-  document.getElementById('submitted-banner-wrap').innerHTML = sub
-    ? '<div class="submitted-banner">您已完成提交，感谢！如需修改请联系管理员。</div>' : '';
+  document.getElementById('submitted-banner-wrap').innerHTML = '';
   document.getElementById('btn-submit-all').disabled = sub;
   document.getElementById('btn-submit-all').style.opacity = sub ? '.5' : '1';
 

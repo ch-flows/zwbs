@@ -22,18 +22,21 @@ html{zoom:1;-ms-zoom:1;-webkit-text-size-adjust:100%;text-size-adjust:100%}
     .ws-title{font-size:18px}
     .workspace-header{padding:18px 32px}
     .stream-selectors{padding:14px 32px}
+    .stream-tag{font-size:13px;color:#5a9070;font-weight:500}
     .score-bar-row{padding:16px 32px;gap:16px}
     .sif input{height:40px;font-size:16px}
-    .sif-lbl{font-size:14px}
-    .sif-max{font-size:13px}
+    .sif-lbl{font-size:14px;color:#5a9070}
+    .sif-max{font-size:13px;color:#8ab0a0}
     .sif-total span:first-child{width:64px;height:40px;font-size:16px}
-    .essay-ms-wrap{padding:20px 32px 28px}
+    .essay-student-hdr{padding:20px 56px 0}
+    .essay-ms-wrap{padding:16px 56px 32px}
+    .essay-student-name{font-size:13px;color:#7aaa8a}
+    .essay-student-meta{font-size:11px;color:#7aaa8a}
     .score-summary-table th{padding:12px 20px;font-size:14px}
     .score-summary-table td{padding:12px 20px;font-size:15px}
     .sort-btn{padding:8px 20px;font-size:14px}
     .score-summary-hdr{padding:14px 24px}
     .custom-dd-btn{font-size:14px;padding:9px 32px 9px 14px}
-    .stream-tag{font-size:13px}
     .stream-prog{font-size:13px}
     .btn-submit{padding:10px 26px;font-size:15px}
     .btn-save svg{width:22px;height:22px}
@@ -74,7 +77,7 @@ html{zoom:1;-ms-zoom:1;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .ws-actions{display:flex;gap:8px}
 .btn{padding:6px 16px;border:1px solid #ddd;border-radius:7px;background:#f7f7f7;color:#444;cursor:pointer;font-size:13px;font-family:inherit}
 .btn:hover{background:#efefef}
-.btn-submit{background:transparent;color:#4a7060;border:0.5px solid #a8c8be;font-weight:400;padding:8px 22px;font-size:14px}
+.btn-submit{background:transparent;color:#5a9070;border:0.5px solid #a8c8be;font-weight:400;padding:8px 22px;font-size:14px}
 .btn-submit:hover{background:#b07808}
 .btn-submit:disabled{opacity:.5}
 
@@ -83,7 +86,7 @@ html{zoom:1;-ms-zoom:1;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
 /* ── Custom dropdown ── */
 .custom-dd-wrap{position:relative}
-.custom-dd-btn{width:100%;padding:8px 32px 8px 12px;font-family:'Courier New',monospace;font-size:12px;border:1px solid #e0e0e0;border-radius:8px;background:#fff;color:#333;cursor:pointer;outline:none;text-align:left;display:flex;justify-content:space-between;align-items:center;min-width:150px}
+.custom-dd-btn{width:100%;padding:8px 32px 8px 12px;font-family:'Courier New',monospace;font-size:12px;border:0.5px solid #d4e4d4;border-radius:8px;background:#fff;color:#5a9070;cursor:pointer;outline:none;text-align:left;display:flex;justify-content:space-between;align-items:center;min-width:150px}
 .custom-dd-btn .arrow{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #888;flex-shrink:0;margin-left:8px}
 .custom-dd-menu{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:0.5px solid #d0d0d0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:9999;overflow:hidden;min-width:180px}
 .custom-dd-menu.open{display:block}
@@ -96,30 +99,30 @@ html{zoom:1;-ms-zoom:1;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 /* ── Stream selectors ── */
 .stream-selectors{padding:12px 28px;display:flex;align-items:center;flex-wrap:wrap;gap:0;background:#f0f6f0;border-bottom:0.5px solid #e4ede4;overflow:visible;position:relative;z-index:100}
 .stream-group{display:flex;align-items:center;gap:8px}
-.stream-tag{font-size:11px;color:#b0c0b0;background:transparent;padding:2px 0;font-weight:400;white-space:nowrap;flex-shrink:0}
+.stream-tag{font-size:12px;color:#5a9070;background:transparent;padding:2px 0;font-weight:500;white-space:nowrap;flex-shrink:0}
 .stream-sel{padding:5px 10px;border:1px solid #e0e0e0;border-radius:7px;background:#fff;font-size:13px;color:#111;min-width:120px}
 .stream-prog{display:none}
 .stream-sep{width:1px;height:24px;background:#e8e8e8;margin:0 12px;flex-shrink:0}
 
 /* ── Score bar ── */
-.score-bar-row{padding:14px 28px;display:flex;align-items:center;flex-wrap:nowrap;background:#f6faf6;border-bottom:0.5px solid #e4ede4;overflow-x:auto;gap:12px}
-.score-inline-fields{display:flex;align-items:center;flex-wrap:nowrap;gap:8px;flex:1}
-.sif{display:flex;align-items:center;gap:4px;flex:1;min-width:0}
-.sif-lbl{font-size:11px;color:#bbb;white-space:nowrap}
-.sif input{flex:1;min-width:0;width:0;height:36px;border:0.5px solid #d4e4d4;border-radius:6px;background:#fff;font-size:14px;font-family:'Courier New',monospace;font-weight:400;text-align:center;color:#555;outline:none}
-.sif input:focus{border-color:#1a6fba;background:#fff}
-.sif-max{font-size:12px;color:#ccc;white-space:nowrap}
-.sif-div{width:1px;height:20px;background:#eee;flex-shrink:0}
-.sif-total{display:flex;align-items:center;gap:4px;flex-shrink:0}
-.sif-total span:first-child{font-size:14px;font-family:'Courier New',monospace;font-weight:400;color:#5a8aaa;width:56px;height:36px;border:0.5px solid #b8d4e8;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center}
+.score-bar-row{padding:12px 18px;display:flex;align-items:flex-start;gap:8px;background:#f6faf6;border-bottom:0.5px solid #e4ede4}
+.score-inline-fields{display:flex;align-items:flex-start;gap:8px;flex:1;width:100%}
+.sif{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;min-width:0}
+.sif-lbl{font-size:12px;color:#5a9070;font-weight:500;white-space:nowrap}
+.sif input{width:100%;height:44px;border:0.5px solid #d4e4d4;border-radius:6px;background:#fff;font-size:15px;font-family:'Courier New',monospace;text-align:center;color:#5a9070;outline:none}
+.sif input:focus{border-color:#7ab89a}
+.sif-max{font-size:10px;color:#b0c8b8;text-align:center}
+.sif-div{width:0.5px;background:#d8e8d8;align-self:stretch;margin-top:20px;flex-shrink:0}
+.sif-total{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1}
+.sif-total span:first-child{width:100%;height:44px;border:0.5px solid #d4e4d4;border-radius:6px;background:#fff;font-family:'Courier New',monospace;font-size:15px;color:#5a9070;display:flex;align-items:center;justify-content:center}
 
 /* ── Essay panel ── */
 .essay-panel{background:#fff}
 .empty-state{display:flex;align-items:center;justify-content:center;min-height:180px;color:#bbb;font-size:13px}
-.essay-student-hdr{padding:16px 32px 0;display:flex;align-items:baseline;gap:8px}
+.essay-student-hdr{padding:16px 48px 0;display:flex;align-items:baseline;gap:8px}
 .essay-student-name{font-size:12px;font-weight:400;color:#7aaa8a;font-family:'Courier New',monospace}
 .essay-student-meta{font-size:10px;color:#7aaa8a;font-family:'Noto Serif SC','Georgia',serif;font-weight:300}
-.essay-ms-wrap{padding:14px 32px 28px}
+.essay-ms-wrap{padding:14px 48px 28px}
 .submitted-note{font-size:12px;color:#1a6fba;background:#eef6ff;padding:5px 14px;border-radius:7px;margin:0 20px 10px;display:inline-block}
 
 /* ── Manuscript ── */
@@ -195,13 +198,28 @@ html{zoom:1;-ms-zoom:1;-webkit-text-size-adjust:100%;text-size-adjust:100%}
   <div id="score-bar-wrap" style="display:none">
     <div class="score-bar-row">
       <div class="score-inline-fields">
-        <div class="sif"><span class="sif-lbl">内容</span><input type="number" id="si-content" min="0" max="40" placeholder="" oninput="onScoreInline('content',this.value,40)"/><span class="sif-max">/ 40</span></div>
+        <div class="sif">
+          <span class="sif-lbl">内容</span>
+          <input type="number" id="si-content" min="0" max="40" placeholder="—" oninput="onScoreInline('content',this.value,40)"/>
+          <span class="sif-max">/ 40</span>
+        </div>
         <div class="sif-div"></div>
-        <div class="sif"><span class="sif-lbl">表达</span><input type="number" id="si-expression" min="0" max="35" placeholder="" oninput="onScoreInline('expression',this.value,35)"/><span class="sif-max">/ 35</span></div>
+        <div class="sif">
+          <span class="sif-lbl">表达</span>
+          <input type="number" id="si-expression" min="0" max="35" placeholder="—" oninput="onScoreInline('expression',this.value,35)"/>
+          <span class="sif-max">/ 35</span>
+        </div>
         <div class="sif-div"></div>
-        <div class="sif"><span class="sif-lbl">创意</span><input type="number" id="si-creativity" min="0" max="25" placeholder="" oninput="onScoreInline('creativity',this.value,25)"/><span class="sif-max">/ 25</span></div>
+        <div class="sif">
+          <span class="sif-lbl">创意</span>
+          <input type="number" id="si-creativity" min="0" max="25" placeholder="—" oninput="onScoreInline('creativity',this.value,25)"/>
+          <span class="sif-max">/ 25</span>
+        </div>
         <div class="sif-div"></div>
-        <div class="sif-total"><span id="si-total"></span><span class="sif-max">/ 100</span></div>
+        <div class="sif-total">
+          <span class="sif-lbl" style="font-size:12px;color:#5a9070;font-weight:500">总分</span>
+          <span id="si-total" style="width:100%;height:44px;border:0.5px solid #d4e4d4;border-radius:6px;background:#fff;font-family:'Courier New',monospace;font-size:15px;color:#5a9070;display:flex;align-items:center;justify-content:center">—/100</span>
+        </div>
       </div>
     </div>
   </div>
@@ -476,7 +494,7 @@ function renderEssayPanel(studentId) {
     }
   });
   const totEl = document.getElementById('si-total');
-  if (totEl) totEl.textContent = (tot !== null && !isNaN(tot)) ? tot : '';
+  if (totEl) totEl.textContent = (tot !== null && !isNaN(tot)) ? (tot + '/100') : '—/100';
 
   // store current student for save
   state.currentStudent = studentId;

@@ -38,12 +38,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .workspace-header{padding:12px 20px;display:flex;align-items:center;gap:11px;border-bottom:1px solid #f0f0f0}
 .ws-avatar{width:36px;height:36px;border-radius:50%;background:#e8f4fd;color:#1a6fba;display:flex;align-items:center;justify-content:center;font-size:14px;font-style:italic;font-weight:500;flex-shrink:0}
 .ws-info{flex:1}
-.ws-title{font-size:14px;font-weight:400;color:#444}
+.ws-title{font-size:13px;font-weight:300;color:#aaa;font-family:'Noto Serif SC',serif}
 .ws-sub{display:none}
 .ws-actions{display:flex;gap:8px}
 .btn{padding:6px 16px;border:1px solid #ddd;border-radius:7px;background:#f7f7f7;color:#444;cursor:pointer;font-size:13px;font-family:inherit}
 .btn:hover{background:#efefef}
-.btn-submit{background:#c8960a;color:#fff;border-color:#b8860b;font-weight:500}
+.btn-submit{background:#c8ddd6;color:#4a7060;border:none;font-weight:400}
 .btn-submit:hover{background:#b07808}
 .btn-submit:disabled{opacity:.5}
 
@@ -65,7 +65,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* ── Stream selectors ── */
 .stream-selectors{padding:8px 20px;display:flex;align-items:center;flex-wrap:wrap;gap:0;border-bottom:1px solid #f0f0f0;overflow:visible;position:relative;z-index:100}
 .stream-group{display:flex;align-items:center;gap:8px}
-.stream-tag{font-size:11px;color:#888;background:#f0f0f0;padding:3px 8px;border-radius:5px;font-weight:400;white-space:nowrap;flex-shrink:0}
+.stream-tag{font-size:11px;color:#bbb;background:transparent;padding:2px 0;font-weight:400;white-space:nowrap;flex-shrink:0}
 .stream-sel{padding:5px 10px;border:1px solid #e0e0e0;border-radius:7px;background:#fff;font-size:13px;color:#111;min-width:120px}
 .stream-prog{display:none}
 .stream-sep{width:1px;height:24px;background:#e8e8e8;margin:0 12px;flex-shrink:0}
@@ -75,19 +75,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .score-inline-fields{display:flex;align-items:center;flex-wrap:nowrap;gap:8px;flex:1}
 .sif{display:flex;align-items:center;gap:4px;flex:1;min-width:0}
 .sif-lbl{font-size:11px;color:#bbb;white-space:nowrap}
-.sif input{flex:1;min-width:0;width:0;height:30px;border:1px solid #e0e0e0;border-radius:6px;background:#fff;font-size:12px;font-family:'Courier New',monospace;font-weight:400;text-align:center;color:#444;outline:none}
+.sif input{flex:1;min-width:0;width:0;height:28px;border:0.5px solid #d0d0d0;border-radius:5px;background:#fff;font-size:11px;font-family:'Courier New',monospace;font-weight:400;text-align:center;color:#555;outline:none}
 .sif input:focus{border-color:#1a6fba;background:#fff}
 .sif-max{font-size:11px;color:#ccc;white-space:nowrap}
 .sif-div{width:1px;height:20px;background:#eee;flex-shrink:0}
 .sif-total{display:flex;align-items:center;gap:4px;flex-shrink:0}
-.sif-total span:first-child{font-size:12px;font-family:'Courier New',monospace;font-weight:400;color:#1a6fba;width:44px;height:30px;border:1px solid #c0d8f0;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center}
+.sif-total span:first-child{font-size:11px;font-family:'Courier New',monospace;font-weight:400;color:#5a8aaa;width:44px;height:28px;border:0.5px solid #b8d4e8;border-radius:5px;background:#fff;display:flex;align-items:center;justify-content:center}
 
 /* ── Essay panel ── */
 .essay-panel{background:#fff}
 .empty-state{display:flex;align-items:center;justify-content:center;min-height:180px;color:#bbb;font-size:13px}
 .essay-student-hdr{padding:12px 20px 0;display:flex;align-items:baseline;gap:8px}
 .essay-student-name{font-size:12px;font-weight:400;color:#888;font-family:'Courier New',monospace}
-.essay-student-meta{font-size:14px;color:#333;font-family:'Noto Serif SC','Georgia',serif;font-weight:400}
+.essay-student-meta{font-size:10px;color:#888;font-family:'Noto Serif SC','Georgia',serif;font-weight:300}
 .essay-ms-wrap{padding:12px 20px 16px}
 .submitted-note{font-size:12px;color:#1a6fba;background:#eef6ff;padding:5px 14px;border-radius:7px;margin:0 20px 10px;display:inline-block}
 
@@ -149,7 +149,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="ws-title" id="ws-title"></div>
     </div>
     <div class="ws-actions">
-      <button class="btn" id="btn-save-cur" onclick="saveCurrentScore()">保存</button>
+      <button class="btn" id="btn-save-cur" onclick="saveCurrentScore()" title="保存" style="background:none;border:none;padding:4px 6px;cursor:pointer;color:#7aaac8">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7aaac8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+        <polyline points="17 21 17 13 7 13 7 21"/>
+        <polyline points="7 3 7 8 15 8"/>
+      </svg>
+    </button>
       <button class="btn btn-submit" id="btn-submit-all" onclick="submitAll()">提交</button>
     </div>
   </div>

@@ -19,15 +19,15 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
 /* ── Screens ── */
 .screen{padding:20px 5%;max-width:900px;margin:0 auto;width:100%;box-sizing:border-box}
-  #screen-workspace.active{display:flex;flex-direction:column;gap:6px;width:100%}
-  #board-ctrl{border-radius:12px 12px 0 0;overflow:visible}
-  #board-paper{border-radius:0}
-  #board-summary{border-radius:0 0 12px 12px}
+  #screen-workspace.active{display:flex;flex-direction:column;gap:4px;width:100%}
 .screen.active{display:block}
 .screen:not(.active){display:none}
 
 /* ── Board ── */
 .board{background:#f0f8f4;border-radius:0;overflow:hidden;border:0.5px solid #a8c8be;box-shadow:0 3px 14px rgba(20,70,55,0.15);align-self:stretch;min-width:0;width:100%}
+  #board-ctrl{border-radius:12px 12px 0 0;overflow:visible;position:relative;z-index:10}
+  #board-paper{border-radius:0}
+  #board-summary{border-radius:0 0 12px 12px}
 
 /* ── Judge select ── */
 .welcome-text{text-align:center;margin:4rem 0 3rem}
@@ -97,7 +97,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 /* ── Essay panel ── */
 .essay-panel{background:#fff;border-bottom:1px solid #90b8a8}
 .empty-state{display:flex;align-items:center;justify-content:center;min-height:180px;color:#bbb;font-size:13px}
-.essay-student-hdr{padding:14px 24px 0;display:flex;align-items:baseline;gap:8px}
+.essay-student-hdr{padding:14px 24px 0;display:flex;align-items:baseline;gap:8px;justify-content:space-between}
 .essay-student-name{font-size:14px;font-weight:400;color:#60a888;font-family:'Courier New',monospace}
 .essay-student-meta{font-size:14px;color:#60a888;font-family:'Noto Serif SC','Georgia',serif;font-weight:300}
 .essay-ms-wrap{padding:14px 24px 28px}
@@ -108,6 +108,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .ms-grid-canvas{display:block;width:100%}
 .ms-text-layer{position:absolute;top:0;left:0;pointer-events:none;overflow:hidden}
 .ms-page-num{font-size:8pt;color:#aaa;text-align:right;padding-right:4px;margin-top:4px;font-family:sans-serif}
+.ms-word-count{font-size:11px;color:#7aaa8a;text-align:right;padding:4px 8px 0;font-family:'Courier New',monospace}
 .manuscript-pages{display:flex;flex-direction:column;gap:16px}
 
 /* ── Score summary ── */
@@ -151,11 +152,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     .stream-tag{font-size:13px;color:#4a6080;font-weight:500}
     .score-bar-row{padding:14px 32px;gap:0}
     .score-inline-fields{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:center;gap:0;width:100%}
-    .sif{flex-direction:row;align-items:center;gap:12px;justify-content:flex-start}
-    .sif-lbl{font-size:13px;font-weight:300;white-space:nowrap;flex-shrink:0}
-    .sif-wrap{width:140px;flex-shrink:0}
     .sif-div{width:0.5px;height:32px;background:#d8e8d8;margin:0 16px;align-self:auto}
-    .sif-total{flex-direction:row;align-items:center;gap:12px}
     .sif input{height:40px;font-size:16px}
     .sif-lbl{font-size:13px;color:#6a88a8;font-family:'Noto Serif SC',serif;font-weight:300}
     .sif-max{font-size:13px;color:#8ab0a0}
@@ -532,6 +529,7 @@ function renderEssayPanel(studentId) {
     '<div class="essay-student-hdr">' +
       '<span class="essay-student-name">' + s.name + '</span>' +
       '<span class="essay-student-meta">' + (s.title || (s.grade + ' · ' + s.stream)) + '</span>' +
+      '<span class="ms-word-count">' + (s.essay ? s.essay.replace(/\s/g,'').length + '字' : '') + '</span>' +
     '</div>' +
     subNote +
     '<div class="essay-ms-wrap">' +

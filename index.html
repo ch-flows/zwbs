@@ -18,12 +18,15 @@ html{zoom:0.85;-ms-zoom:0.85;-webkit-text-size-adjust:100%;text-size-adjust:100%
 
 /* ── Screens ── */
 .screen{padding:20px 5%;max-width:900px;margin:0 auto;width:100%;box-sizing:border-box}
-  #screen-workspace.active{display:flex;flex-direction:column;gap:16px;width:100%}
+  #screen-workspace.active{display:flex;flex-direction:column;gap:1px;width:100%}
+  #board-ctrl{border-radius:12px 12px 0 0}
+  #board-paper{border-radius:0}
+  #board-summary{border-radius:0 0 12px 12px}
 .screen.active{display:block}
 .screen:not(.active){display:none}
 
 /* ── Board ── */
-.board{background:#f0f8f4;border-radius:12px;overflow:hidden;border:0.5px solid #a8c8be;box-shadow:0 3px 14px rgba(20,70,55,0.15);align-self:stretch;min-width:0;width:100%}
+.board{background:#f0f8f4;border-radius:0;overflow:hidden;border:0.5px solid #a8c8be;box-shadow:0 3px 14px rgba(20,70,55,0.15);align-self:stretch;min-width:0;width:100%}
 
 /* ── Judge select ── */
 .welcome-text{text-align:center;margin:4rem 0 3rem}

@@ -86,7 +86,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .essay-panel{background:#fff}
 .empty-state{display:flex;align-items:center;justify-content:center;min-height:180px;color:#bbb;font-size:13px}
 .essay-student-hdr{padding:12px 20px 0;display:flex;align-items:baseline;gap:8px}
-.essay-student-name{font-size:15px;font-weight:500;color:#111;font-family:'Courier New',monospace}
+.essay-student-name{font-size:15px;font-weight:400;color:#111;font-family:'Noto Serif SC','Georgia',serif}
 .essay-student-meta{font-size:12px;color:#bbb}
 .essay-ms-wrap{padding:12px 20px 16px}
 .submitted-note{font-size:12px;color:#1a6fba;background:#eef6ff;padding:5px 14px;border-radius:7px;margin:0 20px 10px;display:inline-block}
@@ -690,8 +690,8 @@ function renderManuscript(containerId, text) {
         ctx.beginPath(); ctx.moveTo(c * cW, base); ctx.lineTo(c * cW, wb); ctx.stroke();
       }
     }
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(0.75, 0.75, TW - 1.5, TH + BOT - 1.5);
+    ctx.lineWidth = 0.8;
+    ctx.strokeRect(0.4, 0.4, TW - 0.8, TH + BOT - 0.8);
 
     // Render characters
     textLayer.innerHTML = '';

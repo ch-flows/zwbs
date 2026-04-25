@@ -516,7 +516,7 @@ function renderEssayPanel(studentId) {
   state.currentStudent = studentId;
 
   const msHtml = buildManuscriptHtml(s.essay || '');
-  const subNote = sub ? '<div class="submitted-note">已提交，如需修改请联系管理员</div>' : '';
+  const subNote = sub ? '' : '';
 
   panel.innerHTML =
     '<div class="essay-student-hdr">' +
@@ -661,7 +661,7 @@ async function submitAll() {
     students.forEach(s => {
       state.scores[state.currentJudge][s.id].submitted = true;
     });
-    toast('评分已提交！感谢 ✓', 3000);
+    toast('评分已提交 ✓', 3000);
     document.getElementById('submitted-banner-wrap').innerHTML = '';
     document.getElementById('btn-submit-all').disabled = true;
     document.getElementById('btn-submit-all').style.opacity = '.5';

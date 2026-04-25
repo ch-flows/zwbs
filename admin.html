@@ -281,22 +281,7 @@ function renderAll() {
 }
 
 function renderStats(results) {
-  const totalStudents = state.students.length;
-  const scoredStudents = results.filter(r => r.avg !== null).length;
-  const submittedJudges = state.judges.filter(j => {
-    const jStudents = state.students.filter(s => j.groups.some(g => g.grade === s.grade && g.stream === s.stream));
-    return jStudents.length > 0 && jStudents.every(s => {
-      const sc = getScoreObj(j.id, s.id);
-      return sc && sc.submitted;
-    });
-  }).length;
-
-  document.getElementById('stat-row').innerHTML = [
-    [totalStudents, '参赛考生'],
-    [scoredStudents, '已完成评分'],
-    [`${submittedJudges}/${state.judges.length}`, '老师已提交'],
-    [state.judges.length, '评审老师'],
-  ].map(([n, l]) => `<div class="stat-card"><div class="stat-n">${n}</div><div class="stat-l">${l}</div></div>`).join('');
+  // stat cards removed
 }
 
 function renderProgress() {

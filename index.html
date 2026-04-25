@@ -44,7 +44,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .judge-card-progress{margin-top:6px;font-size:12px;color:#1a6fba}
 
 /* ── Top bar ── */
-.workspace-header{padding:16px 28px;display:flex;align-items:center;gap:14px;background:#c8ddd6;border-bottom:0.5px solid #a8c8be}
+.workspace-header{padding:16px 28px;display:flex;align-items:center;gap:14px;background:#c8ddd6;border-bottom:0.5px solid #a8c8be;border-radius:12px 12px 0 0}
 .ws-avatar{width:36px;height:36px;border-radius:50%;background:#e8f4fd;color:#1a6fba;display:flex;align-items:center;justify-content:center;font-size:14px;font-style:italic;font-weight:500;flex-shrink:0}
 .ws-info{flex:1}
 .ws-title{font-size:16px;font-weight:300;color:#1a4a3a;font-family:'Noto Serif SC',serif}
@@ -61,11 +61,11 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
 /* ── Custom dropdown ── */
 .custom-dd-wrap{position:relative}
-.custom-dd-btn{width:100%;padding:9px 32px 9px 12px;font-family:'Noto Serif SC',serif;font-size:13px;font-weight:300;border:0.5px solid #90b8a8;border-radius:8px;background:#fff;color:#1a4a3a;cursor:pointer;outline:none;text-align:left;display:flex;justify-content:space-between;align-items:center;min-width:150px}
+.custom-dd-btn{width:100%;padding:9px 32px 9px 12px;font-family:'Noto Serif SC',serif;font-size:13px;font-weight:300;border:0.5px solid #90b8a8;border-radius:8px;background:#eef8f4;color:#1a4a3a;cursor:pointer;outline:none;text-align:left;display:flex;justify-content:space-between;align-items:center;min-width:150px}
 .custom-dd-btn .arrow{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #888;flex-shrink:0;margin-left:8px}
-.custom-dd-menu{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:0.5px solid #a8c8be;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:9999;overflow:hidden;min-width:180px}
+.custom-dd-menu{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#eef8f4;border:0.5px solid #a8c8be;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:9999;overflow:hidden;min-width:180px}
 .custom-dd-menu.open{display:block}
-.custom-dd-item{padding:13px 14px;font-size:16px;font-family:'Courier New',monospace;cursor:pointer;border-bottom:0.5px solid #f0f0f0;color:#5a9070;display:flex;align-items:center;gap:8px}
+.custom-dd-item{padding:13px 14px;font-size:16px;font-family:'Courier New',monospace;cursor:pointer;border-bottom:0.5px solid #d8ede8;color:#1a4a3a;display:flex;align-items:center;gap:8px}
 .custom-dd-item:last-child{border-bottom:none}
 .custom-dd-item:hover,.custom-dd-item.selected{background:#edf4fb;color:#1a6fba}
 .custom-dd-item .dd-check{font-size:12px;color:#1a6fba;width:16px}
@@ -97,8 +97,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 /* ── Essay panel ── */
 .essay-panel{background:#fff;border-bottom:1px solid #90b8a8}
 .empty-state{display:flex;align-items:center;justify-content:center;min-height:180px;color:#bbb;font-size:13px}
-.essay-student-hdr{padding:14px 24px 0;display:flex;align-items:baseline;gap:8px;justify-content:space-between}
-.essay-student-name{font-size:14px;font-weight:400;color:#60a888;font-family:'Courier New',monospace}
+.essay-student-hdr{padding:14px 24px 0;display:flex;align-items:baseline;gap:0}
+.essay-student-name{font-size:14px;font-weight:400;color:#60a888;font-family:'Courier New',monospace;margin-right:1em}
 .essay-student-meta{font-size:14px;color:#60a888;font-family:'Noto Serif SC','Georgia',serif;font-weight:300}
 .essay-ms-wrap{padding:14px 24px 28px}
 .submitted-note{font-size:12px;color:#1a6fba;background:#eef6ff;padding:5px 14px;border-radius:7px;margin:0 20px 10px;display:inline-block}
@@ -398,7 +398,7 @@ function selectJudge(judgeId) {
   state.currentStudent = null;
 
   const wsTitleEl = document.getElementById('ws-title');
-  if (wsTitleEl) wsTitleEl.textContent = judge.name;
+  if (wsTitleEl) wsTitleEl.textContent = '评审：' + judge.name;
   updateWsSub();
 
   history.pushState({ screen: 'workspace', judgeId: judgeId }, '', '');
@@ -529,7 +529,7 @@ function renderEssayPanel(studentId) {
     '<div class="essay-student-hdr">' +
       '<span class="essay-student-name">' + s.name + '</span>' +
       '<span class="essay-student-meta">' + (s.title || (s.grade + ' · ' + s.stream)) + '</span>' +
-      '<span class="ms-word-count">' + (s.essay ? s.essay.replace(/\s/g,'').length + '字' : '') + '</span>' +
+      '<span class="ms-word-count" style="margin-left:auto">' + (s.essay ? s.essay.replace(/\s/g,'').length + '字' : '') + '</span>' +
     '</div>' +
     subNote +
     '<div class="essay-ms-wrap">' +

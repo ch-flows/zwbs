@@ -2,435 +2,171 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
 <title> </title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.26.0"></script>
 <style>
-  :root {
-    --bg: #c8ddc8;
-    --surface: #f6faf6;
-    --surface2: #f0f6f0;
-    --border: #e4ede4;
-    --border-strong: #cde0cd;
-    --text: #2a3a2a;
-    --text-muted: #5a9070;
-    --text-faint: #8ab89a;
-    --accent: #5a9070;
-    --accent-light: #d8edd8;
-    --accent-text: #3a6a4a;
-    --radius: 12px;
-    --radius-sm: 7px;
-  }
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400&display=swap');
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { zoom: 0.85; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
-
-  /* ── Login ── */
-  .login-wrap {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .login-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 2.5rem 2rem;
-    width: 340px;
-    text-align: center;
-  }
-  .login-box h1 {
-    font-size: 20px;
-    font-weight: normal;
-    margin-bottom: 0.5rem;
-  }
-  .login-box p {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-bottom: 1.5rem;
-    font-style: italic;
-  }
-  .login-box input {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    font-size: 16px;
-    font-family: 'Courier New', monospace;
-    letter-spacing: .2em;
-    text-align: center;
-    background: var(--bg);
-    color: var(--text);
-    margin-bottom: 12px;
-  }
-  .login-box input:focus { outline: none; border-color: var(--accent); }
-  .login-box .btn-login {
-    width: 100%;
-    padding: 10px;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    font-family: inherit;
-    cursor: pointer;
-  }
-  .login-box .btn-login:hover { background: #234a31; }
-  .login-error { color: #c0392b; font-size: 13px; margin-top: 10px; }
-
-  /* ── Layout ── */
-  .header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 1rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .header-title { font-size: 17px; font-weight: normal; letter-spacing: .03em; }
-  .header-title span { color: var(--accent); font-style: italic; }
-  .header-badge {
-    font-size: 11px;
-    background: var(--gold-light);
-    color: var(--gold);
-    border: 1px solid #e8d080;
-    padding: 3px 10px;
-    border-radius: 20px;
-  }
-
-  .admin-wrap {
-    max-width: 1050px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  /* ── Stat cards ── */
-  .stat-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-    margin-bottom: 1.75rem;
-  }
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem 1rem;
-    text-align: center;
-  }
-  .stat-n {
-    font-size: 30px;
-    font-family: 'Courier New', monospace;
-    color: var(--text);
-    line-height: 1.1;
-  }
-  .stat-l {
-    font-size: 12px;
-    color: var(--text-faint);
-    margin-top: 4px;
-  }
-
-  /* ── Section ── */
-  .section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 1.25rem;
-    overflow: hidden;
-  }
-  .section-header {
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .section-title { font-size: 14px; font-weight: normal; letter-spacing: .02em; }
-  .section-body { padding: 1.25rem 1.5rem; }
-
-  /* ── Progress ── */
-  .progress-row {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .progress-row:last-child { border-bottom: none; }
-  .prog-avatar {
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    background: var(--accent-light);
-    color: var(--accent-text);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-style: italic; flex-shrink: 0;
-  }
-  .prog-name { font-size: 13px; min-width: 70px; }
-  .prog-track {
-    flex: 1;
-    height: 5px;
-    background: var(--border);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-  .prog-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 3px;
-    transition: width .4s;
-  }
-  .prog-fill.pending { background: #e8b860; }
-  .prog-count { font-size: 12px; color: var(--text-muted); min-width: 40px; text-align: right; }
-  .prog-status {
-    font-size: 11px;
-    min-width: 50px;
-    text-align: right;
-  }
-  .prog-status.done { color: var(--accent); }
-  .prog-status.pending { color: var(--gold); }
-
-  /* ── Filter pills ── */
-  .filter-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 1rem;
-  }
-  .filter-pill {
-    padding: 4px 14px;
-    border: 1px solid var(--border-strong);
-    border-radius: 20px;
-    background: var(--surface);
-    color: var(--text-muted);
-    font-size: 13px;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all .15s;
-  }
-  .filter-pill.active {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-  }
-
-  /* ── Result table ── */
-  .rtable {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    table-layout: fixed;
-  }
-  .rtable th {
-    background: var(--surface2);
-    color: var(--accent);
-    font-weight: 300;
-    font-size: 12px;
-    padding: 9px 14px;
-    text-align: left;
-    border-bottom: 0.5px solid var(--border);
-    font-family: 'Noto Serif SC', serif;
-    letter-spacing: .03em;
-  }
-  .rtable td {
-    padding: 9px 14px;
-    border-bottom: 0.5px solid var(--border);
-    font-size: 13px;
-    color: var(--text);
-  }
-  .rtable tr:last-child td { border-bottom: none; }
-  .rtable tr:hover td { background: var(--bg); }
-
-  .rank-num {
-    font-family: 'Courier New', monospace;
-    font-size: 15px;
-    font-weight: bold;
-  }
-  .rank-1 { color: #b8860b; }
-  .rank-2 { color: #7a7a7a; }
-  .rank-3 { color: #8b4513; }
-
-  .student-name { font-size: 14px; }
-  .group-tag {
-    display: inline-block;
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 20px;
-    background: var(--bg);
-    color: var(--text-muted);
-    border: 1px solid var(--border);
-    margin-top: 3px;
-  }
-  .avg-score {
-    font-size: 20px;
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    color: var(--text);
-  }
-  .grade-pill {
-    display: inline-block;
-    font-size: 11px;
-    padding: 2px 9px;
-    border-radius: 20px;
-    font-family: sans-serif;
-  }
-  .grade-te { background: #fef9e7; color: #8b6914; border: 1px solid #e8d080; }
-  .grade-ex { background: var(--accent-light); color: var(--accent-text); border: 1px solid #b0d8b8; }
-  .grade-gd { background: #e8f4fb; color: #1a5a7a; border: 1px solid #a0cce0; }
-  .grade-ok { background: #f5f0e8; color: #7a6030; border: 1px solid #d8c898; }
-  .grade-na { background: var(--bg); color: var(--text-faint); border: 1px solid var(--border); }
-
-  .judge-scores-list { display: flex; flex-direction: column; gap: 3px; margin-top: 2px; }
-  .judge-score-row { font-size: 12px; color: var(--text-muted); }
-  .judge-score-row strong { color: var(--text); font-family: 'Courier New', monospace; }
-  .subscores { font-size: 11px; color: var(--text-faint); }
-
-  /* ── Breakdown table ── */
-  .btable {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-  .btable th {
-    padding: 7px 12px;
-    text-align: left;
-    font-size: 11px;
-    font-weight: normal;
-    color: var(--text-faint);
-    text-transform: uppercase;
-    letter-spacing: .07em;
-    border-bottom: 1px solid var(--border);
-  }
-  .btable td {
-    padding: 9px 12px;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
-  }
-  .btable tr:last-child td { border-bottom: none; }
-  .btable tr:hover td { background: var(--bg); }
-  .judge-section { margin-bottom: 1.5rem; }
-  .judge-section-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  .judge-section-avatar {
-    width: 30px; height: 30px;
-    border-radius: 50%;
-    background: var(--accent-light);
-    color: var(--accent-text);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-style: italic; flex-shrink: 0;
-  }
-  .judge-section-name { font-size: 14px; }
-  .judge-section-sub { font-size: 12px; color: var(--text-faint); margin-left: auto; }
-
-  /* ── Export ── */
-  .btn {
-    padding: 7px 16px;
-    border: 0.5px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    background: transparent;
-    color: var(--accent);
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 300;
-    font-family: 'Noto Serif SC', serif;
-    transition: all .15s;
-  }
-  .btn:hover { background: var(--accent-light); }
-  .btn:active { transform: scale(0.96); }
-  .btn-primary { background: var(--accent-light); color: var(--accent-text); }
-  .btn-primary:hover { background: #c8e8c8; }
-
-  /* ── Loading ── */
-  .loading {
-    position: fixed; inset: 0;
-    background: var(--bg);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; color: var(--text-muted); z-index: 100;
-  }
-  .loading.hidden { display: none; }
-
-  .last-updated {
-    font-size: 12px;
-    color: var(--text-faint);
-    font-style: italic;
-  }
+*{box-sizing:border-box;margin:0;padding:0}
+html{zoom:0.85;-ms-zoom:0.85;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#d8e0ec;color:#111;min-height:100vh;font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
 
-  .query-sel {
-    padding: 7px 32px 7px 12px;
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    background: var(--bg);
-    font-size: 14px;
-    font-family: inherit;
-    color: var(--text);
-    appearance: none;
-    cursor: pointer;
-    outline: none;
-    min-width: 180px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-  }
-  .query-result { margin-top: 1.25rem; }
-  .query-student-hdr {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    margin-bottom: 1rem;
-  }
-  .query-student-name { font-size: 18px; color: var(--text); }
-  .query-student-meta { font-size: 13px; color: var(--text-muted); }
-  .score-compare-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 10px;
-    margin-bottom: 1.5rem;
-  }
-  .score-compare-card {
-    background: var(--bg);
-    border-radius: var(--radius);
-    padding: 1rem;
-    text-align: center;
-  }
-  .scc-judge { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
-  .scc-total { font-size: 28px; font-family: 'Courier New', monospace; font-weight: bold; color: var(--text); line-height: 1; }
-  .scc-denom { font-size: 12px; color: var(--text-faint); }
-  .scc-breakdown { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
-  .scc-avg-card {
-    background: var(--accent-light);
-    border-radius: var(--radius);
-    padding: 1rem;
-    text-align: center;
-  }
-  .scc-avg-card .scc-judge { color: var(--accent-text); }
-  .scc-avg-card .scc-total { color: var(--accent-text); }
-  .query-ms-label { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px; }
-  .query-ms-paper {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px;
-    overflow-x: auto;
-  }
-  .ms-grid-wrap { position: relative; background: #fff; }
-  .ms-grid-canvas { display: block; width: 100%; }
-  .ms-text-layer { position: absolute; top: 0; left: 0; pointer-events: none; overflow: hidden; }
-  .ms-page-num { font-size: 8pt; color: #aaa; text-align: right; padding-right: 4px; margin-top: 4px; font-family: sans-serif; }
+/* ── Loading ── */
+.loading{position:fixed;inset:0;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:14px;color:#bbb;z-index:100}
+.loading.hidden{display:none}
 
-    @media (max-width: 680px) {
-    .admin-wrap { padding: 1rem; }
+/* ── Screens ── */
+.screen{padding:40px 5%;max-width:1100px;margin:0 auto}
+.screen.active{display:block}
+.screen:not(.active){display:none}
+
+/* ── Board ── */
+.board{background:#f0f4f8;border-radius:12px;overflow:visible;border:0.5px solid #ccd4e0;max-width:1000px;margin:0 auto;box-shadow:0 4px 24px rgba(40,70,110,0.13),0 1px 4px rgba(40,70,110,0.08)}
+
+/* ── Judge select ── */
+.welcome-text{text-align:center;margin:4rem 0 3rem}
+.site-year{font-size:13px;color:#888;letter-spacing:.12em;margin-bottom:12px}
+.welcome-text h1{font-size:30px;font-weight:400;margin-bottom:10px;color:#1a1a1a;font-family:'Noto Serif SC',serif}
+.site-accent{color:#1a6fba}
+.welcome-text p{font-size:14px;color:#777}
+.judge-grid{display:grid;grid-template-columns:repeat(3,120px);gap:12px;justify-content:center}
+.judge-card{background:#fff;border:1px solid #d8e8d8;border-radius:10px;padding:1.2rem 0.8rem;cursor:pointer;transition:border-color .15s,box-shadow .15s;text-align:center;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(60,100,60,0.10)}
+.judge-card:hover{border-color:#1a6fba}
+.judge-avatar{width:44px;height:44px;border-radius:50%;background:#e8f4fd;color:#1a6fba;display:flex;align-items:center;justify-content:center;font-size:16px;font-style:italic;font-weight:400;margin:0 auto 8px}
+.judge-card-name{font-size:14px;margin-bottom:0;color:#5a9070;font-weight:300;font-family:'Noto Serif SC',serif}
+.judge-card-sub{font-size:12px;color:#bbb}
+.judge-card-progress{margin-top:6px;font-size:12px;color:#1a6fba}
+
+/* ── Top bar ── */
+.workspace-header{padding:16px 28px;display:flex;align-items:center;gap:14px;background:#e0e6ef;border-bottom:0.5px solid #ccd4e0}
+.ws-avatar{width:36px;height:36px;border-radius:50%;background:#e8f4fd;color:#1a6fba;display:flex;align-items:center;justify-content:center;font-size:14px;font-style:italic;font-weight:500;flex-shrink:0}
+.ws-info{flex:1}
+.ws-title{font-size:16px;font-weight:300;color:#3a5070;font-family:'Noto Serif SC',serif}
+.ws-sub{display:none}
+.ws-actions{display:flex;gap:8px}
+.btn{padding:6px 16px;border:1px solid #ddd;border-radius:7px;background:#f7f7f7;color:#444;cursor:pointer;font-size:13px;font-family:inherit;transition:all 0.15s}.btn:active{transform:scale(0.94)}
+.btn:hover{background:#efefef}
+.btn-submit{background:transparent;color:#3a5070;border:0.5px solid #9ab8cc;font-weight:300;padding:8px 22px;font-size:14px;transition:all 0.15s}.btn-submit:hover{background:#d8e8f4;border-color:#7aaac8}.btn-submit:active{background:#c0d8ec;transform:scale(0.96)}
+.btn-submit:hover{background:#d8edd8;border-color:#8ac0a0}
+.btn-submit:disabled{opacity:.5}
+
+/* ── Submitted banner ── */
+.submitted-banner{display:none}
+
+/* ── Custom dropdown ── */
+.custom-dd-wrap{position:relative}
+.custom-dd-btn{width:100%;padding:9px 32px 9px 12px;font-family:'Noto Serif SC',serif;font-size:13px;font-weight:300;border:0.5px solid #b8c8dc;border-radius:8px;background:#fff;color:#3a5070;cursor:pointer;outline:none;text-align:left;display:flex;justify-content:space-between;align-items:center;min-width:150px}
+.custom-dd-btn .arrow{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #888;flex-shrink:0;margin-left:8px}
+.custom-dd-menu{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:0.5px solid #b8c8dc;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:9999;overflow:hidden;min-width:180px}
+.custom-dd-menu.open{display:block}
+.custom-dd-item{padding:13px 14px;font-size:16px;font-family:'Courier New',monospace;cursor:pointer;border-bottom:0.5px solid #f0f0f0;color:#5a9070;display:flex;align-items:center;gap:8px}
+.custom-dd-item:last-child{border-bottom:none}
+.custom-dd-item:hover,.custom-dd-item.selected{background:#edf4fb;color:#1a6fba}
+.custom-dd-item .dd-check{font-size:12px;color:#1a6fba;width:16px}
+.custom-dd-item .dd-scored{font-size:11px;color:#3d9a50;margin-left:auto}
+
+/* ── Stream selectors ── */
+.stream-selectors{padding:12px 28px;display:flex;align-items:center;flex-wrap:wrap;gap:0;background:#e0e6ef;border-bottom:0.5px solid #ccd4e0;overflow:visible;position:relative;z-index:100}
+.stream-group{display:flex;align-items:center;gap:8px}
+.stream-tag{font-size:13px;color:#4a6080;background:transparent;padding:2px 0;font-weight:300;white-space:nowrap;flex-shrink:0;font-family:'Noto Serif SC',serif}
+.stream-sel{padding:5px 10px;border:1px solid #e0e0e0;border-radius:7px;background:#fff;font-size:13px;color:#111;min-width:120px}
+.stream-prog{display:none}
+.stream-sep{width:1px;height:24px;background:#e8e8e8;margin:0 12px;flex-shrink:0}
+
+/* ── Score bar ── */
+.score-bar-row{padding:12px 18px;display:flex;align-items:flex-start;gap:8px;background:#e0e6ef;border-bottom:0.5px solid #ccd4e0}
+.score-inline-fields{display:flex;align-items:flex-start;gap:8px;flex:1;width:100%}
+.sif{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;min-width:0}
+.sif-lbl{font-size:13px;color:#6a88a8;font-weight:300;white-space:nowrap;font-family:'Noto Serif SC',serif}
+.sif input{width:100%;height:44px;border:0.5px solid #b8c8dc;border-radius:6px;background:#fff;font-size:15px;font-family:'Courier New',monospace;text-align:center;color:#3a5070;outline:none}
+.sif input:focus{border-color:#7ab89a}
+.sif-wrap{width:100%;height:44px;border:0.5px solid #b8c8dc;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;gap:4px;padding:0 8px}
+.sif-wrap input{border:none;background:transparent;font-family:'Courier New',monospace;font-size:15px;color:#5a9070;text-align:right;width:50%;outline:none;padding:0}
+.sif-wrap input::-webkit-inner-spin-button,.sif-wrap input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.sif-max{font-size:12px;color:#b0c8b8;white-space:nowrap}
+.sif-total-box{font-family:'Courier New',monospace;font-size:15px;color:#5a9070}
+.sif-div{width:0.5px;background:#ccd4e0;align-self:stretch;margin-top:20px;flex-shrink:0}
+.sif-total{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1}
+
+/* ── Essay panel ── */
+.essay-panel{background:#fff}
+.empty-state{display:flex;align-items:center;justify-content:center;min-height:180px;color:#bbb;font-size:13px}
+.essay-student-hdr{padding:14px 24px 0;display:flex;align-items:baseline;gap:8px}
+.essay-student-name{font-size:14px;font-weight:400;color:#7aaa8a;font-family:'Courier New',monospace}
+.essay-student-meta{font-size:14px;color:#7aaa8a;font-family:'Noto Serif SC','Georgia',serif;font-weight:300}
+.essay-ms-wrap{padding:14px 24px 28px}
+.submitted-note{font-size:12px;color:#1a6fba;background:#eef6ff;padding:5px 14px;border-radius:7px;margin:0 20px 10px;display:inline-block}
+
+/* ── Manuscript ── */
+.ms-grid-wrap{position:relative;background:#fff}
+.ms-grid-canvas{display:block;width:100%}
+.ms-text-layer{position:absolute;top:0;left:0;pointer-events:none;overflow:hidden}
+.ms-page-num{font-size:8pt;color:#aaa;text-align:right;padding-right:4px;margin-top:4px;font-family:sans-serif}
+.manuscript-pages{display:flex;flex-direction:column;gap:16px}
+
+/* ── Score summary ── */
+#score-summary-wrap{border-top:1px solid #f0f0f0}
+.score-summary-hdr{padding:10px 20px;display:flex;align-items:center;justify-content:flex-end}
+.sort-btns{display:flex;gap:4px}
+.sort-btn{padding:7px 18px;border:0.5px solid #b8d8b8;border-radius:20px;background:transparent;font-size:14px;color:#5a9070;cursor:pointer;font-family:inherit;font-weight:300}
+.sort-btn.active{background:#d8edd8;color:#3a7a4a;border-color:#a8d0a8}
+.score-summary-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+.score-summary-table th{padding:10px 16px;text-align:left;font-size:13px;color:#8ab89a;border-bottom:0.5px solid #e0ece0;font-weight:300;text-transform:uppercase;letter-spacing:.05em}
+.score-summary-table td{padding:10px 16px;border-bottom:1px solid #f0f5f0;color:#5a9070;font-size:14px;font-weight:400;font-family:'Courier New',monospace}
+.score-summary-table tr:last-child td{border-bottom:none}
+.score-summary-table tr:hover td{background:#fafafa;cursor:pointer}
+.score-summary-table tr.editing td{background:#eef6ff}
+.ss-code{font-family:'Courier New',monospace;font-size:12px;color:#555;white-space:nowrap}
+.ss-total{font-family:inherit;font-weight:400}
+.ss-pending{color:#bbb;font-style:italic}
+.seq{font-size:11px;color:#8ab89a;text-align:center;width:28px}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#d8edd8;color:#3a6a4a;border:0.5px solid #a8cca8;padding:10px 22px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:999;white-space:nowrap;box-shadow:0 2px 8px rgba(60,100,60,0.15)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:680px){
+  .screen{padding:12px}
+  .stream-selectors{gap:6px}
+}
+
+    @media(min-width:768px){
+    .screen{padding:60px 8%}
+    .welcome-text h1{font-size:36px}
+    .site-year{font-size:15px}
+    .welcome-text p{font-size:16px}
+    .judge-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:20px;justify-content:start}
+    .judge-card{padding:1.8rem 1rem;aspect-ratio:1}
+    .judge-avatar{width:52px;height:52px;font-size:20px}
+    .judge-card-name{font-size:15px}
+    .ws-title{font-size:18px;color:#3a5070}
+    .workspace-header{padding:18px 32px}
+    .stream-selectors{padding:14px 32px}
+    .stream-tag{font-size:13px;color:#4a6080;font-weight:500}
+    .score-bar-row{padding:14px 32px;gap:0}
+    .score-inline-fields{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:center;gap:0;width:100%}
+    .sif{flex-direction:row;align-items:center;gap:12px;justify-content:flex-start}
+    .sif-lbl{font-size:13px;font-weight:300;white-space:nowrap;flex-shrink:0}
+    .sif-wrap{width:140px;flex-shrink:0}
+    .sif-div{width:0.5px;height:32px;background:#d8e8d8;margin:0 16px;align-self:auto}
+    .sif-total{flex-direction:row;align-items:center;gap:12px}
+    .sif input{height:40px;font-size:16px}
+    .sif-lbl{font-size:13px;color:#6a88a8;font-family:'Noto Serif SC',serif;font-weight:300}
+    .sif-max{font-size:13px;color:#8ab0a0}
+    .sif-total span:first-child{width:64px;height:40px;font-size:16px}
+    .essay-student-hdr{padding:20px 8% 0}
+    .essay-ms-wrap{padding:16px 8% 32px}
+    .essay-student-name{font-size:16px;color:#7aaa8a}
+    .essay-student-meta{font-size:16px;color:#7aaa8a}
+    .score-summary-table th{padding:12px 20px;font-size:14px}
+    .score-summary-table td{padding:12px 20px;font-size:15px}
+    .sort-btn{padding:8px 20px;font-size:14px}
+    .score-summary-hdr{padding:14px 24px}
+    .custom-dd-btn{font-size:14px;padding:9px 32px 9px 14px}
+    .stream-prog{font-size:13px}
+    .btn-submit{padding:10px 26px;font-size:15px}
+    .btn-save svg{width:22px;height:22px}
   }
 </style>
 </head>
@@ -438,115 +174,146 @@
 
 <div class="loading" id="loading">连接中…</div>
 
-<!-- Admin dashboard -->
-<div id="admin-screen">
-  <div class="header">
-    <div class="header-title">作文比赛 · <span>主控台</span></div>
-    <div style="display:flex;align-items:center;gap:12px">
-      <span class="last-updated" id="last-updated"></span>
-      <button class="btn" onclick="loadData()">刷新</button>
-      <button class="btn" onclick="exportCSV()">导出 CSV</button>
-      <span class="header-badge">管理员</span>
-    </div>
+<!-- Screen 1: Judge selection -->
+<div class="screen active" id="screen-select">
+  <div class="welcome-text">
+    <div class="site-year">毅道中学 · 2026 年度</div>
+    <h1>创意作文比赛 <span class="site-accent">评分系统</span></h1>
+    <p>请选择您的姓名进入评分工作台</p>
   </div>
-
-  <div class="admin-wrap">
-    <div class="stat-row" id="stat-row"></div>
-
-    <div class="section">
-      <div class="section-header">
-        <span class="section-title">评分进度</span>
-      </div>
-      <div class="section-body" style="padding:0.75rem 1.5rem">
-        <div id="progress-list"></div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-header">
-        <span class="section-title">最终排名</span>
-        <div class="filter-row" style="margin:0" id="result-filters"></div>
-      </div>
-      <div style="overflow-x:auto">
-        <table class="rtable" id="result-table">
-          <thead>
-            <tr>
-              <th style="width:60px">名次</th>
-              <th style="width:140px">考生</th>
-              <th style="width:80px">综合分</th>
-              <th>各老师评分</th>
-              <th style="width:70px">等级</th>
-            </tr>
-          </thead>
-          <tbody id="result-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-header">
-        <span class="section-title">篇章评分查询</span>
-      </div>
-      <div class="section-body">
-        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-          <input id="query-search" type="text" placeholder="输入姓名搜索…"
-            oninput="onQuerySearch(this.value)"
-            style="padding:7px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;background:var(--bg);color:var(--text);outline:none;width:160px;"/>
-          <span style="font-size:13px;color:var(--text-muted)">或选择</span>
-          <select class="query-sel" id="query-student-sel" onchange="onQuerySelect(this.value)">
-            <option value="">— 请选择 —</option>
-          </select>
-        </div>
-        <div id="query-result"></div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-header">
-        <span class="section-title">老师评分明细</span>
-      </div>
-      <div class="section-body" id="breakdown"></div>
-    </div>
+  <div class="judge-grid" id="judge-grid">
+    <div style="color:#bbb;font-size:13px">加载中…</div>
   </div>
 </div>
 
+<!-- Screen 2: Judge workspace -->
+<div class="screen" id="screen-workspace">
+<div class="board">
+  <div class="workspace-header">
+    <div class="ws-info">
+      <div class="ws-title" id="ws-title"></div>
+    </div>
+    <div class="ws-actions">
+      <button class="btn" id="btn-save-cur" onclick="saveCurrentScore();this.style.transform='scale(0.85)';setTimeout(()=>this.style.transform='',200)" title="保存" style="background:none;border:none;padding:4px 6px;cursor:pointer;color:#7aaac8;transition:transform 0.15s">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7a9ab8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+        <polyline points="17 21 17 13 7 13 7 21"/>
+        <polyline points="7 3 7 8 15 8"/>
+      </svg>
+    </button>
+      <button class="btn btn-submit" id="btn-submit-all" onclick="submitAll()">提交</button>
+    </div>
+  </div>
+  <div id="submitted-banner-wrap"></div>
+  <div class="stream-selectors" id="stream-selectors"></div>
+  <div id="score-bar-wrap" style="display:none">
+    <div class="score-bar-row">
+      <div class="score-inline-fields">
+        <div class="sif">
+          <span class="sif-lbl">内容</span>
+          <div class="sif-wrap">
+            <input type="number" id="si-content" min="0" max="40" placeholder="—" oninput="onScoreInline('content',this.value,40)"/>
+            <span class="sif-max">/ 40</span>
+          </div>
+        </div>
+        <div class="sif-div"></div>
+        <div class="sif">
+          <span class="sif-lbl">表达</span>
+          <div class="sif-wrap">
+            <input type="number" id="si-expression" min="0" max="35" placeholder="—" oninput="onScoreInline('expression',this.value,35)"/>
+            <span class="sif-max">/ 35</span>
+          </div>
+        </div>
+        <div class="sif-div"></div>
+        <div class="sif">
+          <span class="sif-lbl">创意</span>
+          <div class="sif-wrap">
+            <input type="number" id="si-creativity" min="0" max="25" placeholder="—" oninput="onScoreInline('creativity',this.value,25)"/>
+            <span class="sif-max">/ 25</span>
+          </div>
+        </div>
+        <div class="sif-div"></div>
+        <div class="sif">
+          <span class="sif-lbl">总分</span>
+          <span id="si-total" class="sif-wrap sif-total-box">—/100</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="essay-panel" id="essay-panel">
+    <div class="empty-state">从上方选择考生开始评分</div>
+  </div>
+  <div id="score-summary-wrap" style="display:none">
+    <div class="score-summary-hdr">
+      <div class="sort-btns">
+        <button class="sort-btn active" id="sort-orig" onclick="setSortMode('orig')">原顺序</button>
+        <button class="sort-btn" id="sort-score" onclick="setSortMode('score')">按分数</button>
+      </div>
+    </div>
+    <table class="score-summary-table">
+      <thead><tr>
+        <th style="width:28px;text-align:center">#</th>
+        <th style="min-width:110px">编号</th>
+        <th style="width:70px;text-align:center">内容</th>
+        <th style="width:70px;text-align:center">表达</th>
+        <th style="width:70px;text-align:center">创意</th>
+        <th style="width:70px;text-align:center">总分</th>
+      </tr></thead>
+      <tbody id="score-summary-tbody"></tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
+
 // ════════════════════════════════════════════
-// CONFIG — must match index.html
+// CONFIG — replace these two values
 // ════════════════════════════════════════════
 const SUPABASE_URL = 'https://cmnueivbcqkgjionubne.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbnVlaXZiY3FrZ2ppb251Ym5lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5MzE2ODQsImV4cCI6MjA5MjUwNzY4NH0.4hESinCQ1zQIAC72lTw2kErDNGkEXb7TZNQipqesEdA';
+// ════════════════════════════════════════════
 
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let state = { judges: [], students: [], scores: [] };
-let resultGroup = null;
+let state = {
+  judges: [],
+  students: [],
+  scores: {},       // { judgeId: { studentId: {content, expression, creativity, submitted} } }
+  currentJudge: null,
+  currentGroup: null,
+  currentStudent: null,
+};
 
-async function loadData() {
+// ── Init ─────────────────────────────────────
+async function init() {
   const loadingEl = document.getElementById('loading');
-  loadingEl.classList.remove('hidden');
-  loadingEl.textContent = '连接数据库…';
-  loadingEl.style.color = '';
   try {
-    const j = await db.from('judges').select('*').order('name');
-    if (j.error) throw new Error('judges: ' + j.error.message);
-    const s = await db.from('students').select('*').order('name');
-    if (s.error) throw new Error('students: ' + s.error.message);
-    const sc = await db.from('scores').select('*');
-    if (sc.error) throw new Error('scores: ' + sc.error.message);
-    state.judges = j.data || [];
-    state.students = s.data || [];
-    state.scores = sc.data || [];
-    renderAll();
-    document.getElementById('last-updated').textContent =
-      '更新于 ' + new Date().toLocaleTimeString('zh-SG');
+    loadingEl.textContent = '连接数据库…';
+    const judgesRes = await db.from('judges').select('*').order('name');
+    if (judgesRes.error) throw new Error('judges: ' + judgesRes.error.message);
+    loadingEl.textContent = '载入考生…';
+    const studentsRes = await db.from('students').select('*').order('name');
+    if (studentsRes.error) throw new Error('students: ' + studentsRes.error.message);
+    loadingEl.textContent = '载入评分…';
+    const scoresRes = await db.from('scores').select('*');
+    if (scoresRes.error) throw new Error('scores: ' + scoresRes.error.message);
+    state.judges = judgesRes.data || [];
+    state.students = studentsRes.data || [];
+    (scoresRes.data || []).forEach(s => {
+      if (!state.scores[s.judge_id]) state.scores[s.judge_id] = {};
+      state.scores[s.judge_id][s.student_id] = s;
+    });
+    renderJudgeGrid();
     loadingEl.classList.add('hidden');
   } catch(e) {
     loadingEl.textContent = '错误：' + e.message;
-    loadingEl.style.color = '#c0392b';
     loadingEl.style.fontSize = '13px';
     loadingEl.style.padding = '2rem';
+    loadingEl.style.color = '#c0392b';
     console.error(e);
   }
 }
@@ -554,423 +321,547 @@ async function loadData() {
 // Realtime disabled
 
 // ── Helpers ──────────────────────────────────
-function getScoreObj(judgeId, studentId) {
-  return state.scores.find(s => s.judge_id === judgeId && s.student_id === studentId) || null;
+function getJudgeStudents(judgeId) {
+  const judge = state.judges.find(j => j.id === judgeId);
+  if (!judge) return [];
+  return state.students.filter(s =>
+    judge.groups.some(g => g.grade === s.grade && g.stream === s.stream)
+  );
 }
 
-function totalOf(sc) {
+function getScore(judgeId, studentId) {
+  return state.scores[judgeId]?.[studentId] || null;
+}
+
+function isScored(judgeId, studentId) {
+  const sc = getScore(judgeId, studentId);
+  return sc && sc.content !== null && sc.expression !== null && sc.creativity !== null;
+}
+
+function totalScore(sc) {
   if (!sc || sc.content === null || sc.expression === null || sc.creativity === null) return null;
   return sc.content + sc.expression + sc.creativity;
 }
 
-function getGroups() {
-  const set = new Set();
-  state.students.forEach(s => set.add(`${s.grade} ${s.stream}`));
-  return [...set].sort();
+function isSubmitted(judgeId) {
+  const students = getJudgeStudents(judgeId);
+  return students.length > 0 && students.every(s => {
+    const sc = getScore(judgeId, s.id);
+    return sc && sc.submitted;
+  });
 }
 
-function computeResults() {
-  return state.students.map(s => {
-    const judgeScores = [];
-    let sum = 0, count = 0;
-    state.judges.forEach(j => {
-      const assigned = j.groups.some(g => g.grade === s.grade && g.stream === s.stream);
-      if (!assigned) return;
-      const sc = getScoreObj(j.id, s.id);
-      const tot = totalOf(sc);
-      judgeScores.push({ judge: j, sc, total: tot });
-      if (tot !== null) { sum += tot; count++; }
-    });
-    const avg = count > 0 ? Math.round(sum / count * 10) / 10 : null;
-    return { student: s, avg, judgeScores };
-  }).sort((a, b) => (b.avg || 0) - (a.avg || 0));
+function getGroups(judgeId) {
+  const judge = state.judges.find(j => j.id === judgeId);
+  return judge ? judge.groups : [];
 }
 
-function gradeLabel(avg) {
-  if (avg === null) return { text: '待定', cls: 'grade-na' };
-  if (avg >= 90) return { text: '特优', cls: 'grade-te' };
-  if (avg >= 80) return { text: '优秀', cls: 'grade-ex' };
-  if (avg >= 70) return { text: '良好', cls: 'grade-gd' };
-  if (avg >= 60) return { text: '合格', cls: 'grade-ok' };
-  return { text: '待定', cls: 'grade-na' };
+function gradeLabel(grade) {
+  const map = { '中一':'1', '中二':'2', '中三':'3', '中四':'4' };
+  return map[grade] || grade;
 }
 
-// ── Render all ───────────────────────────────
-function renderAll() {
-  const results = computeResults();
-  renderStats(results);
-  renderProgress();
-  renderFilters();
-  renderResults(results);
-  renderBreakdown(results);
-  populateQuerySelect();
+// ── Toast ─────────────────────────────────────
+function toast(msg, duration = 2000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
 }
 
-function renderStats(results) {
-  const totalStudents = state.students.length;
-  const scoredStudents = results.filter(r => r.avg !== null).length;
-  const submittedJudges = state.judges.filter(j => {
-    const jStudents = state.students.filter(s => j.groups.some(g => g.grade === s.grade && g.stream === s.stream));
-    return jStudents.length > 0 && jStudents.every(s => {
-      const sc = getScoreObj(j.id, s.id);
-      return sc && sc.submitted;
-    });
-  }).length;
-
-  document.getElementById('stat-row').innerHTML = [
-    [totalStudents, '参赛考生'],
-    [scoredStudents, '已完成评分'],
-    [`${submittedJudges}/${state.judges.length}`, '老师已提交'],
-    [state.judges.length, '评审老师'],
-  ].map(([n, l]) => `<div class="stat-card"><div class="stat-n">${n}</div><div class="stat-l">${l}</div></div>`).join('');
-}
-
-function renderProgress() {
-  document.getElementById('progress-list').innerHTML = state.judges.map(j => {
-    const students = state.students.filter(s =>
-      j.groups.some(g => g.grade === s.grade && g.stream === s.stream));
-    const scored = students.filter(s => {
-      const sc = getScoreObj(j.id, s.id);
-      return sc && sc.content !== null && sc.expression !== null && sc.creativity !== null;
-    }).length;
-    const submitted = students.length > 0 && students.every(s => {
-      const sc = getScoreObj(j.id, s.id);
-      return sc && sc.submitted;
-    });
-    const pct = students.length > 0 ? Math.round(scored / students.length * 100) : 0;
-    return `<div class="progress-row">
-      <div class="prog-avatar">${j.name[0]}</div>
-      <span class="prog-name">${j.name}</span>
-      <div class="prog-track">
-        <div class="prog-fill${submitted ? '' : ' pending'}" style="width:${pct}%"></div>
-      </div>
-      <span class="prog-count">${scored}/${students.length}</span>
-      <span class="prog-status ${submitted ? 'done' : 'pending'}">${submitted ? '已提交' : '评分中'}</span>
-    </div>`;
+// ── Screen 1: Judge Grid ──────────────────────
+function renderJudgeGrid() {
+  const grid = document.getElementById('judge-grid');
+  if (!state.judges.length) {
+    grid.innerHTML = '<div style="color:var(--text-faint);font-size:13px">暂无老师数据，请先在 Supabase 插入数据。</div>';
+    return;
+  }
+  grid.innerHTML = state.judges.map(function(j) {
+    return '<div class="judge-card" onclick="selectJudge(&quot;' + j.id + '&quot;)">' +
+      '<div class="judge-avatar">' + j.name[0] + '</div>' +
+      '<div class="judge-card-name">' + j.name + '</div>' +
+    '</div>';
   }).join('');
 }
 
-function renderFilters() {
-  const groups = getGroups();
-  if (!resultGroup) resultGroup = groups[0];
-  document.getElementById('result-filters').innerHTML = groups.map(g =>
-    `<button class="filter-pill${resultGroup === g ? ' active' : ''}" onclick="selectGroup('${g}')">${g}</button>`
-  ).join('');
+// ── Screen 2: Workspace ───────────────────────
+function selectJudge(judgeId) {
+  state.currentJudge = judgeId;
+  const judge = state.judges.find(j => j.id === judgeId);
+  state.currentStudent = null;
+
+  const wsTitleEl = document.getElementById('ws-title');
+  if (wsTitleEl) wsTitleEl.textContent = judge.name;
+  updateWsSub();
+
+  history.pushState({ screen: 'workspace', judgeId: judgeId }, '', '');
+
+  document.getElementById('screen-select').classList.remove('active');
+  document.getElementById('screen-workspace').classList.add('active');
+
+  const sub = isSubmitted(judgeId);
+  document.getElementById('submitted-banner-wrap').innerHTML = '';
+  document.getElementById('btn-submit-all').disabled = sub;
+  document.getElementById('btn-submit-all').style.opacity = sub ? '.5' : '1';
+
+  renderStreamSelectors();
+  renderEssayPanel(null);
+  renderScoreSummary();
 }
 
-function selectGroup(g) {
-  resultGroup = g;
-  renderFilters();
-  renderResults(computeResults());
+function updateWsSub() {
+  renderStreamSelectors();
 }
 
-function renderResults(results) {
-  const [grade, stream] = (resultGroup || '').split(' ');
-  const filtered = results.filter(r => r.student.grade === grade && r.student.stream === stream);
-  // Rank within group
-  filtered.forEach((r, i) => r.rank = i + 1);
-
-  document.getElementById('result-tbody').innerHTML = filtered.map(r => {
-    const { text: glabel, cls: gcls } = gradeLabel(r.avg);
-    const rankClass = r.rank <= 3 ? `rank-${r.rank}` : '';
-    const judgeList = r.judgeScores.map(js =>
-      `<div class="judge-score-row">${js.judge.name}：<strong>${js.total !== null ? js.total : '—'}</strong>
-       ${js.sc ? `<span class="subscores">（内${js.sc.content} 表${js.sc.expression} 创${js.sc.creativity}）</span>` : ''}</div>`
-    ).join('');
-    return `<tr>
-      <td><span class="rank-num ${rankClass}">${r.rank}</span></td>
-      <td>
-        <div class="student-name">${r.student.name}</div>
-        <span class="group-tag">${r.student.grade} ${r.student.stream}</span>
-      </td>
-      <td><span class="avg-score">${r.avg !== null ? r.avg : '—'}</span></td>
-      <td><div class="judge-scores-list">${judgeList}</div></td>
-      <td><span class="grade-pill ${gcls}">${glabel}</span></td>
-    </tr>`;
-  }).join('') || '<tr><td colspan="5" style="padding:1.5rem;text-align:center;color:var(--text-faint);font-size:13px">暂无数据</td></tr>';
+function backToSelect() {
+  state.currentJudge = null;
+  state.currentStudent = null;
+  document.getElementById('screen-workspace').classList.remove('active');
+  document.getElementById('screen-select').classList.add('active');
+  const sb = document.getElementById('score-bar-wrap');
+  if (sb) sb.style.display = 'none';
+  renderJudgeGrid();
 }
 
-function renderBreakdown(results) {
-  document.getElementById('breakdown').innerHTML = state.judges.map(j => {
-    const jStudents = state.students.filter(s =>
-      j.groups.some(g => g.grade === s.grade && g.stream === s.stream));
-
-    const rows = jStudents.map(s => {
-      const sc = getScoreObj(j.id, s.id);
-      const tot = totalOf(sc);
-      // Rank this student among others in same group for this judge
-      const peers = jStudents.filter(p => p.grade === s.grade && p.stream === s.stream);
-      const sorted = peers.map(p => ({ id: p.id, tot: totalOf(getScoreObj(j.id, p.id)) || 0 }))
-        .sort((a, b) => b.tot - a.tot);
-      const rank = sorted.findIndex(p => p.id === s.id) + 1;
-      return `<tr>
-        <td>${s.name}</td>
-        <td><span class="group-tag">${s.grade} ${s.stream}</span></td>
-        <td style="font-family:'Courier New',monospace">${sc ? sc.content ?? '—' : '—'}</td>
-        <td style="font-family:'Courier New',monospace">${sc ? sc.expression ?? '—' : '—'}</td>
-        <td style="font-family:'Courier New',monospace">${sc ? sc.creativity ?? '—' : '—'}</td>
-        <td style="font-family:'Courier New',monospace;font-weight:bold">${tot !== null ? tot : '—'}</td>
-        <td style="color:var(--text-muted);font-size:12px">${sc && tot !== null ? '第 ' + rank + ' 名' : '—'}</td>
-        <td><span style="font-size:11px;color:${sc && sc.submitted ? 'var(--accent)' : 'var(--text-faint)'}">${sc && sc.submitted ? '已提交' : sc ? '已储存' : '未评'}</span></td>
-      </tr>`;
+// ── Stream Selectors ─────────────────────────
+function renderStreamSelectors() {
+  var groups = getGroups(state.currentJudge);
+  var container = document.getElementById('stream-selectors');
+  if (!groups.length) { container.innerHTML = ''; return; }
+  container.innerHTML = groups.map(function(g, gi) {
+    var label = g.grade + ' ' + g.stream;
+    var students = getJudgeStudents(state.currentJudge)
+      .filter(function(s) { return s.grade === g.grade && s.stream === g.stream; });
+    var scored = students.filter(function(s) { return isScored(state.currentJudge, s.id); }).length;
+    var sep = gi < groups.length - 1 ? '<div class="stream-sep"></div>' : '';
+    var ddId = 'dd' + gi;
+    var current = students.find(function(s) { return s.id === state.currentStudent; });
+    var btnLabel = current ? current.name : '— 选择考生 —';
+    var items = students.map(function(s) {
+      var sc = isScored(state.currentJudge, s.id);
+      var isCur = state.currentStudent === s.id;
+      return '<div class="custom-dd-item" onclick="selectStudentFromDrop(\''+s.id+'\',\''+ddId+'\')">'+
+        '<span class="dd-check">'+(isCur?'✓':'')+'</span>'+
+        s.name+
+        (sc?'<span class="dd-scored">已评</span>':'')+
+        '</div>';
     }).join('');
-
-    return `<div class="judge-section">
-      <div class="judge-section-header">
-        <div class="judge-section-avatar">${j.name[0]}</div>
-        <span class="judge-section-name">${j.name}</span>
-        <span class="judge-section-sub">${jStudents.length} 位考生</span>
-      </div>
-      <table class="btable">
-        <thead><tr>
-          <th>考生</th><th>组别</th><th>内容</th><th>表达</th><th>创意</th><th>总分</th><th>组内排名</th><th>状态</th>
-        </tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>`;
+    return '<div class="stream-group">'+
+      '<span class="stream-tag">'+label+'</span>'+
+      '<div class="custom-dd-wrap">'+
+        '<button class="custom-dd-btn" onclick="toggleDrop(\''+ddId+'\',event)" type="button">'+
+          '<span id="'+ddId+'-label">'+btnLabel+'</span>'+
+          '<span class="arrow"></span>'+
+        '</button>'+
+        '<div class="custom-dd-menu" id="'+ddId+'">'+items+'</div>'+
+      '</div>'+
+      '<span class="stream-prog">'+scored+'/'+students.length+' 已评</span>'+
+    '</div>'+sep;
   }).join('');
 }
 
-// ── Export CSV ───────────────────────────────
-function exportCSV() {
-  const results = computeResults();
-  const groups = getGroups();
-  let csv = '组别,考生,综合平均分,等级';
-  state.judges.forEach(j => {
-    csv += `,${j.name}总分,${j.name}内容,${j.name}表达,${j.name}创意`;
-  });
-  csv += ',组内排名\n';
-
-  groups.forEach(grp => {
-    const [grade, stream] = grp.split(' ');
-    const filtered = results.filter(r => r.student.grade === grade && r.student.stream === stream);
-    filtered.forEach((r, i) => {
-      const { text: gl } = gradeLabel(r.avg);
-      let row = `"${grp}","${r.student.name}",${r.avg ?? ''},${gl}`;
-      state.judges.forEach(j => {
-        const assigned = j.groups.some(g => g.grade === r.student.grade && g.stream === r.student.stream);
-        const sc = assigned ? getScoreObj(j.id, r.student.id) : null;
-        const tot = totalOf(sc);
-        row += `,${tot ?? ''},${sc?.content ?? ''},${sc?.expression ?? ''},${sc?.creativity ?? ''}`;
-      });
-      row += `,${i + 1}`;
-      csv += row + '\n';
-    });
-  });
-
-  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = '作文比赛评分结果.csv'; a.click();
+function toggleDrop(ddId, e) {
+  if (e) e.stopPropagation();
+  var menu = document.getElementById(ddId);
+  var isOpen = menu.classList.contains('open');
+  document.querySelectorAll('.custom-dd-menu.open').forEach(function(m){m.classList.remove('open');});
+  if (!isOpen) menu.classList.add('open');
 }
 
-// ── Manuscript rendering (same engine as index.html) ──────
-var MS_COLS = 20, MS_ROWS = 22, MS_G = '#4caf50';
+document.addEventListener('click', function(){
+  document.querySelectorAll('.custom-dd-menu.open').forEach(function(m){m.classList.remove('open');});
+});
+
+
+function selectStudentFromDrop(studentId, ddId) {
+  if (!studentId) return;
+  state.currentStudent = studentId;
+  // Close dropdown
+  if (ddId) {
+    var menu = document.getElementById(ddId);
+    if (menu) menu.classList.remove('open');
+  }
+  renderStreamSelectors();
+  renderEssayPanel(studentId);
+  renderScoreSummary();
+}
+
+// ── Essay Panel ──────────────────────────────
+function renderEssayPanel(studentId) {
+  const panel = document.getElementById('essay-panel');
+  const scoreBarWrap = document.getElementById('score-bar-wrap');
+  if (!studentId) {
+    panel.innerHTML = '<div class="empty-state">从上方选择考生开始评分</div>';
+    scoreBarWrap.style.display = 'none';
+    return;
+  }
+  const s = state.students.find(x => x.id === studentId);
+  const sc = getScore(state.currentJudge, studentId) || {};
+  const sub = isSubmitted(state.currentJudge);
+  const tot = totalScore(sc);
+
+  // populate inline score bar
+  scoreBarWrap.style.display = 'block';
+  ['content','expression','creativity'].forEach(function(field) {
+    const inp = document.getElementById('si-' + field);
+    if (inp) {
+      inp.value = (sc[field] !== null && sc[field] !== undefined) ? sc[field] : '';
+      inp.disabled = sub;
+    }
+  });
+  const totEl = document.getElementById('si-total');
+  if (totEl) totEl.textContent = (tot !== null && !isNaN(tot)) ? (tot + '/100') : '—/100';
+
+  // store current student for save
+  state.currentStudent = studentId;
+
+  const msHtml = buildManuscriptHtml(s.essay || '');
+  const subNote = sub ? '' : '';
+
+  panel.innerHTML =
+    '<div class="essay-student-hdr">' +
+      '<span class="essay-student-name">' + s.name + '</span>' +
+      '<span class="essay-student-meta">' + (s.title || (s.grade + ' · ' + s.stream)) + '</span>' +
+    '</div>' +
+    subNote +
+    '<div class="essay-ms-wrap">' +
+      '<div class="manuscript-pages" id="ms-pages-' + studentId + '">' + msHtml + '</div>' +
+    '</div>';
+
+  initManuscriptForStudent(studentId);
+}
+
+function selectStudent(studentId) {
+  state.currentStudent = studentId;
+  renderStudentList();
+  renderEssayPanel(studentId);
+}
+
+function onScoreInline(field, val, max) {
+  const studentId = state.currentStudent;
+  if (!studentId) return;
+  let n = parseInt(val);
+  if (isNaN(n)) n = null;
+  else if (n < 0) n = 0;
+  else if (n > max) n = max;
+  if (!state.scores[state.currentJudge]) state.scores[state.currentJudge] = {};
+  if (!state.scores[state.currentJudge][studentId]) state.scores[state.currentJudge][studentId] = {};
+  state.scores[state.currentJudge][studentId][field] = n;
+  const sc = state.scores[state.currentJudge][studentId];
+  const tot = totalScore(sc);
+  const totEl = document.getElementById('si-total');
+  if (totEl) totEl.textContent = (tot !== null && !isNaN(tot)) ? tot : '—';
+}
+
+function saveCurrentScore() {
+  const studentId = state.currentStudent;
+  if (!studentId) { toast('请先选择考生'); return; }
+  // Read values from inline inputs
+  const maxes = { content: 40, expression: 35, creativity: 25 };
+  Object.keys(maxes).forEach(function(field) {
+    const inp = document.getElementById('si-' + field);
+    if (inp) {
+      let n = parseInt(inp.value);
+      if (isNaN(n)) n = null;
+      onScoreInline(field, inp.value, maxes[field]);
+    }
+  });
+  saveScore(studentId);
+}
+
+function onScoreChange(studentId, field, val, max) {
+  let n = parseInt(val);
+  if (isNaN(n)) n = null;
+  else if (n < 0) n = 0;
+  else if (n > max) n = max;
+  const pct = n !== null ? Math.round(n / max * 100) : 0;
+  const bar = document.getElementById(`bar-${field}`);
+  if (bar) bar.style.width = pct + '%';
+  // Update local cache so total updates immediately
+  if (!state.scores[state.currentJudge]) state.scores[state.currentJudge] = {};
+  if (!state.scores[state.currentJudge][studentId]) state.scores[state.currentJudge][studentId] = {};
+  state.scores[state.currentJudge][studentId][field] = n;
+  const sc = state.scores[state.currentJudge][studentId];
+  const tot = totalScore(sc);
+  const tn = document.getElementById('total-num');
+  if (tn) tn.textContent = tot !== null ? tot : '—';
+}
+
+async function saveScore(studentId) {
+  const sc = state.scores[state.currentJudge]?.[studentId] || {};
+  if (sc.content === null || sc.content === undefined ||
+      sc.expression === null || sc.expression === undefined ||
+      sc.creativity === null || sc.creativity === undefined) {
+    toast('请填写全部三项分数');
+    return;
+  }
+  // Validate ranges
+  if (sc.content > 40) { toast('内容满分为 40 分'); return; }
+  if (sc.expression > 35) { toast('表达满分为 35 分'); return; }
+  if (sc.creativity > 25) { toast('创意满分为 25 分'); return; }
+  try {
+    const { error } = await db.from('scores').upsert({
+      judge_id: state.currentJudge,
+      student_id: studentId,
+      content: sc.content,
+      expression: sc.expression,
+      creativity: sc.creativity,
+      submitted: false,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'judge_id,student_id' });
+    if (error) throw error;
+    if (!state.scores[state.currentJudge]) state.scores[state.currentJudge] = {};
+    state.scores[state.currentJudge][studentId] = { ...sc, submitted: false };
+    updateWsSub();
+    renderStreamSelectors();
+    renderScoreSummary();
+    toast('已储存 ✓');
+  } catch (e) {
+    toast('储存失败，请重试');
+    console.error(e);
+  }
+}
+
+function nextStudent(studentId) {
+  saveScore(studentId).then(() => {
+    const [grade, stream] = (state.currentGroup || '').split(' ');
+    const students = getJudgeStudents(state.currentJudge)
+      .filter(s => s.grade === grade && s.stream === stream);
+    const idx = students.findIndex(s => s.id === studentId);
+    if (idx < students.length - 1) {
+      selectStudent(students[idx + 1].id);
+    } else {
+      toast('本组已到最后一位');
+    }
+  });
+}
+
+async function submitAll() {
+  const students = getJudgeStudents(state.currentJudge);
+  const unscored = students.filter(s => !isScored(state.currentJudge, s.id));
+  if (unscored.length > 0) {
+    toast(`还有 ${unscored.length} 位考生未完成评分`);
+    return;
+  }
+  // confirm removed - direct submit
+  try {
+    for (const s of students) {
+      const sc = state.scores[state.currentJudge][s.id];
+      const { error } = await db.from('scores').upsert({
+        judge_id: state.currentJudge,
+        student_id: s.id,
+        content: sc.content,
+        expression: sc.expression,
+        creativity: sc.creativity,
+        submitted: true,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'judge_id,student_id' });
+      if (error) { toast('提交失败：' + error.message); return; }
+    }
+    students.forEach(s => {
+      state.scores[state.currentJudge][s.id].submitted = true;
+    });
+    toast('评分已提交 ✓', 3000);
+    document.getElementById('submitted-banner-wrap').innerHTML = '';
+    document.getElementById('btn-submit-all').disabled = true;
+    document.getElementById('btn-submit-all').style.opacity = '.5';
+    renderStreamSelectors();
+  } catch (e) {
+    toast('提交失败：' + e.message);
+    console.error(e);
+  }
+}
+
+// ════════════════════════════════════════════
+// 稿纸渲染引擎（改编自竞赛稿纸模块）
+// ════════════════════════════════════════════
+const MS_COLS = 20, MS_ROWS = 22;
+const MS_GRID_COLOR = '#6db86d';
+
+function buildManuscriptHtml(text) {
+  const pages = paginateText(text);
+  if (!pages.length) pages.push([]);
+  return pages.map(function(pageChars, pi) {
+    var pageNum = pages.length > 1 ? '<div class="ms-page-num">第 ' + (pi+1) + ' 页</div>' : '';
+    return '<div class="ms-page-block" data-page="' + pi + '">' +
+      '<div class="ms-grid-wrap">' +
+        '<canvas class="ms-grid-canvas"></canvas>' +
+        '<div class="ms-text-layer"></div>' +
+      '</div>' +
+      pageNum +
+    '</div>';
+  }).join('');
+}
 
 function paginateText(text) {
-  var pages = [], row = 0, col = 0, page = [];
-  var NL = '\n';
+  var pages = [];
+  var row = 0, col = 0, page = [];
+  var NEWLINE = '\n';
   for (var i = 0; i < text.length; i++) {
     var ch = text[i];
-    if (ch === NL) { row++; col = 0; }
-    else {
+    if (ch === NEWLINE) {
+      row++; col = 0;
+    } else {
       page.push({ ch: ch, row: row % MS_ROWS, col: col });
       col++;
       if (col >= MS_COLS) { row++; col = 0; }
     }
-    if (row >= MS_ROWS) { pages.push(page); page = []; row = 0; col = 0; }
+    if (row >= MS_ROWS) {
+      pages.push(page); page = []; row = 0; col = 0;
+    }
   }
   if (page.length || !pages.length) pages.push(page);
   return pages;
 }
 
-function buildMsHtml(text) {
-  var pages = paginateText(text || '');
-  if (!pages.length) pages.push([]);
-  return pages.map(function(pg, pi) {
-    var pageNum = pages.length > 1 ? '<div class="ms-page-num">第 ' + (pi+1) + ' 页</div>' : '';
-    return '<div class="ms-page-block" data-page="' + pi + '">' +
-      '<div class="ms-grid-wrap"><canvas class="ms-grid-canvas"></canvas>' +
-      '<div class="ms-text-layer"></div></div>' + pageNum + '</div>';
-  }).join('');
-}
-
-function renderMsInContainer(containerId, text) {
-  var container = document.getElementById(containerId);
+function renderManuscript(containerId, text) {
+  const container = document.getElementById('ms-pages-' + containerId);
   if (!container) return;
-  var dpr = window.devicePixelRatio || 1;
-  var pages = paginateText(text || '');
-  container.querySelectorAll('.ms-page-block').forEach(function(block, pi) {
-    var wrap = block.querySelector('.ms-grid-wrap');
-    var cv = block.querySelector('.ms-grid-canvas');
-    var tl = block.querySelector('.ms-text-layer');
-    if (!wrap || !cv || !tl) return;
-    var TW = wrap.clientWidth || 600;
-    var cW = TW / MS_COLS;
-    var cH = Math.min(cW, Math.floor(957/31.8));
-    var auxH = Math.round(cH * 0.4);
-    var gH = cH + auxH;
-    var TH = (MS_ROWS - 1) * gH + cH;
-    var BOT = 2;
+  const dpr = window.devicePixelRatio || 1;
+
+  container.querySelectorAll('.ms-page-block').forEach((block, pi) => {
+    const wrap = block.querySelector('.ms-grid-wrap');
+    const cv = block.querySelector('.ms-grid-canvas');
+    const textLayer = block.querySelector('.ms-text-layer');
+    if (!wrap || !cv || !textLayer) return;
+
+    const TW = wrap.clientWidth || wrap.parentNode.clientWidth || 400;
+    const cW = TW / MS_COLS;
+    const cH = cW;
+    const auxH = Math.round(cH * 0.3);
+    const gH = cH + auxH;
+    const TH = (MS_ROWS - 1) * gH + cH;
+    const BOT = 2;
+
+    // Draw grid on canvas
     cv.width = Math.round(TW * dpr);
     cv.height = Math.round((TH + BOT) * dpr);
     cv.style.width = TW + 'px';
     cv.style.height = (TH + BOT) + 'px';
     wrap.style.height = (TH + BOT) + 'px';
-    var ctx = cv.getContext('2d');
+
+    const ctx = cv.getContext('2d');
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, TW, TH + BOT);
-    ctx.strokeStyle = MS_G; ctx.lineWidth = 0.7;
-    for (var r = 0; r < MS_ROWS; r++) {
-      var base = r * gH, wb = base + cH, ab = wb + auxH;
+    ctx.strokeStyle = MS_GRID_COLOR;
+    ctx.lineWidth = 0.4;
+
+    for (let r = 0; r < MS_ROWS; r++) {
+      const base = r * gH, wb = base + cH, ab = wb + auxH;
       if (r < MS_ROWS - 1) {
         ctx.beginPath(); ctx.moveTo(0, wb); ctx.lineTo(TW, wb); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(0, ab); ctx.lineTo(TW, ab); ctx.stroke();
       }
-      for (var c = 1; c < MS_COLS; c++) {
-        ctx.beginPath(); ctx.moveTo(c*cW, base); ctx.lineTo(c*cW, wb); ctx.stroke();
+      for (let c = 1; c < MS_COLS; c++) {
+        ctx.beginPath(); ctx.moveTo(c * cW, base); ctx.lineTo(c * cW, wb); ctx.stroke();
       }
     }
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(0.75, 0.75, TW - 1.5, TH + BOT - 1.5);
-    tl.innerHTML = '';
-    tl.style.width = TW + 'px';
-    tl.style.height = TH + 'px';
-    var fs = Math.round(cH * 0.60);
-    var topOff = Math.round((cH - fs) / 2);
-    var ty = Math.round(fs * 0.08);
-    var pageChars = pages[pi] || [];
-    pageChars.forEach(function(item) {
-      var span = document.createElement('span');
-      span.textContent = item.ch;
-      span.style.cssText = 'position:absolute;left:' + (item.col*cW) + 'px;top:' + (item.row*gH+topOff) + 'px;' +
-        'width:' + cW + 'px;height:' + fs + 'px;display:flex;align-items:center;justify-content:center;' +
-        'font-size:' + fs + 'px;font-weight:100;line-height:1;color:#1a2a3a;' +
-        'font-family:"SimSun","宋体","STSong",serif;box-sizing:border-box;-webkit-font-smoothing:antialiased;' +
-        'transform:translateY(-' + ty + 'px);';
-      tl.appendChild(span);
+    ctx.lineWidth = 0.8;
+    ctx.strokeRect(0.4, 0.4, TW - 0.8, TH + BOT - 0.8);
+
+    // Render characters
+    textLayer.innerHTML = '';
+    textLayer.style.width = TW + 'px';
+    textLayer.style.height = TH + 'px';
+
+    const fs = Math.round(cH * 0.62);
+    const topOffset = Math.round((cH - fs) / 2) + Math.round(cH * 0.03);
+    const translateY = 0;
+
+    // Re-paginate to get this page's chars
+    const pages = paginateText(text);
+    const pageChars = pages[pi] || [];
+
+    pageChars.forEach(({ ch, row: r, col: c }) => {
+      const span = document.createElement('span');
+      span.textContent = ch;
+      span.style.cssText = `position:absolute;left:${c*cW}px;top:${r*gH+topOffset}px;` +
+        `width:${cW}px;height:${fs}px;display:flex;align-items:center;justify-content:center;` +
+        `font-size:${fs}px;font-weight:100;line-height:1;color:#2a6a3a;` +
+        `font-family:"Noto Serif SC","SimSun","宋体","STSong",serif;box-sizing:border-box;` +
+        `-webkit-font-smoothing:antialiased;transform:translateY(-${translateY}px);`;
+      textLayer.appendChild(span);
     });
   });
 }
 
-// ── Query functions ────────────────────────────────────────
-function onQuerySearch(val) {
-  val = val.trim();
-  if (!val) { document.getElementById('query-result').innerHTML = ''; return; }
-  var matched = state.students.filter(function(s) {
-    return s.name.includes(val);
+function initManuscriptForStudent(studentId) {
+  // Run after DOM is painted
+  requestAnimationFrame(() => {
+    const s = state.students.find(x => x.id === studentId);
+    if (!s) return;
+    renderManuscript(studentId, s.essay || '');
   });
-  if (matched.length === 0) {
-    document.getElementById('query-result').innerHTML =
-      '<p style="font-size:13px;color:var(--text-muted);margin-top:1rem">找不到"' + val + '"</p>';
-    return;
+}
+// ════════════════════════════════════════════
+
+
+// ── Score Summary ─────────────────────────────
+var _sortMode = 'orig';
+
+function setSortMode(mode) {
+  _sortMode = mode;
+  document.getElementById('sort-orig').className = 'sort-btn' + (mode==='orig'?' active':'');
+  document.getElementById('sort-score').className = 'sort-btn' + (mode==='score'?' active':'');
+  renderScoreSummary();
+}
+
+function renderScoreSummary() {
+  if (!state.currentJudge) return;
+  const students = getJudgeStudents(state.currentJudge);
+  const scored = students.filter(s => isScored(state.currentJudge, s.id));
+  const wrap = document.getElementById('score-summary-wrap');
+  if (!scored.length) { if(wrap) wrap.style.display='none'; return; }
+  if(wrap) wrap.style.display='block';
+
+  var rows = scored.map(function(s) {
+    var sc = getScore(state.currentJudge, s.id) || {};
+    var tot = totalScore(sc);
+    return { s: s, sc: sc, tot: tot };
+  });
+
+  if (_sortMode === 'score') {
+    rows.sort(function(a,b) { return (b.tot||0)-(a.tot||0); });
   }
-  if (matched.length === 1) {
-    // sync dropdown
-    var sel = document.getElementById('query-student-sel');
-    if (sel) sel.value = matched[0].id;
-    renderQueryResult(matched[0].id);
-  } else {
-    // show list to pick from
-    var html = '<div style="margin-top:1rem;display:flex;flex-direction:column;gap:6px">';
-    matched.forEach(function(s) {
-      html += '<button onclick="onQueryPick(&quot;' + s.id + '&quot;)" style="text-align:left;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);cursor:pointer;font-size:13px;font-family:inherit;color:var(--text)">' +
-        s.name + ' <span style="font-size:11px;color:var(--text-muted)">— ' + s.grade + ' ' + s.stream + '</span></button>';
-    });
-    html += '</div>';
-    document.getElementById('query-result').innerHTML = html;
-  }
-}
 
-function onQueryPick(studentId) {
-  var sel = document.getElementById('query-student-sel');
-  if (sel) sel.value = studentId;
-  var inp = document.getElementById('query-search');
-  var s = state.students.find(function(x) { return x.id === studentId; });
-  if (inp && s) inp.value = s.name;
-  renderQueryResult(studentId);
-}
-
-function onQuerySelect(studentId) {
-  var inp = document.getElementById('query-search');
-  var s = state.students.find(function(x) { return x.id === studentId; });
-  if (inp && s) inp.value = s.name;
-  renderQueryResult(studentId);
-}
-
-function populateQuerySelect() {
-  var sel = document.getElementById('query-student-sel');
-  if (!sel) return;
-  var current = sel.value;
-  var groups = getGroups();
-  sel.innerHTML = '<option value="">— 请选择 —</option>';
-  groups.forEach(function(grp) {
-    var grpEl = document.createElement('optgroup');
-    grpEl.label = grp;
-    var parts = grp.split(' ');
-    var grade = parts[0], stream = parts[1];
-    state.students.filter(function(s) { return s.grade === grade && s.stream === stream; })
-      .forEach(function(s) {
-        var opt = document.createElement('option');
-        opt.value = s.id;
-        opt.textContent = s.name;
-        if (s.id === current) opt.selected = true;
-        grpEl.appendChild(opt);
-      });
-    sel.appendChild(grpEl);
-  });
-}
-
-function renderQueryResult(studentId) {
-  var container = document.getElementById('query-result');
-  if (!studentId) { container.innerHTML = ''; return; }
-  var s = state.students.find(function(x) { return x.id === studentId; });
-  if (!s) return;
-
-  // Find judges assigned to this student
-  var assignedJudges = state.judges.filter(function(j) {
-    return j.groups.some(function(g) { return g.grade === s.grade && g.stream === s.stream; });
-  });
-
-  // Build score cards
-  var cards = assignedJudges.map(function(j) {
-    var sc = getScoreObj(j.id, s.id);
-    var tot = totalOf(sc);
-    var breakdown = sc ? '内' + (sc.content||'—') + ' 表' + (sc.expression||'—') + ' 创' + (sc.creativity||'—') : '未评分';
-    return '<div class="score-compare-card">' +
-      '<div class="scc-judge">' + j.name + '</div>' +
-      '<div class="scc-total">' + (tot !== null ? tot : '—') + '</div>' +
-      '<div class="scc-denom">/ 100</div>' +
-      '<div class="scc-breakdown">' + breakdown + '</div>' +
-    '</div>';
+  var tbody = document.getElementById('score-summary-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = rows.map(function(r) {
+    var active = state.currentStudent === r.s.id ? ' class="editing"' : '';
+    var seqNum = _sortMode === 'orig' ? (rows.indexOf(r) + 1) : (rows.indexOf(r) + 1);
+    return '<tr' + active + ' onclick="selectStudentFromSummary(&quot;' + r.s.id + '&quot;)" title="点击修改">' +
+      '<td class="seq" style="text-align:center">' + seqNum + '</td>' +
+      '<td class="ss-code">' + r.s.name + '</td>' +
+      '<td style="text-align:center">' + (r.sc.content!==null&&r.sc.content!==undefined?r.sc.content:'<span class="ss-pending">—</span>') + '</td>' +
+      '<td style="text-align:center">' + (r.sc.expression!==null&&r.sc.expression!==undefined?r.sc.expression:'<span class="ss-pending">—</span>') + '</td>' +
+      '<td style="text-align:center">' + (r.sc.creativity!==null&&r.sc.creativity!==undefined?r.sc.creativity:'<span class="ss-pending">—</span>') + '</td>' +
+      '<td style="text-align:center"><span class="ss-total">' + (r.tot!==null?r.tot:'—') + '</span></td>' +
+    '</tr>';
   }).join('');
-
-  // Average card
-  var totals = assignedJudges.map(function(j) { return totalOf(getScoreObj(j.id, s.id)); }).filter(function(t) { return t !== null; });
-  var avg = totals.length > 0 ? (totals.reduce(function(a,b){return a+b;},0) / totals.length).toFixed(1) : '—';
-  var avgCard = '<div class="scc-avg-card">' +
-    '<div class="scc-judge">综合平均</div>' +
-    '<div class="scc-total">' + avg + '</div>' +
-    '<div class="scc-denom">/ 100</div>' +
-    '<div class="scc-breakdown">' + totals.length + ' 位老师已评</div>' +
-  '</div>';
-
-  // Manuscript
-  var msId = 'qms-' + studentId;
-  var msHtml = buildMsHtml(s.essay || '');
-
-  container.innerHTML =
-    '<div class="query-result">' +
-      '<div class="query-student-hdr">' +
-        '<span class="query-student-name">' + s.name + '</span>' +
-        '<span class="query-student-meta">' + s.grade + ' · ' + s.stream + '</span>' +
-      '</div>' +
-      '<div class="score-compare-grid">' + cards + avgCard + '</div>' +
-    '</div>';
 }
 
-loadData();
-</script>
+function selectStudentFromSummary(studentId) {
+  // sync dropdown
+  state.currentStudent = studentId;
+  renderStreamSelectors();
+  renderEssayPanel(studentId);
+  renderScoreSummary();
+  // scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
+
+window.addEventListener('popstate', function(e) {
+  if (!e.state || e.state.screen === 'select') {
+    document.getElementById('screen-workspace').classList.remove('active');
+    document.getElementById('screen-select').classList.add('active');
+    state.currentJudge = null;
+    state.currentStudent = null;
+  }
+});
+
+init();
+
+</script>
 </body>
 </html>

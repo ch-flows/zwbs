@@ -21,7 +21,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* ── Header bar ── */
-.admin-header{background:#7a8fa8;padding:14px 24px;display:flex;align-items:center;gap:16px;border-radius:10px;box-shadow:0 2px 8px rgba(30,50,80,0.12)}
+.admin-header{background:#7a8fa8;padding:14px 24px;display:flex;align-items:center;gap:16px;border-radius:10px 10px 0 0;box-shadow:0 2px 8px rgba(30,50,80,0.12)}
 .admin-title{font-size:18px;font-weight:300;color:#ffffff;font-family:'Noto Serif SC',serif;flex:1}
 .admin-title span{color:#c8e0f4}
 .admin-sub{font-size:12px;color:#b8cce0;font-family:'Noto Serif SC',serif;margin-top:2px}
@@ -29,12 +29,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .header-btn:hover{background:rgba(255,255,255,0.15)}
 
 /* ── Main wrap ── */
-.admin-wrap{max-width:1050px;margin:0 auto;padding:14px 5% 24px;display:flex;flex-direction:column;gap:14px}
+.admin-wrap{max-width:1050px;margin:0 auto;padding:0 5% 24px;display:flex;flex-direction:column;gap:6px}
 
 /* ── Cards ── */
-.card{background:#f4f6f8;border-radius:10px;overflow:hidden;border:0.5px solid #c8d4e0;box-shadow:0 2px 8px rgba(30,50,80,0.07)}
-.card-hdr{padding:12px 20px;background:#dde4ed;border-bottom:0.5px solid #c8d4e0;display:flex;align-items:center;justify-content:space-between}
-.card-hdr h2{font-size:14px;font-weight:300;color:#2a3a50;font-family:'Noto Serif SC',serif}
+.card{background:#f4f6f8;border-radius:0;overflow:hidden;border:0.5px solid #c8d4e0;box-shadow:0 2px 8px rgba(30,50,80,0.07)}
+#card-first{border-radius:0}
+#card-last{border-radius:0 0 10px 10px}
+.card-hdr{padding:11px 20px;background:#edf1f6;border-bottom:0.5px solid #d0dae6;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card-hdr h2{font-size:14px;font-weight:300;color:#2a3a50;font-family:'Noto Serif SC',serif;display:flex;align-items:center;white-space:nowrap}
 .card-body{padding:16px 20px}
 
 /* ── Stat cards ── */
@@ -64,14 +66,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* ── Tables ── */
 .rtable,.btable{width:100%;border-collapse:collapse;font-size:13px}
 .rtable th,.btable th{padding:9px 14px;text-align:left;font-size:11px;font-weight:300;color:#6a7a8a;text-transform:uppercase;letter-spacing:.06em;border-bottom:0.5px solid #c8d4e0;background:#eaf0f7;font-family:'Noto Serif SC',serif}
-.rtable td,.btable td{padding:10px 14px;border-bottom:0.5px solid #d8e0ea;color:#2a3a50;font-size:13px}
+.rtable td,.btable td{padding:10px 14px;border-bottom:0.5px solid #d8e0ea;color:#2a3a50;font-size:13px;font-weight:300;font-family:'Courier New',monospace}
 .rtable tr:last-child td,.btable tr:last-child td{border-bottom:none}
 .rtable tr:hover td,.btable tr:hover td{background:#eef4fa}
-.rank-num{font-family:'Courier New',monospace;font-size:15px;font-weight:500}
+.rank-num{font-family:'Courier New',monospace;font-size:13px;font-weight:300}
 .rank-1{color:#8a6010}.rank-2{color:#606870}.rank-3{color:#7a4020}
-.student-name{font-size:13px;font-family:'Courier New',monospace;color:#2a3a50}
+.student-name{font-size:13px;font-family:'Courier New',monospace;color:#2a3a50;font-weight:300}
 .group-tag{display:inline-block;font-size:11px;color:#6a7a8a;margin-top:3px;font-family:'Noto Serif SC',serif}
-.avg-score{font-size:18px;font-family:'Courier New',monospace;color:#2a3a50}
+.avg-score{font-size:13px;font-family:'Courier New',monospace;color:#2a3a50;font-weight:300}
 .grade-pill{display:inline-block;font-size:11px;padding:2px 9px;border-radius:10px;font-family:'Noto Serif SC',serif;font-weight:300}
 .grade-te{background:#fef8e8;color:#8a6010;border:0.5px solid #d4a820}
 .grade-ex{background:#e8f4ee;color:#2a5a3a;border:0.5px solid #90c8a0}
@@ -80,7 +82,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .grade-na{background:#eef2f6;color:#6a7a8a;border:0.5px solid #b8c8d8}
 .judge-scores-list{display:flex;flex-direction:column;gap:3px;margin-top:2px}
 .judge-score-row{font-size:12px;color:#6a7a8a}
-.judge-score-row strong{color:#2a3a50;font-family:'Courier New',monospace}
+.judge-score-row strong{color:#2a3a50;font-family:'Courier New',monospace;font-weight:400}
 .subscores{font-size:11px;color:#8a9aaa}
 .judge-section{margin-bottom:20px}
 .judge-section-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding-bottom:8px;border-bottom:0.5px solid #c8d4e0}
@@ -99,7 +101,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .score-compare-card{background:#eaf0f7;border:0.5px solid #b8c8d8;border-radius:8px;padding:12px;text-align:center}
 .scc-avg-card{background:#dde8f4;border:0.5px solid #a8c0d8;border-radius:8px;padding:12px;text-align:center}
 .scc-judge{font-size:12px;color:#6a7a8a;margin-bottom:6px;font-family:'Noto Serif SC',serif}
-.scc-total{font-size:26px;font-family:'Courier New',monospace;color:#2a3a50;line-height:1}
+.scc-total{font-size:16px;font-family:'Courier New',monospace;color:#2a3a50;line-height:1;font-weight:300}
 .scc-denom{font-size:12px;color:#8a9aaa}
 .scc-breakdown{font-size:11px;color:#8a9aaa;margin-top:6px}
 .ms-grid-wrap{position:relative;background:#fff}
@@ -117,13 +119,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div id="admin-screen">
   <!-- Header -->
-  <div style="max-width:1050px;margin:0 auto;padding:24px 5% 0">
+  <div style="max-width:1050px;margin:0 auto;padding:24px 5% 0;margin-bottom:6px">
     <div class="admin-header">
-      <div class="admin-title" style="flex:1;text-align:center">创意作文评分评估平台 <span>· 主控台</span></div>
+      <div style="flex:1;text-align:center">
+        <div class="admin-title">创意作文评分评估平台 <span>· 主控台</span></div>
+        <div id="last-updated" style="font-size:11px;color:#c8d8e8;margin-top:4px;font-family:'Noto Serif SC',serif"></div>
+      </div>
       <button class="header-btn" onclick="loadData()">刷新</button>
       <button class="header-btn" onclick="exportCSV()">导出 CSV</button>
     </div>
-    <div class="last-updated" id="last-updated" style="text-align:center;padding:6px 0 0;font-size:11px;color:#8a9aaa"></div>
   </div>
 
   <div class="admin-wrap">
@@ -131,21 +135,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 
     <!-- 评分进度 -->
-    <div class="card">
-      <div class="card-hdr"><h2>评分进度</h2></div>
+    <div class="card" id="card-first">
+      <div class="card-hdr">
+        <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5a7a9a" stroke-width="1.8" style="margin-right:7px;vertical-align:middle"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>评分进度</h2>
+      </div>
       <div class="card-body"><div id="progress-list"></div></div>
     </div>
 
     <!-- 最终排名 -->
     <div class="card">
       <div class="card-hdr">
-        <h2>最终排名</h2>
+        <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5a7a9a" stroke-width="1.8" style="margin-right:7px;vertical-align:middle"><circle cx="12" cy="8" r="6"/><path d="M8 14l-4 7h16l-4-7"/></svg>最终排名</h2>
         <div class="filter-row" id="result-filters"></div>
       </div>
       <div style="overflow-x:auto">
         <table class="rtable" id="result-table">
           <thead><tr>
-            <th style="width:60px">名次</th>
+            <th style="width:70px;padding-left:32px">名次</th>
             <th style="width:140px">考生</th>
             <th style="width:80px">综合分</th>
             <th>各老师评分</th>
@@ -158,7 +164,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
     <!-- 篇章查询 -->
     <div class="card">
-      <div class="card-hdr"><h2>篇章评分查询</h2></div>
+      <div class="card-hdr">
+        <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5a7a9a" stroke-width="1.8" style="margin-right:7px;vertical-align:middle"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>篇章评分查询</h2>
+      </div>
       <div class="card-body">
         <div class="query-wrap">
           <input class="query-input" id="query-search" type="text" placeholder="输入考生编号搜索…" oninput="onQuerySearch(this.value)"/>
@@ -172,8 +180,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
 
     <!-- 老师明细 -->
-    <div class="card">
-      <div class="card-hdr"><h2>老师评分明细</h2></div>
+    <div class="card" id="card-last">
+      <div class="card-hdr">
+        <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5a7a9a" stroke-width="1.8" style="margin-right:7px;vertical-align:middle"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>老师评分明细</h2>
+      </div>
       <div class="card-body" id="breakdown"></div>
     </div>
 
@@ -337,7 +347,7 @@ function renderResults(results) {
        ${js.sc ? `<span class="subscores">（内${js.sc.content} 表${js.sc.expression} 创${js.sc.creativity}）</span>` : ''}</div>`
     ).join('');
     return `<tr>
-      <td><span class="rank-num ${rankClass}">${r.rank}</span></td>
+      <td style="padding-left:32px"><span class="rank-num ${rankClass}">${r.rank}</span></td>
       <td>
         <div class="student-name">${r.student.name}</div>
         <span class="group-tag">${r.student.grade} ${r.student.stream}</span>
@@ -368,7 +378,7 @@ function renderBreakdown(results) {
         <td style="font-family:'Courier New',monospace">${sc ? sc.content ?? '—' : '—'}</td>
         <td style="font-family:'Courier New',monospace">${sc ? sc.expression ?? '—' : '—'}</td>
         <td style="font-family:'Courier New',monospace">${sc ? sc.creativity ?? '—' : '—'}</td>
-        <td style="font-family:'Courier New',monospace;font-weight:bold">${tot !== null ? tot : '—'}</td>
+        <td style="font-family:'Courier New',monospace;font-weight:300">${tot !== null ? tot : '—'}</td>
         <td style="color:var(--text-muted);font-size:12px">${sc && tot !== null ? '第 ' + rank + ' 名' : '—'}</td>
         <td><span style="font-size:11px;color:${sc && sc.submitted ? 'var(--accent)' : 'var(--text-faint)'}">${sc && sc.submitted ? '已提交' : sc ? '已储存' : '未评'}</span></td>
       </tr>`;

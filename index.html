@@ -48,7 +48,7 @@ html{zoom:0.85;-ms-zoom:0.85;-webkit-text-size-adjust:100%;text-size-adjust:100%
 .btn{padding:6px 16px;border:1px solid #ddd;border-radius:7px;background:#f7f7f7;color:#444;cursor:pointer;font-size:13px;font-family:inherit}
 .btn:hover{background:#efefef}
 .btn-submit{background:transparent;color:#5a9070;border:0.5px solid #a8c8be;font-weight:300;padding:8px 22px;font-size:14px}
-.btn-submit:hover{background:#b07808}
+.btn-submit:hover{background:#d8edd8;border-color:#8ac0a0}
 .btn-submit:disabled{opacity:.5}
 
 /* ── Submitted banner ── */
@@ -109,11 +109,11 @@ html{zoom:0.85;-ms-zoom:0.85;-webkit-text-size-adjust:100%;text-size-adjust:100%
 #score-summary-wrap{border-top:1px solid #f0f0f0}
 .score-summary-hdr{padding:10px 20px;display:flex;align-items:center;justify-content:flex-end}
 .sort-btns{display:flex;gap:4px}
-.sort-btn{padding:7px 18px;border:1px solid #e0e0e0;border-radius:20px;background:transparent;font-size:14px;color:#888;cursor:pointer;font-family:inherit}
-.sort-btn.active{background:#1a6fba;color:#fff;border-color:#1a6fba}
+.sort-btn{padding:7px 18px;border:0.5px solid #b8d8b8;border-radius:20px;background:transparent;font-size:14px;color:#5a9070;cursor:pointer;font-family:inherit;font-weight:300}
+.sort-btn.active{background:#d8edd8;color:#3a7a4a;border-color:#a8d0a8}
 .score-summary-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
 .score-summary-table th{padding:10px 16px;text-align:left;font-size:13px;color:#bbb;border-bottom:1px solid #f5f5f5;font-weight:normal;text-transform:uppercase;letter-spacing:.05em}
-.score-summary-table td{padding:10px 16px;border-bottom:1px solid #f7f7f7;color:#444;font-size:14px;font-weight:400;font-family:'Courier New',monospace}
+.score-summary-table td{padding:10px 16px;border-bottom:1px solid #f0f5f0;color:#5a9070;font-size:14px;font-weight:400;font-family:'Courier New',monospace}
 .score-summary-table tr:last-child td{border-bottom:none}
 .score-summary-table tr:hover td{background:#fafafa;cursor:pointer}
 .score-summary-table tr.editing td{background:#eef6ff}
@@ -678,7 +678,7 @@ async function submitAll() {
 // 稿纸渲染引擎（改编自竞赛稿纸模块）
 // ════════════════════════════════════════════
 const MS_COLS = 20, MS_ROWS = 22;
-const MS_GRID_COLOR = '#8dcc8d';
+const MS_GRID_COLOR = '#6db86d';
 
 function buildManuscriptHtml(text) {
   const pages = paginateText(text);
@@ -779,7 +779,7 @@ function renderManuscript(containerId, text) {
       span.textContent = ch;
       span.style.cssText = `position:absolute;left:${c*cW}px;top:${r*gH+topOffset}px;` +
         `width:${cW}px;height:${fs}px;display:flex;align-items:center;justify-content:center;` +
-        `font-size:${fs}px;font-weight:100;line-height:1;color:#1a2a3a;` +
+        `font-size:${fs}px;font-weight:100;line-height:1;color:#2a6a3a;` +
         `font-family:"Noto Serif SC","SimSun","宋体","STSong",serif;box-sizing:border-box;` +
         `-webkit-font-smoothing:antialiased;transform:translateY(-${translateY}px);`;
       textLayer.appendChild(span);

@@ -309,17 +309,11 @@ function renderJudgeGrid() {
     grid.innerHTML = '<div style="color:var(--text-faint);font-size:13px">暂无老师数据，请先在 Supabase 插入数据。</div>';
     return;
   }
-  grid.innerHTML = state.judges.map(j => {
-    const students = getJudgeStudents(j.id);
-    const scored = students.filter(s => isScored(j.id, s.id)).length;
-    const sub = isSubmitted(j.id);
-    const initials = j.name[0];
-    return `<div class="judge-card" onclick="selectJudge('${j.id}')">
-      <div class="judge-avatar">${initials}</div>
-      <div class="judge-card-name">${j.name}</div>
-      <div class="judge-card-sub">${students.length} 位考生</div>
-      <div class="judge-card-progress">${scored}/${students.length} ${sub ? '✓ 已提交' : '已评'}</div>
-    </div>`;
+  grid.innerHTML = state.judges.map(function(j) {
+    return '<div class="judge-card" onclick="selectJudge(&quot;' + j.id + '&quot;)">' +
+      '<div class="judge-avatar">' + j.name[0] + '</div>' +
+      '<div class="judge-card-name">' + j.name + '</div>' +
+    '</div>';
   }).join('');
 }
 
@@ -329,8 +323,8 @@ function selectJudge(judgeId) {
   const judge = state.judges.find(j => j.id === judgeId);
   state.currentStudent = null;
 
-  document.getElementById('ws-avatar').textContent = judge.name[0];
-  document.getElementById('ws-title').textContent = judge.name;
+  const wsTitleEl = document.getElementById('ws-title');
+  if (wsTitleEl) wsTitleEl.textContent = judge.name;
   updateWsSub();
 
   document.getElementById('screen-select').classList.remove('active');

@@ -52,7 +52,7 @@ html{zoom:0.85;-ms-zoom:0.85;-webkit-text-size-adjust:100%;text-size-adjust:100%
 .btn-submit:disabled{opacity:.5}
 
 /* ── Submitted banner ── */
-.submitted-banner{background:#e8f4e8;border-bottom:0.5px solid #c8e0c8;padding:8px 20px;font-size:13px;color:#4a7a4a;text-align:center}
+.submitted-banner{display:none}
 
 /* ── Custom dropdown ── */
 .custom-dd-wrap{position:relative}
@@ -112,7 +112,7 @@ html{zoom:0.85;-ms-zoom:0.85;-webkit-text-size-adjust:100%;text-size-adjust:100%
 .sort-btn{padding:7px 18px;border:0.5px solid #b8d8b8;border-radius:20px;background:transparent;font-size:14px;color:#5a9070;cursor:pointer;font-family:inherit;font-weight:300}
 .sort-btn.active{background:#d8edd8;color:#3a7a4a;border-color:#a8d0a8}
 .score-summary-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
-.score-summary-table th{padding:10px 16px;text-align:left;font-size:13px;color:#bbb;border-bottom:1px solid #f5f5f5;font-weight:normal;text-transform:uppercase;letter-spacing:.05em}
+.score-summary-table th{padding:10px 16px;text-align:left;font-size:13px;color:#8ab89a;border-bottom:0.5px solid #e0ece0;font-weight:300;text-transform:uppercase;letter-spacing:.05em}
 .score-summary-table td{padding:10px 16px;border-bottom:1px solid #f0f5f0;color:#5a9070;font-size:14px;font-weight:400;font-family:'Courier New',monospace}
 .score-summary-table tr:last-child td{border-bottom:none}
 .score-summary-table tr:hover td{background:#fafafa;cursor:pointer}
@@ -120,7 +120,7 @@ html{zoom:0.85;-ms-zoom:0.85;-webkit-text-size-adjust:100%;text-size-adjust:100%
 .ss-code{font-family:'Courier New',monospace;font-size:12px;color:#555;white-space:nowrap}
 .ss-total{font-family:inherit;font-weight:400}
 .ss-pending{color:#bbb;font-style:italic}
-.seq{font-size:11px;color:#ccc;text-align:center;width:28px}
+.seq{font-size:11px;color:#8ab89a;text-align:center;width:28px}
 
 /* ── Toast ── */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#d8edd8;color:#3a6a4a;border:0.5px solid #a8cca8;padding:10px 22px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:999;white-space:nowrap;box-shadow:0 2px 8px rgba(60,100,60,0.15)}
@@ -663,8 +663,7 @@ async function submitAll() {
       state.scores[state.currentJudge][s.id].submitted = true;
     });
     toast('评分已提交！感谢 ✓', 3000);
-    document.getElementById('submitted-banner-wrap').innerHTML =
-      '<div class="submitted-banner">您已完成提交，感谢！如需修改请联系管理员。</div>';
+    document.getElementById('submitted-banner-wrap').innerHTML = '';
     document.getElementById('btn-submit-all').disabled = true;
     document.getElementById('btn-submit-all').style.opacity = '.5';
     renderStreamSelectors();

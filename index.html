@@ -26,10 +26,10 @@ html{zoom:0.85;-ms-zoom:0.85;-webkit-text-size-adjust:100%;text-size-adjust:100%
 
 /* ── Judge select ── */
 .welcome-text{text-align:center;margin:4rem 0 3rem}
-.site-year{font-size:13px;color:#3a5a4a;letter-spacing:.12em;margin-bottom:12px}
-.welcome-text h1{font-size:30px;font-weight:400;margin-bottom:10px;color:#1a3a2a;font-family:'Noto Serif SC',serif}
-.site-accent{color:#1a6fba}
-.welcome-text p{font-size:14px;color:#3a5a4a}
+.site-year{font-size:13px;color:#e8f4f0;letter-spacing:.12em;margin-bottom:10px}
+.welcome-text h1{font-size:30px;font-weight:400;margin-bottom:8px;color:#ffffff;font-family:'Noto Serif SC',serif}
+.site-accent{color:#a8e8d8}
+.welcome-text p{font-size:14px;color:#d0ece4}
 .judge-grid{display:grid;grid-template-columns:repeat(3,120px);gap:12px;justify-content:center}
 .judge-card{background:#fff;border:1px solid #d8e8d8;border-radius:10px;padding:1.2rem 0.8rem;cursor:pointer;transition:border-color .15s,box-shadow .15s;text-align:center;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(20,70,55,0.12)}
 .judge-card:hover{border-color:#1a6fba}
@@ -79,7 +79,7 @@ html{zoom:0.85;-ms-zoom:0.85;-webkit-text-size-adjust:100%;text-size-adjust:100%
 .score-inline-fields{display:flex;align-items:flex-start;gap:8px;flex:1;width:100%}
 .sif{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;min-width:0}
 .sif-lbl{font-size:13px;color:#2a6050;font-family:'Noto Serif SC',serif;font-weight:300}
-.sif input{width:100%;height:44px;border:0.5px solid #90b8a8;border-radius:6px;background:#fff;font-size:15px;font-family:'Courier New',monospace;text-align:center;color:#3a5070;outline:none;display:block;padding:0}
+.sif input{width:100%;height:44px;border:0.5px solid #90b8a8;border-radius:6px;background:#fff;font-size:15px;font-family:'Courier New',monospace;text-align:center;color:#1a4a3a;outline:none;padding:0;-moz-appearance:textfield}
 .sif input:focus{border-color:#7ab89a}
 .sif-wrap{width:100%;height:44px;border:0.5px solid #90b8a8;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;gap:4px;padding:0 8px}
 .sif-wrap input{border:none;background:transparent;font-family:'Courier New',monospace;font-size:15px;color:#5a9070;text-align:right;width:50%;outline:none;padding:0}
@@ -187,8 +187,8 @@ html{zoom:0.85;-ms-zoom:0.85;-webkit-text-size-adjust:100%;text-size-adjust:100%
 </div>
 
 <!-- Screen 2: Judge workspace -->
-<div class="screen" id="screen-workspace">
-<div class="board">
+<div class="screen" id="screen-workspace" style="display:flex;flex-direction:column;gap:16px">
+<div class="board" id="board-ctrl">
   <div class="workspace-header">
     <div class="ws-info">
       <div class="ws-title" id="ws-title"></div>
@@ -240,9 +240,13 @@ html{zoom:0.85;-ms-zoom:0.85;-webkit-text-size-adjust:100%;text-size-adjust:100%
       </div>
     </div>
   </div>
+</div>
+<div class="board" id="board-paper">
   <div class="essay-panel" id="essay-panel">
     <div class="empty-state">从上方选择考生开始评分</div>
   </div>
+</div>
+<div class="board" id="board-summary">
   <div id="score-summary-wrap" style="display:none">
     <div class="score-summary-hdr">
       <div class="sort-btns">
@@ -261,6 +265,7 @@ html{zoom:0.85;-ms-zoom:0.85;-webkit-text-size-adjust:100%;text-size-adjust:100%
       </tr></thead>
       <tbody id="score-summary-tbody"></tbody>
     </table>
+  </div>
   </div>
 </div>
 </div>

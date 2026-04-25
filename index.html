@@ -8,7 +8,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.26.0"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html{zoom:0.85;-ms-zoom:0.85;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  @media(min-width:768px){html{zoom:0.85}}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#7aa898;color:#111;min-height:100vh;font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
 
@@ -18,8 +19,8 @@ html{zoom:0.85;-ms-zoom:0.85;-webkit-text-size-adjust:100%;text-size-adjust:100%
 
 /* ── Screens ── */
 .screen{padding:20px 5%;max-width:900px;margin:0 auto;width:100%;box-sizing:border-box}
-  #screen-workspace.active{display:flex;flex-direction:column;gap:1px;width:100%}
-  #board-ctrl{border-radius:12px 12px 0 0}
+  #screen-workspace.active{display:flex;flex-direction:column;gap:6px;width:100%}
+  #board-ctrl{border-radius:12px 12px 0 0;overflow:visible}
   #board-paper{border-radius:0}
   #board-summary{border-radius:0 0 12px 12px}
 .screen.active{display:block}
@@ -71,7 +72,7 @@ html{zoom:0.85;-ms-zoom:0.85;-webkit-text-size-adjust:100%;text-size-adjust:100%
 .custom-dd-item .dd-scored{font-size:11px;color:#3d9a50;margin-left:auto}
 
 /* ── Stream selectors ── */
-.stream-selectors{padding:12px 28px;display:flex;align-items:center;flex-wrap:wrap;gap:0;background:#c8ddd6;border-bottom:0.5px solid #a8c8be;overflow:visible;position:relative;z-index:100}
+.stream-selectors{padding:12px 28px;display:flex;align-items:center;flex-wrap:wrap;gap:0;background:#c8ddd6;border-bottom:0.5px solid #a8c8be;overflow:visible;position:relative;z-index:9999}
 .stream-group{display:flex;align-items:center;gap:8px}
 .stream-tag{font-size:13px;color:#2a6050;font-weight:300;font-family:'Noto Serif SC',serif}
 .stream-sel{padding:5px 10px;border:1px solid #e0e0e0;border-radius:7px;background:#fff;font-size:13px;color:#111;min-width:120px}
@@ -79,18 +80,18 @@ html{zoom:0.85;-ms-zoom:0.85;-webkit-text-size-adjust:100%;text-size-adjust:100%
 .stream-sep{width:1px;height:24px;background:#e8e8e8;margin:0 12px;flex-shrink:0}
 
 /* ── Score bar ── */
-.score-bar-row{padding:12px 18px;display:flex;align-items:flex-start;gap:8px;background:#c8ddd6;border-bottom:0.5px solid #a8c8be}
+.score-bar-row{padding:10px 14px;display:flex;align-items:flex-start;gap:5px;background:#c8ddd6;border-bottom:0.5px solid #a8c8be}
 .score-inline-fields{display:flex;align-items:flex-start;gap:8px;flex:1;width:100%}
 .sif{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;min-width:0}
 .sif-lbl{font-size:13px;color:#2a6050;font-family:'Noto Serif SC',serif;font-weight:300}
-.sif input{width:100%;height:44px;border:0.5px solid #90b8a8;border-radius:6px;background:#fff;font-size:15px;font-family:'Courier New',monospace;text-align:center;color:#1a4a3a;outline:none;padding:0;-moz-appearance:textfield}
+.sif input{width:100%;height:44px;border:0.5px solid #90b8a8;border-radius:6px;background:#eef8f4;font-size:15px;font-family:'Courier New',monospace;text-align:center;color:#1a4a3a;outline:none;padding:0;-moz-appearance:textfield}
 .sif input:focus{border-color:#7ab89a}
-.sif-wrap{width:100%;height:44px;border:0.5px solid #90b8a8;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;gap:4px;padding:0 8px}
+.sif-wrap{width:100%;height:44px;border:0.5px solid #90b8a8;border-radius:6px;background:#eef8f4;display:flex;align-items:center;justify-content:center;gap:4px;padding:0 8px}
 .sif-wrap input{border:none;background:transparent;font-family:'Courier New',monospace;font-size:15px;color:#5a9070;text-align:right;width:50%;outline:none;padding:0}
 .sif-wrap input::-webkit-inner-spin-button,.sif-wrap input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .sif-max{font-size:12px;color:#b0c8b8;white-space:nowrap}
-.sif-total-box{font-family:'Courier New',monospace;font-size:15px;color:#5a9070}
-.sif-div{width:0.5px;background:#a8c8be;align-self:stretch;margin-top:20px;flex-shrink:0}
+.sif-total-box{font-family:'Courier New',monospace;font-size:15px;color:#1a4a3a;background:#eef8f4}
+.sif-div{width:0.5px;background:#a8c8be;align-self:stretch;margin-top:18px;flex-shrink:0;margin-left:3px;margin-right:3px}
 .sif-total{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1}
 
 /* ── Essay panel ── */

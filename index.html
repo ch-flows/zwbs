@@ -2,25 +2,25 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>作文比赛评分系统</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.26.0"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#edf4ed;color:#111;min-height:100vh}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#edf4ed;color:#111;min-height:100vh;font-size:16px}
 
 /* ── Loading ── */
 .loading{position:fixed;inset:0;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:14px;color:#bbb;z-index:100}
 .loading.hidden{display:none}
 
 /* ── Screens ── */
-.screen{padding:40px 20px;max-width:960px;margin:0 auto}
+.screen{padding:40px 5%;max-width:1100px;margin:0 auto}
 .screen.active{display:block}
 .screen:not(.active){display:none}
 
 /* ── Board ── */
-.board{background:#f6faf6;border-radius:12px;overflow:visible;border:1px solid #d8e8d8;max-width:860px;margin:0 auto}
+.board{background:#f6faf6;border-radius:12px;overflow:visible;border:1px solid #d8e8d8;max-width:1000px;margin:0 auto}
 
 /* ── Judge select ── */
 .welcome-text{text-align:center;margin:4rem 0 3rem}
@@ -37,15 +37,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .judge-card-progress{margin-top:6px;font-size:12px;color:#1a6fba}
 
 /* ── Top bar ── */
-.workspace-header{padding:12px 20px;display:flex;align-items:center;gap:11px;background:#f6faf6;border-bottom:0.5px solid #e4ede4}
+.workspace-header{padding:16px 28px;display:flex;align-items:center;gap:14px;background:#f6faf6;border-bottom:0.5px solid #e4ede4}
 .ws-avatar{width:36px;height:36px;border-radius:50%;background:#e8f4fd;color:#1a6fba;display:flex;align-items:center;justify-content:center;font-size:14px;font-style:italic;font-weight:500;flex-shrink:0}
 .ws-info{flex:1}
-.ws-title{font-size:13px;font-weight:300;color:#aaa;font-family:'Noto Serif SC',serif}
+.ws-title{font-size:16px;font-weight:300;color:#888;font-family:'Noto Serif SC',serif}
 .ws-sub{display:none}
 .ws-actions{display:flex;gap:8px}
 .btn{padding:6px 16px;border:1px solid #ddd;border-radius:7px;background:#f7f7f7;color:#444;cursor:pointer;font-size:13px;font-family:inherit}
 .btn:hover{background:#efefef}
-.btn-submit{background:transparent;color:#4a7060;border:0.5px solid #a8c8be;font-weight:400}
+.btn-submit{background:transparent;color:#4a7060;border:0.5px solid #a8c8be;font-weight:400;padding:8px 22px;font-size:14px}
 .btn-submit:hover{background:#b07808}
 .btn-submit:disabled{opacity:.5}
 
@@ -65,7 +65,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .custom-dd-item .dd-scored{font-size:11px;color:#3d9a50;margin-left:auto}
 
 /* ── Stream selectors ── */
-.stream-selectors{padding:10px 20px;display:flex;align-items:center;flex-wrap:wrap;gap:0;background:#f0f6f0;border-bottom:0.5px solid #e4ede4;overflow:visible;position:relative;z-index:100}
+.stream-selectors{padding:12px 28px;display:flex;align-items:center;flex-wrap:wrap;gap:0;background:#f0f6f0;border-bottom:0.5px solid #e4ede4;overflow:visible;position:relative;z-index:100}
 .stream-group{display:flex;align-items:center;gap:8px}
 .stream-tag{font-size:11px;color:#b0c0b0;background:transparent;padding:2px 0;font-weight:400;white-space:nowrap;flex-shrink:0}
 .stream-sel{padding:5px 10px;border:1px solid #e0e0e0;border-radius:7px;background:#fff;font-size:13px;color:#111;min-width:120px}
@@ -73,16 +73,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stream-sep{width:1px;height:24px;background:#e8e8e8;margin:0 12px;flex-shrink:0}
 
 /* ── Score bar ── */
-.score-bar-row{padding:10px 14px;display:flex;align-items:center;flex-wrap:nowrap;background:#f6faf6;border-bottom:0.5px solid #e4ede4;overflow-x:auto;gap:8px}
+.score-bar-row{padding:14px 28px;display:flex;align-items:center;flex-wrap:nowrap;background:#f6faf6;border-bottom:0.5px solid #e4ede4;overflow-x:auto;gap:12px}
 .score-inline-fields{display:flex;align-items:center;flex-wrap:nowrap;gap:8px;flex:1}
 .sif{display:flex;align-items:center;gap:4px;flex:1;min-width:0}
 .sif-lbl{font-size:11px;color:#bbb;white-space:nowrap}
-.sif input{flex:1;min-width:0;width:0;height:28px;border:0.5px solid #d4e4d4;border-radius:5px;background:#fff;font-size:11px;font-family:'Courier New',monospace;font-weight:400;text-align:center;color:#555;outline:none}
+.sif input{flex:1;min-width:0;width:0;height:36px;border:0.5px solid #d4e4d4;border-radius:6px;background:#fff;font-size:14px;font-family:'Courier New',monospace;font-weight:400;text-align:center;color:#555;outline:none}
 .sif input:focus{border-color:#1a6fba;background:#fff}
-.sif-max{font-size:11px;color:#ccc;white-space:nowrap}
+.sif-max{font-size:12px;color:#ccc;white-space:nowrap}
 .sif-div{width:1px;height:20px;background:#eee;flex-shrink:0}
 .sif-total{display:flex;align-items:center;gap:4px;flex-shrink:0}
-.sif-total span:first-child{font-size:11px;font-family:'Courier New',monospace;font-weight:400;color:#5a8aaa;width:44px;height:28px;border:0.5px solid #b8d4e8;border-radius:5px;background:#fff;display:flex;align-items:center;justify-content:center}
+.sif-total span:first-child{font-size:14px;font-family:'Courier New',monospace;font-weight:400;color:#5a8aaa;width:56px;height:36px;border:0.5px solid #b8d4e8;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center}
 
 /* ── Essay panel ── */
 .essay-panel{background:#fff}
@@ -90,7 +90,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .essay-student-hdr{padding:12px 20px 0;display:flex;align-items:baseline;gap:8px}
 .essay-student-name{font-size:12px;font-weight:400;color:#888;font-family:'Courier New',monospace}
 .essay-student-meta{font-size:10px;color:#888;font-family:'Noto Serif SC','Georgia',serif;font-weight:300}
-.essay-ms-wrap{padding:12px 20px 16px}
+.essay-ms-wrap{padding:16px 28px 24px}
 .submitted-note{font-size:12px;color:#1a6fba;background:#eef6ff;padding:5px 14px;border-radius:7px;margin:0 20px 10px;display:inline-block}
 
 /* ── Manuscript ── */
@@ -104,11 +104,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #score-summary-wrap{border-top:1px solid #f0f0f0}
 .score-summary-hdr{padding:10px 20px;display:flex;align-items:center;justify-content:flex-end}
 .sort-btns{display:flex;gap:4px}
-.sort-btn{padding:5px 14px;border:1px solid #e0e0e0;border-radius:20px;background:transparent;font-size:13px;color:#888;cursor:pointer;font-family:inherit}
+.sort-btn{padding:7px 18px;border:1px solid #e0e0e0;border-radius:20px;background:transparent;font-size:14px;color:#888;cursor:pointer;font-family:inherit}
 .sort-btn.active{background:#1a6fba;color:#fff;border-color:#1a6fba}
 .score-summary-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
-.score-summary-table th{padding:7px 12px;text-align:left;font-size:12px;color:#bbb;border-bottom:1px solid #f5f5f5;font-weight:normal;text-transform:uppercase;letter-spacing:.05em}
-.score-summary-table td{padding:8px 12px;border-bottom:1px solid #f7f7f7;color:#444;font-size:12px;font-weight:400;font-family:'Courier New',monospace}
+.score-summary-table th{padding:10px 16px;text-align:left;font-size:13px;color:#bbb;border-bottom:1px solid #f5f5f5;font-weight:normal;text-transform:uppercase;letter-spacing:.05em}
+.score-summary-table td{padding:10px 16px;border-bottom:1px solid #f7f7f7;color:#444;font-size:14px;font-weight:400;font-family:'Courier New',monospace}
 .score-summary-table tr:last-child td{border-bottom:none}
 .score-summary-table tr:hover td{background:#fafafa;cursor:pointer}
 .score-summary-table tr.editing td{background:#eef6ff}

@@ -27,7 +27,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .board{background:#f0f8f4;border-radius:0;overflow:hidden;border:0.5px solid #a8c8be;box-shadow:0 3px 14px rgba(20,70,55,0.15);align-self:stretch;min-width:0;width:100%}
   #board-ctrl{border-radius:12px 12px 0 0;overflow:visible;position:relative;z-index:10}
   #board-paper{border-radius:0}
-  #board-summary{border-radius:0 0 12px 12px}
+  #board-summary{border-radius:0 0 12px 12px;overflow:visible}
 
 /* ── Judge select ── */
 .welcome-text{text-align:center;margin:3rem 0 2.5rem}
@@ -114,7 +114,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .manuscript-pages{display:flex;flex-direction:column;gap:16px}
 
 /* ── Score summary ── */
-#score-summary-wrap{border-top:1px solid #f0f0f0}
+#score-summary-wrap{border-top:1px solid #f0f0f0;overflow-x:auto}
 .score-summary-hdr{padding:10px 20px;display:flex;align-items:center;justify-content:flex-end}
 .sort-btns{display:flex;gap:4px}
 .sort-btn{padding:7px 18px;border:0.5px solid #b8d8b8;border-radius:20px;background:transparent;font-size:14px;color:#5a9070;cursor:pointer;font-family:inherit;font-weight:300}
@@ -375,7 +375,9 @@ function getGroups(judgeId) {
 }
 
 function getGroupLabel(g) {
-  return g.label || ((g.grade || (g.grades && g.grades[0]) || '') + ' ' + g.stream);
+  if (g.label) return g.label;
+  const gradeStr = g.grade || (g.grades ? g.grades.join('+') : '');
+  return gradeStr + ' ' + g.stream;
 }
 
 function gradeLabel(grade) {

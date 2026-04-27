@@ -27,7 +27,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .board{background:#f0f8f4;border-radius:0;overflow:hidden;border:0.5px solid #a8c8be;box-shadow:0 3px 14px rgba(20,70,55,0.15);align-self:stretch;min-width:0;width:100%}
   #board-ctrl{border-radius:12px 12px 0 0;overflow:visible;position:relative;z-index:10}
   #board-paper{border-radius:0}
-  #board-summary{border-radius:0 0 12px 12px;overflow:hidden}
+  #board-summary{border-radius:0 0 12px 12px;overflow:hidden;border:none;box-shadow:none;background:transparent}
 
 /* ── Judge select ── */
 .welcome-text{text-align:center;margin:3rem 0 2.5rem}
@@ -141,17 +141,17 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
     @media(min-width:768px){
     .screen{padding:30px 5%}
-    .welcome-text{margin:2.5rem 0 2.5rem}
-    .welcome-text h1{font-size:34px;letter-spacing:-.01em}
-    .site-year{font-size:14px;letter-spacing:.18em}
+    .welcome-text{margin:1.8rem 0 1.8rem}
+    .welcome-text h1{font-size:30px;letter-spacing:-.01em}
+    .site-year{font-size:13px;letter-spacing:.18em}
     .welcome-text p{font-size:15px}
     .judge-grid{gap:12px;width:340px}
     .judge-grid-row{gap:20px}
     .judge-card{width:100px}
     .judge-avatar{width:88px;height:88px;font-size:40px;border-width:1.5px}
     .judge-card-name{font-size:14px}
-    .ws-title{font-size:15px;color:#1a4a3a}
-    .workspace-header{padding:12px 24px}
+    .ws-title{font-size:14px;color:#1a4a3a}
+    .workspace-header{padding:10px 22px}
     .stream-selectors{padding:10px 24px;row-gap:12px;column-gap:16px}
     .stream-sep{display:none}
     .stream-group{flex-direction:column;align-items:center;gap:4px}
@@ -441,6 +441,7 @@ function selectJudge(judgeId) {
   document.getElementById('btn-submit-all').disabled = sub;
   document.getElementById('btn-submit-all').style.opacity = sub ? '.5' : '1';
 
+  document.getElementById('board-summary').style.display='none';
   renderStreamSelectors();
   renderEssayPanel(null);
   renderScoreSummary();
@@ -852,8 +853,14 @@ function renderScoreSummary() {
   const students = getJudgeStudents(state.currentJudge);
   const scored = students.filter(s => isScored(state.currentJudge, s.id));
   const wrap = document.getElementById('score-summary-wrap');
-  if (!scored.length) { if(wrap) wrap.style.display='none'; return; }
+  const boardSummary = document.getElementById('board-summary');
+  if (!scored.length) {
+    if(wrap) wrap.style.display='none';
+    if(boardSummary) boardSummary.style.display='none';
+    return;
+  }
   if(wrap) wrap.style.display='block';
+  if(boardSummary) { boardSummary.style.display='block'; boardSummary.style.background='#f0f8f4'; boardSummary.style.border='0.5px solid #a8c8be'; boardSummary.style.boxShadow='0 3px 14px rgba(20,70,55,0.15)'; }
 
   var rows = scored.map(function(s) {
     var sc = getScore(state.currentJudge, s.id) || {};

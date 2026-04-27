@@ -36,6 +36,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .site-accent{color:#a8e8d8}
 .welcome-text p{font-size:14px;color:#d0ece4}
 .judge-grid{display:grid;grid-template-columns:repeat(3,120px);gap:12px;justify-content:center}
+.judge-card:last-child:nth-child(3n+1){grid-column:2}
 .judge-card{background:#fff;border:1px solid #d8e8d8;border-radius:10px;padding:1.2rem 0.8rem;cursor:pointer;transition:border-color .15s,box-shadow .15s;text-align:center;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(20,70,55,0.12)}
 .judge-card:hover{border-color:#1a6fba}
 .judge-avatar{width:44px;height:44px;border-radius:50%;background:#e8f4fd;color:#1a6fba;display:flex;align-items:center;justify-content:center;font-size:16px;font-style:italic;font-weight:400;margin:0 auto 8px}
@@ -142,7 +143,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     .welcome-text h1{font-size:36px}
     .site-year{font-size:15px}
     .welcome-text p{font-size:16px}
-    .judge-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:20px;justify-content:start}
+    .judge-grid{grid-template-columns:repeat(3,minmax(160px,1fr));gap:20px;justify-content:center}
+    .judge-card:last-child:nth-child(3n+1){grid-column:2}
     .judge-card{padding:1.8rem 1rem;aspect-ratio:1}
     .judge-avatar{width:52px;height:52px;font-size:20px}
     .judge-card-name{font-size:15px}
@@ -383,7 +385,11 @@ function renderJudgeGrid() {
     grid.innerHTML = '<div style="color:var(--text-faint);font-size:13px">暂无老师数据，请先在 Supabase 插入数据。</div>';
     return;
   }
-  grid.innerHTML = state.judges.map(function(j) {
+  // 按姓氏拼音首字母排列
+  const sorted = [...state.judges].sort((a, b) =>
+    a.name.localeCompare(b.name, 'zh-Hans-CN', { sensitivity: 'base' })
+  );
+  grid.innerHTML = sorted.map(function(j) {
     return '<div class="judge-card" onclick="selectJudge(&quot;' + j.id + '&quot;)">' +
       '<div class="judge-avatar">' + j.name[0] + '</div>' +
       '<div class="judge-card-name">' + j.name + '</div>' +

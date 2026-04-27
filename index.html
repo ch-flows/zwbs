@@ -120,7 +120,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .sort-btn{padding:7px 18px;border:0.5px solid #b8d8b8;border-radius:20px;background:transparent;font-size:14px;color:#5a9070;cursor:pointer;font-family:inherit;font-weight:300}
 .sort-btn.active{background:#d8edd8;color:#3a7a4a;border-color:#a8d0a8}
 .score-summary-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
-.score-summary-table th{padding:8px 6px;text-align:center;font-size:12px;color:#8ab89a;border:0.5px solid #c8e8d8;font-weight:300;letter-spacing:.02em;background:#f0faf5;white-space:nowrap}
+.score-summary-table th{padding:8px 0;text-align:center;font-size:12px;color:#8ab89a;border:0.5px solid #c8e8d8;font-weight:300;letter-spacing:.02em;background:#f0faf5;white-space:nowrap}
 .score-summary-table td{padding:8px 6px;border:0.5px solid #d8eee4;color:#5a9070;font-size:13px;font-weight:400;font-family:'Courier New',monospace;text-align:center}
 .score-summary-table tr:last-child td{border-bottom:none}
 .score-summary-table tr:hover td{background:#e4f5ec;color:#2a7a4a;cursor:pointer}
@@ -169,8 +169,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     .essay-ms-wrap{padding:16px 8% 32px}
     .essay-student-name{font-size:13px;color:#7aaa8a}
     .essay-student-meta{font-size:13px;color:#7aaa8a}
-    .score-summary-table th{padding:10px 16px;font-size:13px}
-    .score-summary-table td{padding:10px 16px;font-size:14px}
+    .score-summary-table th{padding:10px 0;font-size:13px;text-align:center}
+    .score-summary-table td{padding:10px 0;font-size:14px;text-align:center}
     .sort-btn{padding:7px 18px;font-size:13px}
     .score-summary-hdr{padding:9px 16px}
     .custom-dd-btn{font-size:12px;padding:6px 24px 6px 10px;min-width:120px}
@@ -268,10 +268,10 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       <thead><tr>
         <th style="width:28px;text-align:center">#</th>
         <th style="text-align:left;white-space:nowrap">编号</th>
-        <th style="width:44px;text-align:center;padding-left:0;padding-right:0">内容</th>
-        <th style="width:44px;text-align:center;padding-left:0;padding-right:0">表达</th>
-        <th style="width:44px;text-align:center;padding-left:0;padding-right:0">创意</th>
-        <th style="width:44px;text-align:center;padding-left:0;padding-right:0">总分</th>
+        <th style="width:44px">内容</th>
+        <th style="width:44px">表达</th>
+        <th style="width:44px">创意</th>
+        <th style="width:44px">总分</th>
       </tr></thead>
       <tbody id="score-summary-tbody"></tbody>
     </table>
@@ -872,7 +872,7 @@ function renderScoreSummary() {
     var seqNum = _sortMode === 'orig' ? (rows.indexOf(r) + 1) : (rows.indexOf(r) + 1);
     return '<tr' + active + ' onclick="selectStudentFromSummary(&quot;' + r.s.id + '&quot;)" title="">' +
       '<td class="seq" style="text-align:center">' + seqNum + '</td>' +
-      '<td class="ss-code" style="text-align:left;padding-left:16px">' + r.s.name + '</td>' +
+      '<td class="ss-code" style="text-align:left;padding-left:8px">' + r.s.name + '</td>' +
       '<td>' + (r.sc.content!==null&&r.sc.content!==undefined?r.sc.content:'<span class="ss-pending">—</span>') + '</td>' +
       '<td>' + (r.sc.expression!==null&&r.sc.expression!==undefined?r.sc.expression:'<span class="ss-pending">—</span>') + '</td>' +
       '<td>' + (r.sc.creativity!==null&&r.sc.creativity!==undefined?r.sc.creativity:'<span class="ss-pending">—</span>') + '</td>' +

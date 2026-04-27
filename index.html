@@ -35,9 +35,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .welcome-text h1{font-size:30px;font-weight:400;margin-bottom:8px;color:#ffffff;font-family:'Noto Serif SC',serif}
 .site-accent{color:#a8e8d8}
 .welcome-text p{font-size:14px;color:#d0ece4}
-.judge-grid{display:grid;grid-template-columns:repeat(3,120px);gap:12px;justify-content:center}
-.judge-card:last-child:nth-child(3n+1){grid-column:2}
-.judge-card{background:#fff;border:1px solid #d8e8d8;border-radius:10px;padding:1.2rem 0.8rem;cursor:pointer;transition:border-color .15s,box-shadow .15s;text-align:center;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(20,70,55,0.12)}
+.judge-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;max-width:420px;margin:0 auto}
+.judge-card{background:#fff;border:1px solid #d8e8d8;border-radius:10px;padding:1.2rem 0.8rem;cursor:pointer;transition:border-color .15s,box-shadow .15s;text-align:center;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(20,70,55,0.12);width:120px;flex-shrink:0}
 .judge-card:hover{border-color:#1a6fba}
 .judge-avatar{width:44px;height:44px;border-radius:50%;background:#e8f4fd;color:#1a6fba;display:flex;align-items:center;justify-content:center;font-size:16px;font-style:italic;font-weight:400;margin:0 auto 8px}
 .judge-card-name{font-size:14px;margin-bottom:0;color:#1a4a3a;font-weight:300;font-family:'Noto Serif SC',serif}
@@ -143,9 +142,9 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     .welcome-text h1{font-size:36px}
     .site-year{font-size:15px}
     .welcome-text p{font-size:16px}
-    .judge-grid{grid-template-columns:repeat(3,minmax(160px,1fr));gap:20px;justify-content:center}
+    .judge-grid{gap:20px;max-width:600px}
     .judge-card:last-child:nth-child(3n+1){grid-column:2}
-    .judge-card{padding:1.8rem 1rem;aspect-ratio:1}
+    .judge-card{padding:1.8rem 1rem;aspect-ratio:1;width:160px}
     .judge-avatar{width:52px;height:52px;font-size:20px}
     .judge-card-name{font-size:15px}
     .ws-title{font-size:18px;color:#1a4a3a}
@@ -389,12 +388,23 @@ function renderJudgeGrid() {
   const sorted = [...state.judges].sort((a, b) =>
     a.name.localeCompare(b.name, 'zh-Hans-CN', { sensitivity: 'base' })
   );
-  grid.innerHTML = sorted.map(function(j) {
-    return '<div class="judge-card" onclick="selectJudge(&quot;' + j.id + '&quot;)">' +
-      '<div class="judge-avatar">' + j.name[0] + '</div>' +
-      '<div class="judge-card-name">' + j.name + '</div>' +
-    '</div>';
-  }).join('');
+  // 2-3-3-2 菱形排列
+  const pattern = [2, 3, 3, 2];
+  let idx = 0;
+  let html = '';
+  for (const count of pattern) {
+    html += '<div style="display:flex;justify-content:center;gap:12px;width:100%">';
+    for (let i = 0; i < count && idx < sorted.length; i++, idx++) {
+      const j = sorted[idx];
+      html += '<div class="judge-card" onclick="selectJudge(&quot;' + j.id + '&quot;)">' +
+        '<div class="judge-avatar">' + j.name[0] + '</div>' +
+        '<div class="judge-card-name">' + j.name + '</div>' +
+        '</div>';
+    }
+    html += '</div>';
+    if (idx >= sorted.length) break;
+  }
+  grid.innerHTML = html;
 }
 
 // ── Screen 2: Workspace ───────────────────────

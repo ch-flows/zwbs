@@ -442,6 +442,7 @@ function selectJudge(judgeId) {
   document.getElementById('btn-submit-all').style.opacity = sub ? '.5' : '1';
 
   document.getElementById('board-summary').style.display='none';
+  document.getElementById('board-paper').style.borderRadius='0 0 12px 12px';
   renderStreamSelectors();
   renderEssayPanel(null);
   renderScoreSummary();
@@ -854,12 +855,15 @@ function renderScoreSummary() {
   const scored = students.filter(s => isScored(state.currentJudge, s.id));
   const wrap = document.getElementById('score-summary-wrap');
   const boardSummary = document.getElementById('board-summary');
+  const boardPaper = document.getElementById('board-paper');
   if (!scored.length) {
     if(wrap) wrap.style.display='none';
     if(boardSummary) boardSummary.style.display='none';
+    if(boardPaper) boardPaper.style.borderRadius='0 0 12px 12px';
     return;
   }
   if(wrap) wrap.style.display='block';
+  if(boardPaper) boardPaper.style.borderRadius='0';
   if(boardSummary) { boardSummary.style.display='block'; boardSummary.style.background='#f0f8f4'; boardSummary.style.border='0.5px solid #a8c8be'; boardSummary.style.boxShadow='0 3px 14px rgba(20,70,55,0.15)'; }
 
   var rows = scored.map(function(s) {

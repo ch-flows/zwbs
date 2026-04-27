@@ -9,7 +9,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
-  @media(min-width:768px){html{zoom:0.85}}
+
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#7aa898;color:#111;min-height:100vh;font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
 
@@ -18,7 +18,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .loading.hidden{display:none}
 
 /* ── Screens ── */
-.screen{padding:20px 5%;max-width:900px;margin:0 auto;width:100%;box-sizing:border-box}
+.screen{padding:20px 5%;max-width:920px;margin:0 auto;width:100%;box-sizing:border-box}
   #screen-workspace.active{display:flex;flex-direction:column;gap:4px;width:100%}
 .screen.active{display:block}
 .screen:not(.active){display:none}
@@ -74,15 +74,15 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .custom-dd-item .dd-scored{font-size:11px;color:#3d9a50;margin-left:auto}
 
 /* ── Stream selectors ── */
-.stream-selectors{padding:12px 28px;display:flex;align-items:center;flex-wrap:wrap;gap:0;background:#c8ddd6;border-bottom:0.5px solid #a8c8be;overflow:visible;position:relative;z-index:9999}
-.stream-group{display:flex;align-items:center;gap:8px}
+.stream-selectors{padding:12px 28px;display:flex;align-items:center;flex-wrap:wrap;row-gap:10px;column-gap:0;background:#c8ddd6;border-bottom:0.5px solid #a8c8be;overflow:visible;position:relative;z-index:9999}
+.stream-group{display:flex;align-items:center;gap:6px}
 .stream-tag{font-size:13px;color:#2a6050;font-weight:300;font-family:'Noto Serif SC',serif}
 .stream-sel{padding:5px 10px;border:1px solid #e0e0e0;border-radius:7px;background:#fff;font-size:13px;color:#111;min-width:120px}
 .stream-prog{display:none}
-.stream-sep{width:1px;height:24px;background:#e8e8e8;margin:0 12px;flex-shrink:0}
+.stream-sep{width:1px;height:24px;background:#e8e8e8;margin:0 8px;flex-shrink:0;align-self:center}
 
 /* ── Score bar ── */
-.score-bar-row{padding:10px 14px;display:flex;align-items:flex-start;gap:5px;background:#c8ddd6;border-bottom:0.5px solid #a8c8be}
+.score-bar-row{padding:10px 14px;display:flex;align-items:center;gap:5px;background:#c8ddd6;border-bottom:0.5px solid #a8c8be}
 .score-inline-fields{display:flex;align-items:flex-start;gap:8px;flex:1;width:100%}
 .sif{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;min-width:0}
 .sif-lbl{font-size:13px;color:#2a6050;font-family:'Noto Serif SC',serif;font-weight:300}
@@ -120,11 +120,11 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .sort-btn{padding:7px 18px;border:0.5px solid #b8d8b8;border-radius:20px;background:transparent;font-size:14px;color:#5a9070;cursor:pointer;font-family:inherit;font-weight:300}
 .sort-btn.active{background:#d8edd8;color:#3a7a4a;border-color:#a8d0a8}
 .score-summary-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
-.score-summary-table th{padding:10px 16px;text-align:left;font-size:13px;color:#8ab89a;border-bottom:0.5px solid #e0ece0;font-weight:300;text-transform:uppercase;letter-spacing:.05em}
-.score-summary-table td{padding:10px 16px;border-bottom:1px solid #f0f5f0;color:#5a9070;font-size:14px;font-weight:400;font-family:'Courier New',monospace}
+.score-summary-table th{padding:10px 16px;text-align:left;font-size:13px;color:#8ab89a;border:0.5px solid #c8e8d8;font-weight:300;letter-spacing:.05em;background:#f0faf5}
+.score-summary-table td{padding:10px 16px;border:0.5px solid #d8eee4;color:#5a9070;font-size:14px;font-weight:400;font-family:'Courier New',monospace;text-align:center}
 .score-summary-table tr:last-child td{border-bottom:none}
-.score-summary-table tr:hover td{background:#fafafa;cursor:pointer}
-.score-summary-table tr.editing td{background:#eef6ff}
+.score-summary-table tr:hover td{background:#e4f5ec;color:#2a7a4a;cursor:pointer}
+.score-summary-table tr.editing td{background:#e4f5ec;color:#2a7a4a}
 .ss-code{font-family:'Courier New',monospace;font-size:12px;color:#555;white-space:nowrap}
 .ss-total{font-family:inherit;font-weight:400}
 .ss-pending{color:#bbb;font-style:italic}
@@ -140,38 +140,42 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 }
 
     @media(min-width:768px){
-    .screen{padding:60px 8%}
-    .welcome-text{margin:4rem 0 3.5rem}
-    .welcome-text h1{font-size:56px;letter-spacing:-.01em}
-    .site-year{font-size:17px;letter-spacing:.18em}
-    .welcome-text p{font-size:18px}
-    .judge-grid{gap:24px;width:600px}
-    .judge-grid-row{gap:16px}
-    .judge-card{width:116px}
-    .judge-avatar{width:100px;height:100px;font-size:46px;border-width:2px}
-    .judge-card-name{font-size:16px}
-    .ws-title{font-size:18px;color:#1a4a3a}
-    .workspace-header{padding:18px 32px}
-    .stream-selectors{padding:14px 32px}
-    .stream-tag{font-size:13px;color:#4a6080;font-weight:500}
-    .score-bar-row{padding:14px 32px;gap:0}
-    .score-inline-fields{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:center;gap:0;width:100%}
-    .sif-div{width:0.5px;height:32px;background:#d8e8d8;margin:0 16px;align-self:auto}
-    .sif input{height:40px;font-size:16px;text-align:center;padding:0;line-height:40px;display:flex;align-items:center;justify-content:center}
-    .sif-lbl{font-size:13px;color:#6a88a8;font-family:'Noto Serif SC',serif;font-weight:300}
+    .screen{padding:30px 5%}
+    .welcome-text{margin:2.5rem 0 2.5rem}
+    .welcome-text h1{font-size:34px;letter-spacing:-.01em}
+    .site-year{font-size:14px;letter-spacing:.18em}
+    .welcome-text p{font-size:15px}
+    .judge-grid{gap:12px;width:340px}
+    .judge-grid-row{gap:20px}
+    .judge-card{width:76px}
+    .judge-avatar{width:68px;height:68px;font-size:28px;border-width:1.5px}
+    .judge-card-name{font-size:14px}
+    .ws-title{font-size:15px;color:#1a4a3a}
+    .workspace-header{padding:12px 24px}
+    .stream-selectors{padding:10px 24px;row-gap:12px;column-gap:16px}
+    .stream-sep{display:none}
+    .stream-group{flex-direction:column;align-items:center;gap:4px}
+    .stream-tag{font-size:12px;color:#4a6080;font-weight:400;white-space:nowrap;font-family:'Noto Serif SC',serif}
+    .score-bar-row{padding:10px 24px;gap:0}
+    .score-inline-fields{display:flex;align-items:center;gap:16px;margin:0;padding:0}
+    .sif{flex-direction:row;align-items:center;gap:6px;flex:0 0 auto}
+    .sif-div{display:none}
+    .sif input{height:36px;font-size:15px;text-align:center;padding:0;line-height:36px;width:80px}
+    .sif-wrap{width:130px;height:36px;flex-shrink:0}
+    .sif-lbl{font-size:13px;color:#6a88a8;font-family:'Noto Serif SC',serif;font-weight:300;white-space:nowrap}
     .sif-max{font-size:13px;color:#8ab0a0}
     .sif-total span:first-child{width:64px;height:40px;font-size:16px}
-    .essay-student-hdr{padding:20px 8% 0}
+    .essay-student-hdr{padding:12px 24px 0}
     .essay-ms-wrap{padding:16px 8% 32px}
-    .essay-student-name{font-size:16px;color:#7aaa8a}
-    .essay-student-meta{font-size:16px;color:#7aaa8a}
-    .score-summary-table th{padding:12px 20px;font-size:14px}
-    .score-summary-table td{padding:12px 20px;font-size:15px}
-    .sort-btn{padding:8px 20px;font-size:14px}
-    .score-summary-hdr{padding:14px 24px}
-    .custom-dd-btn{font-size:14px;padding:9px 32px 9px 14px}
+    .essay-student-name{font-size:13px;color:#7aaa8a}
+    .essay-student-meta{font-size:13px;color:#7aaa8a}
+    .score-summary-table th{padding:9px 14px;font-size:12px}
+    .score-summary-table td{padding:9px 14px;font-size:13px}
+    .sort-btn{padding:7px 18px;font-size:13px}
+    .score-summary-hdr{padding:9px 16px}
+    .custom-dd-btn{font-size:12px;padding:6px 24px 6px 10px;min-width:120px}
     .stream-prog{font-size:13px}
-    .btn-submit{padding:10px 26px;font-size:15px}
+    .btn-submit{padding:7px 18px;font-size:13px}
     .btn-save svg{width:22px;height:22px}
   }
 </style>
@@ -218,7 +222,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
         <div class="sif">
           <span class="sif-lbl">内容</span>
           <div class="sif-wrap">
-            <input type="number" id="si-content" min="0" max="40" placeholder="—" oninput="onScoreInline('content',this.value,40)"/>
+            <input type="number" id="si-content" min="0" max="40" placeholder="" oninput="onScoreInline('content',this.value,40)"/>
             <span class="sif-max">/ 40</span>
           </div>
         </div>
@@ -226,7 +230,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
         <div class="sif">
           <span class="sif-lbl">表达</span>
           <div class="sif-wrap">
-            <input type="number" id="si-expression" min="0" max="35" placeholder="—" oninput="onScoreInline('expression',this.value,35)"/>
+            <input type="number" id="si-expression" min="0" max="35" placeholder="" oninput="onScoreInline('expression',this.value,35)"/>
             <span class="sif-max">/ 35</span>
           </div>
         </div>
@@ -234,14 +238,14 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
         <div class="sif">
           <span class="sif-lbl">创意</span>
           <div class="sif-wrap">
-            <input type="number" id="si-creativity" min="0" max="25" placeholder="—" oninput="onScoreInline('creativity',this.value,25)"/>
+            <input type="number" id="si-creativity" min="0" max="25" placeholder="" oninput="onScoreInline('creativity',this.value,25)"/>
             <span class="sif-max">/ 25</span>
           </div>
         </div>
         <div class="sif-div"></div>
         <div class="sif">
           <span class="sif-lbl">总分</span>
-          <span id="si-total" class="sif-wrap sif-total-box">—/100</span>
+          <span id="si-total" class="sif-wrap sif-total-box">/100</span>
         </div>
       </div>
     </div>
@@ -262,12 +266,12 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     </div>
     <table class="score-summary-table">
       <thead><tr>
-        <th style="width:28px;text-align:center">#</th>
-        <th style="min-width:110px">编号</th>
-        <th style="width:70px;text-align:center">内容</th>
-        <th style="width:70px;text-align:center">表达</th>
-        <th style="width:70px;text-align:center">创意</th>
-        <th style="width:70px;text-align:center">总分</th>
+        <th style="width:40px;text-align:center">#</th>
+        <th style="width:160px;text-align:left">编号</th>
+        <th style="width:80px;text-align:center">内容</th>
+        <th style="width:80px;text-align:center">表达</th>
+        <th style="width:80px;text-align:center">创意</th>
+        <th style="width:80px;text-align:center">总分</th>
       </tr></thead>
       <tbody id="score-summary-tbody"></tbody>
     </table>
@@ -336,7 +340,10 @@ function getJudgeStudents(judgeId) {
   const judge = state.judges.find(j => j.id === judgeId);
   if (!judge) return [];
   return state.students.filter(s =>
-    judge.groups.some(g => g.grade === s.grade && g.stream === s.stream)
+    judge.groups.some(g => {
+      const grades = g.grades || [g.grade];
+      return grades.includes(s.grade) && g.stream === s.stream;
+    })
   );
 }
 
@@ -365,6 +372,10 @@ function isSubmitted(judgeId) {
 function getGroups(judgeId) {
   const judge = state.judges.find(j => j.id === judgeId);
   return judge ? judge.groups : [];
+}
+
+function getGroupLabel(g) {
+  return g.label || ((g.grade || (g.grades && g.grades[0]) || '') + ' ' + g.stream);
 }
 
 function gradeLabel(grade) {
@@ -453,14 +464,15 @@ function renderStreamSelectors() {
   var container = document.getElementById('stream-selectors');
   if (!groups.length) { container.innerHTML = ''; return; }
   container.innerHTML = groups.map(function(g, gi) {
-    var label = g.grade + ' ' + g.stream;
+    var label = getGroupLabel(g);
+    var grades = g.grades || [g.grade];
     var students = getJudgeStudents(state.currentJudge)
-      .filter(function(s) { return s.grade === g.grade && s.stream === g.stream; });
+      .filter(function(s) { return grades.includes(s.grade) && s.stream === g.stream; });
     var scored = students.filter(function(s) { return isScored(state.currentJudge, s.id); }).length;
     var sep = gi < groups.length - 1 ? '<div class="stream-sep"></div>' : '';
     var ddId = 'dd' + gi;
     var current = students.find(function(s) { return s.id === state.currentStudent; });
-    var btnLabel = current ? current.name : '— 选择考生 —';
+    var btnLabel = current ? current.name : '选择考生';
     var items = students.map(function(s) {
       var sc = isScored(state.currentJudge, s.id);
       var isCur = state.currentStudent === s.id;
@@ -522,15 +534,17 @@ function renderEssayPanel(studentId) {
   const s = state.students.find(x => x.id === studentId);
   const sc = getScore(state.currentJudge, studentId) || {};
   const sub = isSubmitted(state.currentJudge);
+  const studentSubmitted = sc && sc.submitted;
   const tot = totalScore(sc);
 
   // populate inline score bar
   scoreBarWrap.style.display = 'block';
+  requestAnimationFrame(() => { alignScoreBar(); setTimeout(alignScoreBar, 200); });
   ['content','expression','creativity'].forEach(function(field) {
     const inp = document.getElementById('si-' + field);
     if (inp) {
       inp.value = (sc[field] !== null && sc[field] !== undefined) ? sc[field] : '';
-      inp.disabled = sub;
+      inp.disabled = studentSubmitted;
     }
   });
   const totEl = document.getElementById('si-total');
@@ -854,13 +868,13 @@ function renderScoreSummary() {
   tbody.innerHTML = rows.map(function(r) {
     var active = state.currentStudent === r.s.id ? ' class="editing"' : '';
     var seqNum = _sortMode === 'orig' ? (rows.indexOf(r) + 1) : (rows.indexOf(r) + 1);
-    return '<tr' + active + ' onclick="selectStudentFromSummary(&quot;' + r.s.id + '&quot;)" title="点击修改">' +
+    return '<tr' + active + ' onclick="selectStudentFromSummary(&quot;' + r.s.id + '&quot;)" title="">' +
       '<td class="seq" style="text-align:center">' + seqNum + '</td>' +
-      '<td class="ss-code">' + r.s.name + '</td>' +
-      '<td style="text-align:center">' + (r.sc.content!==null&&r.sc.content!==undefined?r.sc.content:'<span class="ss-pending">—</span>') + '</td>' +
-      '<td style="text-align:center">' + (r.sc.expression!==null&&r.sc.expression!==undefined?r.sc.expression:'<span class="ss-pending">—</span>') + '</td>' +
-      '<td style="text-align:center">' + (r.sc.creativity!==null&&r.sc.creativity!==undefined?r.sc.creativity:'<span class="ss-pending">—</span>') + '</td>' +
-      '<td style="text-align:center"><span class="ss-total">' + (r.tot!==null?r.tot:'—') + '</span></td>' +
+      '<td class="ss-code" style="text-align:left;padding-left:16px">' + r.s.name + '</td>' +
+      '<td>' + (r.sc.content!==null&&r.sc.content!==undefined?r.sc.content:'<span class="ss-pending">—</span>') + '</td>' +
+      '<td>' + (r.sc.expression!==null&&r.sc.expression!==undefined?r.sc.expression:'<span class="ss-pending">—</span>') + '</td>' +
+      '<td>' + (r.sc.creativity!==null&&r.sc.creativity!==undefined?r.sc.creativity:'<span class="ss-pending">—</span>') + '</td>' +
+      '<td><span class="ss-total">' + (r.tot!==null?r.tot:'—') + '</span></td>' +
     '</tr>';
   }).join('');
 }
@@ -875,6 +889,50 @@ function selectStudentFromSummary(studentId) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+
+
+function alignScoreBar() {
+  if (window.innerWidth < 768) return;
+
+  // Step 1: match dd-btn height/width to sif-wrap
+  const firstSifWrap = document.querySelector('.sif-wrap');
+  if (!firstSifWrap) return;
+  const sifH = firstSifWrap.getBoundingClientRect().height;
+  const sifW = firstSifWrap.getBoundingClientRect().width;
+
+  document.querySelectorAll('.custom-dd-btn').forEach(btn => {
+    btn.style.height = sifH + 'px';
+  });
+  document.querySelectorAll('.custom-dd-wrap').forEach(w => {
+    w.style.width = sifW + 'px';
+  });
+
+  // Step 2: align each dd-wrap to its corresponding sif-wrap
+  const sifWraps = document.querySelectorAll('.sif-wrap');
+  const ddWraps = document.querySelectorAll('.custom-dd-wrap');
+  if (!sifWraps.length || !ddWraps.length) return;
+
+  // Use stream-selectors as a flex container with absolute-positioned groups
+  const streamSel = document.querySelector('.stream-selectors');
+  const streamGroups = document.querySelectorAll('.stream-group');
+  if (!streamSel || !streamGroups.length) return;
+
+  // For each dd-wrap, align its left to the corresponding sif-wrap left
+  const selRect = streamSel.getBoundingClientRect();
+  ddWraps.forEach((ddWrap, i) => {
+    if (i >= sifWraps.length) return;
+    const targetLeft = sifWraps[i].getBoundingClientRect().left;
+    const group = streamGroups[i];
+    if (!group) return;
+    group.style.position = 'absolute';
+    group.style.left = (targetLeft - selRect.left) + 'px';
+  });
+  streamSel.style.position = 'relative';
+  // Set stream-selectors height to fit groups
+  const maxH = Math.max(...Array.from(streamGroups).map(g => g.getBoundingClientRect().height));
+  streamSel.style.minHeight = (maxH + 20) + 'px';
+}
+window.addEventListener('resize', alignScoreBar);
 
 window.addEventListener('popstate', function(e) {
   if (!e.state || e.state.screen === 'select') {

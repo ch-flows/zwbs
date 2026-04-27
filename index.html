@@ -35,13 +35,15 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .welcome-text h1{font-size:30px;font-weight:400;margin-bottom:8px;color:#ffffff;font-family:'Noto Serif SC',serif}
 .site-accent{color:#a8e8d8}
 .welcome-text p{font-size:14px;color:#d0ece4}
-.judge-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;max-width:420px;margin:0 auto}
-.judge-card{background:#fff;border:1px solid #d8e8d8;border-radius:10px;padding:1.2rem 0.8rem;cursor:pointer;transition:border-color .15s,box-shadow .15s;text-align:center;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(20,70,55,0.12);width:120px;flex-shrink:0}
-.judge-card:hover{border-color:#1a6fba}
-.judge-avatar{width:44px;height:44px;border-radius:50%;background:#e8f4fd;color:#1a6fba;display:flex;align-items:center;justify-content:center;font-size:16px;font-style:italic;font-weight:400;margin:0 auto 8px}
-.judge-card-name{font-size:14px;margin-bottom:0;color:#1a4a3a;font-weight:300;font-family:'Noto Serif SC',serif}
-.judge-card-sub{font-size:12px;color:#bbb}
-.judge-card-progress{margin-top:6px;font-size:12px;color:#1a6fba}
+.judge-grid{display:flex;flex-direction:column;align-items:center;gap:10px;margin:0 auto}
+.judge-grid-row{display:flex;justify-content:center;gap:24px}
+.judge-card{display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;background:none;border:none;padding:4px;width:72px;flex-shrink:0;transition:transform .15s}
+.judge-card:hover{transform:translateY(-3px)}
+.judge-avatar{width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,0.22);display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;font-family:'Noto Serif SC',serif;font-weight:300;border:1.5px solid rgba(255,255,255,0.5);transition:background .15s,border-color .15s}
+.judge-card:hover .judge-avatar{background:rgba(255,255,255,0.38);border-color:rgba(255,255,255,0.85)}
+.judge-card-name{font-size:12px;color:rgba(255,255,255,0.9);font-weight:300;font-family:'Noto Serif SC',serif;text-align:center}
+.judge-card-sub{display:none}
+.judge-card-progress{display:none}
 
 /* ── Top bar ── */
 .workspace-header{padding:16px 28px;display:flex;align-items:center;gap:14px;background:#c8ddd6;border-bottom:0.5px solid #a8c8be;border-radius:12px 12px 0 0}
@@ -142,9 +144,10 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     .welcome-text h1{font-size:36px}
     .site-year{font-size:15px}
     .welcome-text p{font-size:16px}
-    .judge-grid{gap:20px;max-width:600px}
-    .judge-card:last-child:nth-child(3n+1){grid-column:2}
-    .judge-card{padding:1.8rem 1rem;aspect-ratio:1;width:160px}
+    .judge-grid{gap:16px}
+    .judge-grid-row{gap:32px}
+    .judge-avatar{width:68px;height:68px;font-size:26px}
+    .judge-card-name{font-size:13px}
     .judge-avatar{width:52px;height:52px;font-size:20px}
     .judge-card-name{font-size:15px}
     .ws-title{font-size:18px;color:#1a4a3a}
@@ -381,19 +384,17 @@ function toast(msg, duration = 2000) {
 function renderJudgeGrid() {
   const grid = document.getElementById('judge-grid');
   if (!state.judges.length) {
-    grid.innerHTML = '<div style="color:var(--text-faint);font-size:13px">暂无老师数据，请先在 Supabase 插入数据。</div>';
+    grid.innerHTML = '<div style="color:rgba(255,255,255,0.6);font-size:13px">暂无老师数据，请先在 Supabase 插入数据。</div>';
     return;
   }
-  // 按姓氏拼音首字母排列
   const sorted = [...state.judges].sort((a, b) =>
     a.name.localeCompare(b.name, 'zh-Hans-CN', { sensitivity: 'base' })
   );
-  // 2-3-3-2 菱形排列
   const pattern = [2, 3, 3, 2];
   let idx = 0;
   let html = '';
   for (const count of pattern) {
-    html += '<div style="display:flex;justify-content:center;gap:12px;width:100%">';
+    html += '<div class="judge-grid-row">';
     for (let i = 0; i < count && idx < sorted.length; i++, idx++) {
       const j = sorted[idx];
       html += '<div class="judge-card" onclick="selectJudge(&quot;' + j.id + '&quot;)">' +

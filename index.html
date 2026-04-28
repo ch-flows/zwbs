@@ -18,7 +18,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .loading.hidden{display:none}
 
 /* ── Screens ── */
-.screen{padding:20px 5%;max-width:1100px;margin:0 auto;width:100%;box-sizing:border-box}
+.screen{padding:20px 5%;max-width:920px;margin:0 auto;width:100%;box-sizing:border-box}
   #screen-workspace.active{display:flex;flex-direction:column;gap:4px;width:100%}
 .screen.active{display:block}
 .screen:not(.active){display:none}
@@ -27,7 +27,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .board{background:#f0f8f4;border-radius:0;overflow:hidden;border:0.5px solid #a8c8be;box-shadow:0 3px 14px rgba(20,70,55,0.15);align-self:stretch;min-width:0;width:100%}
   #board-ctrl{border-radius:12px 12px 0 0;overflow:visible;position:relative;z-index:10}
   #board-paper{border-radius:0}
-  #board-summary{border-radius:0 0 12px 12px;overflow:hidden;border:none;box-shadow:none;background:transparent}
+  #board-summary{border-radius:0 0 12px 12px}
 
 /* ── Judge select ── */
 .welcome-text{text-align:center;margin:3rem 0 2.5rem}
@@ -119,7 +119,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .sort-btns{display:flex;gap:4px}
 .sort-btn{padding:7px 18px;border:0.5px solid #b8d8b8;border-radius:20px;background:transparent;font-size:14px;color:#5a9070;cursor:pointer;font-family:inherit;font-weight:300}
 .sort-btn.active{background:#d8edd8;color:#3a7a4a;border-color:#a8d0a8}
-.score-summary-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+.score-summary-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;border:0.5px solid #c8e8d8}
 .score-summary-table th{padding:8px 0;text-align:center;font-size:12px;color:#8ab89a;border:0.5px solid #c8e8d8;font-weight:300;letter-spacing:.02em;background:#f0faf5;white-space:nowrap}
 .score-summary-table td{padding:8px 6px;border:0.5px solid #d8eee4;color:#5a9070;font-size:13px;font-weight:400;font-family:'Courier New',monospace;text-align:center}
 .score-summary-table tr:last-child td{border-bottom:none}
@@ -140,18 +140,32 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 }
 
     @media(min-width:768px){
-    .screen{padding:30px 5%}
-    .welcome-text{margin:1.8rem 0 1.8rem}
-    .welcome-text h1{font-size:30px;letter-spacing:-.01em}
-    .site-year{font-size:13px;letter-spacing:.18em}
-    .welcome-text p{font-size:15px}
     .judge-grid{gap:12px;width:340px}
     .judge-grid-row{gap:20px}
     .judge-card{width:100px}
     .judge-avatar{width:88px;height:88px;font-size:40px;border-width:1.5px}
     .judge-card-name{font-size:14px}
-    .ws-title{font-size:14px;color:#1a4a3a}
-    .workspace-header{padding:10px 22px}
+    .stream-group{flex-direction:column;align-items:center;gap:4px}
+    .stream-tag{font-size:12px;color:#4a6080;font-weight:400;white-space:nowrap;font-family:'Noto Serif SC',serif}
+    .stream-sep{display:none}
+    .sif{flex-direction:row;align-items:center;gap:6px;flex:0 0 auto}
+    .sif-div{display:none}
+    .sif input{height:36px;font-size:15px;text-align:center;padding:0;line-height:36px;width:80px}
+    .sif-wrap{width:130px;height:36px;flex-shrink:0}
+    .sif-lbl{font-size:13px;color:#6a88a8;font-family:'Noto Serif SC',serif;font-weight:300;white-space:nowrap}
+    .score-inline-fields{display:flex;align-items:center;gap:16px;margin:0;padding:0}
+    .screen{padding:30px 5%}
+    .welcome-text{margin:2.5rem 0 2.5rem}
+    .welcome-text h1{font-size:34px;letter-spacing:-.01em}
+    .site-year{font-size:14px;letter-spacing:.18em}
+    .welcome-text p{font-size:15px}
+    .judge-grid{gap:12px;width:340px}
+    .judge-grid-row{gap:20px}
+    .judge-card{width:76px}
+    .judge-avatar{width:68px;height:68px;font-size:28px;border-width:1.5px}
+    .judge-card-name{font-size:14px}
+    .ws-title{font-size:15px;color:#1a4a3a}
+    .workspace-header{padding:12px 24px}
     .stream-selectors{padding:10px 24px;row-gap:12px;column-gap:16px}
     .stream-sep{display:none}
     .stream-group{flex-direction:column;align-items:center;gap:4px}
@@ -169,8 +183,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     .essay-ms-wrap{padding:16px 8% 32px}
     .essay-student-name{font-size:13px;color:#7aaa8a}
     .essay-student-meta{font-size:13px;color:#7aaa8a}
-    .score-summary-table th{padding:10px 0;font-size:13px;text-align:center}
-    .score-summary-table td{padding:10px 0;font-size:14px;text-align:center}
+    .score-summary-table th{padding:9px 14px;font-size:12px}
+    .score-summary-table td{padding:9px 14px;font-size:13px}
     .sort-btn{padding:7px 18px;font-size:13px}
     .score-summary-hdr{padding:9px 16px}
     .custom-dd-btn{font-size:12px;padding:6px 24px 6px 10px;min-width:120px}
@@ -380,6 +394,10 @@ function getGroupLabel(g) {
   return gradeStr + ' ' + g.stream;
 }
 
+function getGroupLabel(g) {
+  return g.label || ((g.grade || (g.grades && g.grades[0]) || '') + ' ' + g.stream);
+}
+
 function gradeLabel(grade) {
   const map = { '中一':'1', '中二':'2', '中三':'3', '中四':'4' };
   return map[grade] || grade;
@@ -435,14 +453,14 @@ function selectJudge(judgeId) {
 
   document.getElementById('screen-select').classList.remove('active');
   document.getElementById('screen-workspace').classList.add('active');
+  document.getElementById('board-summary').style.display='none';
+  document.getElementById('board-paper').style.borderRadius='0 0 12px 12px';
 
   const sub = isSubmitted(judgeId);
   document.getElementById('submitted-banner-wrap').innerHTML = '';
   document.getElementById('btn-submit-all').disabled = sub;
   document.getElementById('btn-submit-all').style.opacity = sub ? '.5' : '1';
 
-  document.getElementById('board-summary').style.display='none';
-  document.getElementById('board-paper').style.borderRadius='0 0 12px 12px';
   renderStreamSelectors();
   renderEssayPanel(null);
   renderScoreSummary();
@@ -543,6 +561,7 @@ function renderEssayPanel(studentId) {
 
   // populate inline score bar
   scoreBarWrap.style.display = 'block';
+  requestAnimationFrame(() => { alignScoreBar(); setTimeout(alignScoreBar, 200); });
   requestAnimationFrame(() => { alignScoreBar(); setTimeout(alignScoreBar, 200); });
   ['content','expression','creativity'].forEach(function(field) {
     const inp = document.getElementById('si-' + field);
@@ -881,7 +900,7 @@ function renderScoreSummary() {
   tbody.innerHTML = rows.map(function(r) {
     var active = state.currentStudent === r.s.id ? ' class="editing"' : '';
     var seqNum = _sortMode === 'orig' ? (rows.indexOf(r) + 1) : (rows.indexOf(r) + 1);
-    return '<tr' + active + ' onclick="selectStudentFromSummary(&quot;' + r.s.id + '&quot;)" title="">' +
+    return '<tr' + active + ' onclick="selectStudentFromSummary(&quot;' + r.s.id + '&quot;)" title="点击修改">' +
       '<td class="seq" style="text-align:center">' + seqNum + '</td>' +
       '<td class="ss-code" style="text-align:left;padding-left:8px">' + r.s.name + '</td>' +
       '<td>' + (r.sc.content!==null&&r.sc.content!==undefined?r.sc.content:'<span class="ss-pending">—</span>') + '</td>' +
@@ -946,6 +965,43 @@ function alignScoreBar() {
   streamSel.style.minHeight = (maxH + 20) + 'px';
 }
 window.addEventListener('resize', alignScoreBar);
+
+function alignScoreBar() {
+  if (window.innerWidth < 768) return;
+  const firstSifWrap = document.querySelector('.sif-wrap');
+  if (!firstSifWrap) return;
+  const sifH = firstSifWrap.getBoundingClientRect().height;
+  const sifW = firstSifWrap.getBoundingClientRect().width;
+  document.querySelectorAll('.custom-dd-btn').forEach(btn => { btn.style.height = sifH + 'px'; });
+  document.querySelectorAll('.custom-dd-wrap').forEach(w => { w.style.width = sifW + 'px'; });
+  const sifWraps = document.querySelectorAll('.sif-wrap');
+  const ddWraps = document.querySelectorAll('.custom-dd-wrap');
+  if (!sifWraps.length || !ddWraps.length) return;
+  const streamSel = document.querySelector('.stream-selectors');
+  const streamGroups = document.querySelectorAll('.stream-group');
+  if (!streamSel || !streamGroups.length) return;
+  const selRect = streamSel.getBoundingClientRect();
+  ddWraps.forEach((ddWrap, i) => {
+    if (i >= sifWraps.length) return;
+    const targetLeft = sifWraps[i].getBoundingClientRect().left;
+    const group = streamGroups[i];
+    if (!group) return;
+    group.style.position = 'absolute';
+    group.style.left = (targetLeft - selRect.left) + 'px';
+  });
+  streamSel.style.position = 'relative';
+  const maxH = Math.max(...Array.from(streamGroups).map(g => g.getBoundingClientRect().height));
+  streamSel.style.minHeight = (maxH + 20) + 'px';
+}
+window.addEventListener('resize', alignScoreBar);
+
+// Edge-only: zoom workspace screen
+(function() {
+  if (navigator.userAgent.indexOf('Edg/') === -1) return;
+  var style = document.createElement('style');
+  style.textContent = '#screen-workspace { zoom: 0.85; }';
+  document.head.appendChild(style);
+})();
 
 window.addEventListener('popstate', function(e) {
   if (!e.state || e.state.screen === 'select') {

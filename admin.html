@@ -11,41 +11,27 @@
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 @media(min-width:768px){html{zoom:0.9}}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#e8e8e8;color:#1a2a3a;min-height:100vh}
-
-/* ── Loading ── */
 .loading{position:fixed;inset:0;background:#e8eaee;display:flex;align-items:center;justify-content:center;font-size:14px;color:#6a7a8a;z-index:100}
 .loading.hidden{display:none}
-
-/* ── Toast ── */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#d8edd8;color:#3a6a4a;border:0.5px solid #a8cca8;padding:10px 22px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:999;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ── Header bar ── */
 .admin-header{background:#4a6080;padding:16px 24px;display:flex;align-items:center;gap:16px;border-radius:10px 10px 0 0;box-shadow:0 4px 12px rgba(0,0,0,0.12)}
 .admin-title{font-size:24px;font-weight:300;color:#ffffff;font-family:'Noto Serif SC',serif;flex:1}
 .admin-title span{color:#c8e0f4}
 .admin-sub{font-size:12px;color:#b8cce0;font-family:'Noto Serif SC',serif;margin-top:2px}
 .header-btn{padding:7px 16px;border:0.5px solid #9ab8d0;border-radius:7px;background:transparent;color:#e8f0f8;font-size:13px;font-weight:300;cursor:pointer;font-family:'Noto Serif SC',serif;transition:all .15s}
 .header-btn:hover{background:rgba(255,255,255,0.15)}
-
-/* ── Main wrap ── */
 .admin-wrap{max-width:1050px;margin:0 auto;padding:0 5% 24px;display:flex;flex-direction:column;gap:4px}
-
-/* ── Cards ── */
 .card{background:#ffffff;border-radius:0;overflow:hidden;border:0.5px solid #d8d8d8;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
 #card-first{border-radius:0}
 #card-last{border-radius:0 0 10px 10px}
 .card-hdr{padding:11px 20px;background:#efefef;border-bottom:0.5px solid #d8d8d8;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .card-hdr h2{font-size:14px;font-weight:300;color:#3a4258;font-family:'Noto Serif SC',serif;display:flex;align-items:center;white-space:nowrap}
 .card-body{padding:16px 20px;background:#fff}
-
-/* ── Stat cards ── */
 .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;padding:16px 20px}
 .stat-card{background:#eaf0f7;border:0.5px solid #c0d0e0;border-radius:8px;padding:14px;text-align:center}
 .stat-n{font-size:28px;font-weight:300;color:#2a3a50;font-family:'Noto Serif SC',serif;line-height:1}
 .stat-l{font-size:12px;color:#6a7a8a;font-weight:300;margin-top:6px;font-family:'Noto Serif SC',serif}
-
-/* ── Progress ── */
 .progress-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:0.5px solid #d8e0ea}
 .progress-row:last-child{border-bottom:none}
 .prog-avatar{width:32px;height:32px;border-radius:50%;background:#e8f0f8;color:#2563a8;display:flex;align-items:center;justify-content:center;font-size:13px;font-style:italic;flex-shrink:0;font-family:'Noto Serif SC',serif}
@@ -57,13 +43,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .prog-status{font-size:11px;min-width:50px;text-align:right;font-family:'Noto Serif SC',serif}
 .prog-status.done{color:#1a7a45}
 .prog-status.pending{color:#c07830}
-
-/* ── Filter pills ── */
 .filter-row{display:flex;gap:6px;flex-wrap:wrap}
 .filter-pill{padding:4px 14px;border:0.5px solid #c8c8c8;border-radius:20px;background:transparent;color:#7a8298;font-size:12px;font-family:'Noto Serif SC',serif;font-weight:300;cursor:pointer;transition:all .15s}
 .filter-pill.active{background:#dde8f4;color:#2563a8;border-color:#a8c0d8}
-
-/* ── Tables ── */
 .rtable,.btable{width:100%;border-collapse:collapse;font-size:13px}
 .rtable th,.btable th{padding:9px 14px;text-align:center;font-size:11px;font-weight:300;color:#7a8298;text-transform:uppercase;letter-spacing:.06em;border-bottom:0.5px solid #d8d8d8;background:#efefef;font-family:'Noto Serif SC',serif}
 .rtable td,.btable td{padding:10px 14px;border-bottom:0.5px solid #efefef;color:#1a1f2e;font-size:15px;font-weight:300;font-family:'Courier New',monospace;text-align:center}
@@ -89,8 +71,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .judge-section-avatar{width:30px;height:30px;border-radius:50%;background:#e8f0f8;color:#2563a8;display:flex;align-items:center;justify-content:center;font-size:12px;font-style:italic;flex-shrink:0}
 .judge-section-name{font-size:14px;font-weight:300;color:#1a1f2e;font-family:'Noto Serif SC',serif}
 .judge-section-sub{font-size:12px;color:#8a9aaa;margin-left:auto;font-family:'Noto Serif SC',serif}
-
-/* ── Query ── */
 .query-wrap{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
 .query-input{padding:8px 12px;border:none;border-bottom:0.5px solid #d8d8d8;background:#fff;font-size:13px;font-family:'Courier New',monospace;color:#2a3a50;outline:none;flex:1;min-width:150px}
 .query-sel{padding:8px 12px;border:none;border-bottom:0.5px solid #d8d8d8;background:#fff;font-size:13px;font-family:'Courier New',monospace;color:#2a3a50;min-width:150px}
@@ -109,7 +89,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ms-text-layer{position:absolute;top:0;left:0;pointer-events:none;overflow:hidden}
 .ms-page-num{font-size:8pt;color:#aaa;text-align:right;padding-right:4px;margin-top:4px;font-family:sans-serif}
 .last-updated{font-size:11px;color:#b8c8d8;font-family:'Noto Serif SC',serif}
-
 @media(max-width:680px){.admin-wrap{padding:16px 4%}}
 </style>
 </head>
@@ -118,7 +97,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="loading" id="loading">连接中…</div>
 
 <div id="admin-screen">
-  <!-- Header -->
   <div style="max-width:1050px;margin:0 auto;padding:24px 5% 0;margin-bottom:6px">
     <div class="admin-header">
       <div style="flex:1;text-align:center">
@@ -129,10 +107,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 
   <div class="admin-wrap">
-
-
-
-    <!-- 评分进度 -->
     <div class="card" id="card-first">
       <div class="card-hdr">
         <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5a7a9a" stroke-width="1.8" style="margin-right:7px;vertical-align:middle"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>评分进度</h2>
@@ -140,7 +114,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="card-body"><div id="progress-list"></div></div>
     </div>
 
-    <!-- 最终排名 -->
     <div class="card">
       <div class="card-hdr">
         <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5a7a9a" stroke-width="1.8" style="margin-right:7px;vertical-align:middle"><circle cx="12" cy="8" r="6"/><path d="M8 14l-4 7h16l-4-7"/></svg>最终排名</h2>
@@ -153,14 +126,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
             <th style="width:140px">考生</th>
             <th style="width:80px">综合分</th>
             <th>各老师评分</th>
-
           </tr></thead>
           <tbody id="result-tbody"></tbody>
         </table>
       </div>
     </div>
 
-    <!-- 篇章查询 -->
     <div class="card">
       <div class="card-hdr">
         <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5a7a9a" stroke-width="1.8" style="margin-right:7px;vertical-align:middle"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>评分查询</h2>
@@ -175,25 +146,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </div>
     </div>
 
-    <!-- 老师明细 -->
     <div class="card" id="card-last">
       <div class="card-hdr">
         <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5a7a9a" stroke-width="1.8" style="margin-right:7px;vertical-align:middle"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>评分明细</h2>
       </div>
       <div class="card-body" id="breakdown"></div>
     </div>
-
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-
-
-// ════════════════════════════════════════════
-// CONFIG — must match index.html
-// ════════════════════════════════════════════
 const SUPABASE_URL = 'https://cmnueivbcqkgjionubne.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbnVlaXZiY3FrZ2ppb251Ym5lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5MzE2ODQsImV4cCI6MjA5MjUwNzY4NH0.4hESinCQ1zQIAC72lTw2kErDNGkEXb7TZNQipqesEdA';
 
@@ -231,9 +195,6 @@ async function loadData() {
   }
 }
 
-// Realtime disabled
-
-// ── Helpers ──────────────────────────────────
 function getScoreObj(judgeId, studentId) {
   return state.scores.find(s => s.judge_id === judgeId && s.student_id === studentId) || null;
 }
@@ -243,9 +204,27 @@ function totalOf(sc) {
   return sc.content + sc.expression + sc.creativity;
 }
 
+// ── G3华文 组别映射 ──────────────────────────────
+var G3_HIGH_GRADES = ['中三','中四'];
+var G3_LOW_GRADES  = ['中一','中二'];
+
+// 将学生映射到主控台显示的组别标签
+function getGroupKey(s) {
+  if (s.stream === 'G3华文') {
+    return G3_HIGH_GRADES.indexOf(s.grade) >= 0 ? 'G3华文 · 高年级组' : 'G3华文 · 低年级组';
+  }
+  return s.grade + ' ' + s.stream;
+}
+
+// 判断一个 judge group 配置是否匹配某个学生（支持 grades 数组）
+function judgeGroupMatchesStudent(g, s) {
+  var grades = g.grades || (g.grade ? [g.grade] : []);
+  return grades.indexOf(s.grade) >= 0 && g.stream === s.stream;
+}
+
 function getGroups() {
   const set = new Set();
-  state.students.forEach(s => set.add(`${s.grade} ${s.stream}`));
+  state.students.forEach(s => set.add(getGroupKey(s)));
   return [...set].sort();
 }
 
@@ -254,7 +233,7 @@ function computeResults() {
     const judgeScores = [];
     let sum = 0, count = 0;
     state.judges.forEach(j => {
-      const assigned = j.groups.some(g => g.grade === s.grade && g.stream === s.stream);
+      const assigned = j.groups.some(g => judgeGroupMatchesStudent(g, s));
       if (!assigned) return;
       const sc = getScoreObj(j.id, s.id);
       const tot = totalOf(sc);
@@ -275,10 +254,8 @@ function gradeLabel(avg) {
   return { text: '待定', cls: 'grade-na' };
 }
 
-// ── Render all ───────────────────────────────
 function renderAll() {
   const results = computeResults();
-  renderStats(results);
   renderProgress();
   renderFilters();
   renderResults(results);
@@ -286,14 +263,10 @@ function renderAll() {
   populateQuerySelect();
 }
 
-function renderStats(results) {
-  // stat cards removed
-}
-
 function renderProgress() {
   document.getElementById('progress-list').innerHTML = state.judges.map(j => {
     const students = state.students.filter(s =>
-      j.groups.some(g => g.grade === s.grade && g.stream === s.stream));
+      j.groups.some(g => judgeGroupMatchesStudent(g, s)));
     const scored = students.filter(s => {
       const sc = getScoreObj(j.id, s.id);
       return sc && sc.content !== null && sc.expression !== null && sc.creativity !== null;
@@ -316,7 +289,7 @@ function renderProgress() {
 }
 
 function renderFilters() {
-  const fixedGroups = ['中一 高华','中二 高华','中三 高华','中四 高华','G3 华文 · 高年级组','G3 华文 · 低年级组'];
+  const fixedGroups = ['中一 高华','中二 高华','中三 高华','中四 高华','G3华文 · 高年级组','G3华文 · 低年级组'];
   const available = getGroups();
   const groups = fixedGroups.filter(function(g) { return available.indexOf(g) >= 0; });
   if (!resultGroup || groups.indexOf(resultGroup) < 0) resultGroup = groups[0] || available[0];
@@ -332,9 +305,7 @@ function selectGroup(g) {
 }
 
 function renderResults(results) {
-  const [grade, stream] = (resultGroup || '').split(' ');
-  const filtered = results.filter(r => r.student.grade === grade && r.student.stream === stream);
-  // Rank within group
+  const filtered = results.filter(r => getGroupKey(r.student) === resultGroup);
   filtered.forEach((r, i) => r.rank = i + 1);
 
   document.getElementById('result-tbody').innerHTML = filtered.map(r => {
@@ -346,40 +317,32 @@ function renderResults(results) {
     ).join('');
     return `<tr>
       <td style="padding-left:32px"><span class="rank-num ${rankClass}">${r.rank}</span></td>
-      <td>
-        <div class="student-name">${r.student.name}</div>
-   </td>
+      <td><div class="student-name">${r.student.name}</div></td>
       <td><span class="avg-score">${r.avg !== null ? r.avg : '—'}</span></td>
       <td><div class="judge-scores-list">${judgeList}</div></td>
-
     </tr>`;
-  }).join('') || '<tr><td colspan="5" style="padding:1.5rem;text-align:center;color:var(--text-faint);font-size:13px">暂无数据</td></tr>';
+  }).join('') || '<tr><td colspan="5" style="padding:1.5rem;text-align:center;color:#aaa;font-size:13px">暂无数据</td></tr>';
 }
 
 function renderBreakdown(results) {
-  // Track active stream tab per judge
   if (!window._bdTabs) window._bdTabs = {};
 
   document.getElementById('breakdown').innerHTML = state.judges.map(j => {
     const jStudents = state.students.filter(s =>
-      j.groups.some(g => g.grade === s.grade && g.stream === s.stream));
+      j.groups.some(g => judgeGroupMatchesStudent(g, s)));
     if (!jStudents.length) return '';
 
-    // Get unique streams for this judge
-    const streams = [];
-    j.groups.forEach(function(g) {
-      var label = g.grade + ' ' + g.stream;
-      // Only add if there are students in this group
-      var hasStudents = jStudents.some(function(s) { return s.grade === g.grade && s.stream === g.stream; });
-      if (hasStudents && streams.indexOf(label) < 0) streams.push(label);
-    });
+    // Build tab labels using getGroupKey (so G3 shows as 高年级组/低年级组)
+    const tabSet = new Set();
+    jStudents.forEach(function(s) { tabSet.add(getGroupKey(s)); });
+    const tabs = Array.from(tabSet);
 
     var jId = j.id;
-    if (!window._bdTabs[jId]) window._bdTabs[jId] = streams[0];
+    if (!window._bdTabs[jId] || tabs.indexOf(window._bdTabs[jId]) < 0) window._bdTabs[jId] = tabs[0];
 
-    var tabsHtml = streams.map(function(s) {
-      var active = window._bdTabs[jId] === s ? ' active' : '';
-      return '<button class="filter-pill' + active + '" style="font-size:11px;padding:2px 10px" onclick="setBdTab(\'' + jId + '\',\'' + s + '\')">' + s + '</button>';
+    var tabsHtml = tabs.map(function(t) {
+      var active = window._bdTabs[jId] === t ? ' active' : '';
+      return '<button class="filter-pill' + active + '" style="font-size:11px;padding:2px 10px" onclick="setBdTab(\'' + jId + '\',\'' + t + '\')">' + t + '</button>';
     }).join('');
 
     return '<div class="judge-section" id="jSection-' + jId + '">' +
@@ -393,22 +356,22 @@ function renderBreakdown(results) {
   }).join('');
 }
 
-function setBdTab(jId, stream) {
+function setBdTab(jId, tab) {
   if (!window._bdTabs) window._bdTabs = {};
-  window._bdTabs[jId] = stream;
+  window._bdTabs[jId] = tab;
   renderBreakdown(computeResults());
 }
 
-function renderBreakdownTable(j, jStudents, activeStream) {
+function renderBreakdownTable(j, jStudents, activeTab) {
+  // Filter students whose group key matches the active tab
   var filtered = jStudents.filter(function(s) {
-    return (s.grade + ' ' + s.stream) === activeStream;
+    return getGroupKey(s) === activeTab;
   });
 
   var rows = filtered.map(function(s, si) {
     var sc = getScoreObj(j.id, s.id);
     var tot = totalOf(sc);
-    var peers = filtered;
-    var sorted = peers.map(function(p) { return { id: p.id, tot: totalOf(getScoreObj(j.id, p.id)) || 0 }; })
+    var sorted = filtered.map(function(p) { return { id: p.id, tot: totalOf(getScoreObj(j.id, p.id)) || 0 }; })
       .sort(function(a, b) { return b.tot - a.tot; });
     var rank = sorted.findIndex(function(p) { return p.id === s.id; }) + 1;
     return '<tr>' +
@@ -433,24 +396,19 @@ function renderBreakdownTable(j, jStudents, activeStream) {
   '</table>';
 }
 
-
 function exportCSV() {
   const results = computeResults();
   const groups = getGroups();
   let csv = '组别,考生,综合平均分,等级';
-  state.judges.forEach(j => {
-    csv += `,${j.name}总分,${j.name}内容,${j.name}表达,${j.name}创意`;
-  });
+  state.judges.forEach(j => { csv += `,${j.name}总分,${j.name}内容,${j.name}表达,${j.name}创意`; });
   csv += ',组内排名\n';
-
   groups.forEach(grp => {
-    const [grade, stream] = grp.split(' ');
-    const filtered = results.filter(r => r.student.grade === grade && r.student.stream === stream);
+    const filtered = results.filter(r => getGroupKey(r.student) === grp);
     filtered.forEach((r, i) => {
       const { text: gl } = gradeLabel(r.avg);
       let row = `"${grp}","${r.student.name}",${r.avg ?? ''},${gl}`;
       state.judges.forEach(j => {
-        const assigned = j.groups.some(g => g.grade === r.student.grade && g.stream === r.student.stream);
+        const assigned = j.groups.some(g => judgeGroupMatchesStudent(g, r.student));
         const sc = assigned ? getScoreObj(j.id, r.student.id) : null;
         const tot = totalOf(sc);
         row += `,${tot ?? ''},${sc?.content ?? ''},${sc?.expression ?? ''},${sc?.creativity ?? ''}`;
@@ -459,14 +417,12 @@ function exportCSV() {
       csv += row + '\n';
     });
   });
-
   const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = '作文比赛评分结果.csv'; a.click();
 }
 
-// ── Manuscript rendering (same engine as index.html) ──────
 var MS_COLS = 20, MS_ROWS = 22, MS_G = '#4caf50';
 
 function paginateText(text) {
@@ -555,48 +511,7 @@ function renderMsInContainer(containerId, text) {
   });
 }
 
-// ── Query functions ────────────────────────────────────────
-function onQuerySearch(val) {
-  val = val.trim();
-  if (!val) { document.getElementById('query-result').innerHTML = ''; return; }
-  var matched = state.students.filter(function(s) {
-    return s.name.includes(val);
-  });
-  if (matched.length === 0) {
-    document.getElementById('query-result').innerHTML =
-      '<p style="font-size:13px;color:var(--text-muted);margin-top:1rem">找不到"' + val + '"</p>';
-    return;
-  }
-  if (matched.length === 1) {
-    // sync dropdown
-    var sel = document.getElementById('query-student-sel');
-    if (sel) sel.value = matched[0].id;
-    renderQueryResult(matched[0].id);
-  } else {
-    // show list to pick from
-    var html = '<div style="margin-top:1rem;display:flex;flex-direction:column;gap:6px">';
-    matched.forEach(function(s) {
-      html += '<button onclick="onQueryPick(&quot;' + s.id + '&quot;)" style="text-align:left;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);cursor:pointer;font-size:13px;font-family:inherit;color:var(--text)">' +
-        s.name + ' <span style="font-size:11px;color:var(--text-muted)">— ' + s.grade + ' ' + s.stream + '</span></button>';
-    });
-    html += '</div>';
-    document.getElementById('query-result').innerHTML = html;
-  }
-}
-
-function onQueryPick(studentId) {
-  var sel = document.getElementById('query-student-sel');
-  if (sel) sel.value = studentId;
-  var inp = null;
-  var s = state.students.find(function(x) { return x.id === studentId; });
-  if (inp && s) inp.value = s.name;
-  renderQueryResult(studentId);
-}
-
 function onQuerySelect(studentId) {
-  var inp = null;
-  var s = state.students.find(function(x) { return x.id === studentId; });
-  if (inp && s) inp.value = s.name;
   renderQueryResult(studentId);
 }
 
@@ -604,16 +519,14 @@ function populateQuerySelect() {
   var sel = document.getElementById('query-student-sel');
   if (!sel) return;
   var current = sel.value;
-  var fixedGroups = ['中一 高华','中二 高华','中三 高华','中四 高华','G3 华文 · 高年级组','G3 华文 · 低年级组'];
+  var fixedGroups = ['中一 高华','中二 高华','中三 高华','中四 高华','G3华文 · 高年级组','G3华文 · 低年级组'];
   var available = getGroups();
   var groups = fixedGroups.filter(function(g){ return available.indexOf(g) >= 0; });
   sel.innerHTML = '<option value="">— 请选择 —</option>';
   groups.forEach(function(grp) {
     var grpEl = document.createElement('optgroup');
     grpEl.label = grp;
-    var parts = grp.split(' ');
-    var grade = parts[0], stream = parts[1];
-    state.students.filter(function(s) { return s.grade === grade && s.stream === stream; })
+    state.students.filter(function(s) { return getGroupKey(s) === grp; })
       .forEach(function(s) {
         var opt = document.createElement('option');
         opt.value = s.id;
@@ -631,12 +544,10 @@ function renderQueryResult(studentId) {
   var s = state.students.find(function(x) { return x.id === studentId; });
   if (!s) return;
 
-  // Find judges assigned to this student
   var assignedJudges = state.judges.filter(function(j) {
-    return j.groups.some(function(g) { return g.grade === s.grade && g.stream === s.stream; });
+    return j.groups.some(function(g) { return judgeGroupMatchesStudent(g, s); });
   });
 
-  // Build score cards
   var cards = assignedJudges.map(function(j) {
     var sc = getScoreObj(j.id, s.id);
     var tot = totalOf(sc);
@@ -649,7 +560,6 @@ function renderQueryResult(studentId) {
     '</div>';
   }).join('');
 
-  // Average card
   var totals = assignedJudges.map(function(j) { return totalOf(getScoreObj(j.id, s.id)); }).filter(function(t) { return t !== null; });
   var avg = totals.length > 0 ? (totals.reduce(function(a,b){return a+b;},0) / totals.length).toFixed(1) : '—';
   var avgCard = '<div class="scc-avg-card">' +
@@ -658,10 +568,6 @@ function renderQueryResult(studentId) {
     '<div class="scc-denom">/ 100</div>' +
     '<div class="scc-breakdown">' + totals.length + ' 位老师已评</div>' +
   '</div>';
-
-  // Manuscript
-  var msId = 'qms-' + studentId;
-  var msHtml = buildMsHtml(s.essay || '');
 
   container.innerHTML =
     '<div class="query-result">' +
@@ -674,8 +580,6 @@ function renderQueryResult(studentId) {
 }
 
 loadData();
-
-
 </script>
 </body>
 </html>

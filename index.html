@@ -389,12 +389,6 @@ function getGroups(judgeId) {
 }
 
 function getGroupLabel(g) {
-  if (g.label) return g.label;
-  const gradeStr = g.grade || (g.grades ? g.grades.join('+') : '');
-  return gradeStr + ' ' + g.stream;
-}
-
-function getGroupLabel(g) {
   return g.label || ((g.grade || (g.grades && g.grades[0]) || '') + ' ' + g.stream);
 }
 
@@ -735,10 +729,13 @@ async function submitAll() {
 }
 
 // ════════════════════════════════════════════
-// 稿纸渲染引擎（改编自竞赛稿纸模块）
+// 稿纸渲染引擎
 // ════════════════════════════════════════════
 const MS_COLS = 20, MS_ROWS = 22;
 const MS_GRID_COLOR = '#6db86d';
+
+// 全角空格（用于段首缩进检测与补充）
+const INDENT = '\u3000';
 
 function buildManuscriptHtml(text) {
   const pages = paginateText(text);
@@ -759,19 +756,49 @@ function paginateText(text) {
   var pages = [];
   var row = 0, col = 0, page = [];
   var NEWLINE = '\n';
+
+  // 检查第一段开头是否已有全角空格缩进
+  function hasIndent(str, pos) {
+    return str[pos] === INDENT || str[pos] === '\u0020\u0020';
+  }
+
   for (var i = 0; i < text.length; i++) {
     var ch = text[i];
+
     if (ch === NEWLINE) {
       row++; col = 0;
+      // 下一段开头自动补两个全角空格（如果下一个字符不是换行也不是已有全角空格）
+      if (row < MS_ROWS) {
+        var next = text[i + 1];
+        if (next && next !== NEWLINE && next !== INDENT) {
+          page.push({ ch: INDENT, row: row % MS_ROWS, col: col }); col++;
+          page.push({ ch: INDENT, row: row % MS_ROWS, col: col }); col++;
+        }
+      }
     } else {
       page.push({ ch: ch, row: row % MS_ROWS, col: col });
       col++;
       if (col >= MS_COLS) { row++; col = 0; }
     }
+
     if (row >= MS_ROWS) {
       pages.push(page); page = []; row = 0; col = 0;
     }
   }
+
+  // 第一段开头：如果文章第一个字符不是全角空格，补两格缩进
+  if (pages.length === 0 && page.length > 0 && page[0].ch !== INDENT) {
+    page.unshift(
+      { ch: INDENT, row: 0, col: 1 },
+      { ch: INDENT, row: 0, col: 0 }
+    );
+    // 重新修正 col 偏移
+    page = page.map(function(c, idx) {
+      if (idx < 2) return c;
+      return { ch: c.ch, row: c.row, col: c.col + 2 <= MS_COLS - 1 ? c.col + 2 : c.col };
+    });
+  }
+
   if (page.length || !pages.length) pages.push(page);
   return pages;
 }
@@ -920,51 +947,6 @@ function selectStudentFromSummary(studentId) {
   // scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
-
-
-function alignScoreBar() {
-  if (window.innerWidth < 768) return;
-
-  // Step 1: match dd-btn height/width to sif-wrap
-  const firstSifWrap = document.querySelector('.sif-wrap');
-  if (!firstSifWrap) return;
-  const sifH = firstSifWrap.getBoundingClientRect().height;
-  const sifW = firstSifWrap.getBoundingClientRect().width;
-
-  document.querySelectorAll('.custom-dd-btn').forEach(btn => {
-    btn.style.height = sifH + 'px';
-  });
-  document.querySelectorAll('.custom-dd-wrap').forEach(w => {
-    w.style.width = sifW + 'px';
-  });
-
-  // Step 2: align each dd-wrap to its corresponding sif-wrap
-  const sifWraps = document.querySelectorAll('.sif-wrap');
-  const ddWraps = document.querySelectorAll('.custom-dd-wrap');
-  if (!sifWraps.length || !ddWraps.length) return;
-
-  // Use stream-selectors as a flex container with absolute-positioned groups
-  const streamSel = document.querySelector('.stream-selectors');
-  const streamGroups = document.querySelectorAll('.stream-group');
-  if (!streamSel || !streamGroups.length) return;
-
-  // For each dd-wrap, align its left to the corresponding sif-wrap left
-  const selRect = streamSel.getBoundingClientRect();
-  ddWraps.forEach((ddWrap, i) => {
-    if (i >= sifWraps.length) return;
-    const targetLeft = sifWraps[i].getBoundingClientRect().left;
-    const group = streamGroups[i];
-    if (!group) return;
-    group.style.position = 'absolute';
-    group.style.left = (targetLeft - selRect.left) + 'px';
-  });
-  streamSel.style.position = 'relative';
-  // Set stream-selectors height to fit groups
-  const maxH = Math.max(...Array.from(streamGroups).map(g => g.getBoundingClientRect().height));
-  streamSel.style.minHeight = (maxH + 20) + 'px';
-}
-window.addEventListener('resize', alignScoreBar);
 
 function alignScoreBar() {
   if (window.innerWidth < 768) return;

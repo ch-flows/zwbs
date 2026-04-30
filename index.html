@@ -753,28 +753,20 @@ function buildManuscriptHtml(text) {
 }
 
 function paginateText(text) {
+  // 第一段开头没有全角空格缩进，直接补上
+  if (text.length > 0 && text[0] !== INDENT) {
+    text = INDENT + INDENT + text;
+  }
+
   var pages = [];
   var row = 0, col = 0, page = [];
   var NEWLINE = '\n';
-
-  // 检查第一段开头是否已有全角空格缩进
-  function hasIndent(str, pos) {
-    return str[pos] === INDENT || str[pos] === '\u0020\u0020';
-  }
 
   for (var i = 0; i < text.length; i++) {
     var ch = text[i];
 
     if (ch === NEWLINE) {
       row++; col = 0;
-      // 下一段开头自动补两个全角空格（如果下一个字符不是换行也不是已有全角空格）
-      if (row < MS_ROWS) {
-        var next = text[i + 1];
-        if (next && next !== NEWLINE && next !== INDENT) {
-          page.push({ ch: INDENT, row: row % MS_ROWS, col: col }); col++;
-          page.push({ ch: INDENT, row: row % MS_ROWS, col: col }); col++;
-        }
-      }
     } else {
       page.push({ ch: ch, row: row % MS_ROWS, col: col });
       col++;
@@ -784,19 +776,6 @@ function paginateText(text) {
     if (row >= MS_ROWS) {
       pages.push(page); page = []; row = 0; col = 0;
     }
-  }
-
-  // 第一段开头：如果文章第一个字符不是全角空格，补两格缩进
-  if (pages.length === 0 && page.length > 0 && page[0].ch !== INDENT) {
-    page.unshift(
-      { ch: INDENT, row: 0, col: 1 },
-      { ch: INDENT, row: 0, col: 0 }
-    );
-    // 重新修正 col 偏移
-    page = page.map(function(c, idx) {
-      if (idx < 2) return c;
-      return { ch: c.ch, row: c.row, col: c.col + 2 <= MS_COLS - 1 ? c.col + 2 : c.col };
-    });
   }
 
   if (page.length || !pages.length) pages.push(page);

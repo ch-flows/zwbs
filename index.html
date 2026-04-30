@@ -956,13 +956,7 @@ function alignScoreBar() {
 }
 window.addEventListener('resize', alignScoreBar);
 
-// Edge-only: zoom workspace screen
-(function() {
-  if (navigator.userAgent.indexOf('Edg/') === -1) return;
-  var style = document.createElement('style');
-  style.textContent = '#screen-workspace { zoom: 0.85; }';
-  document.head.appendChild(style);
-})();
+
 
 window.addEventListener('popstate', function(e) {
   if (!e.state || e.state.screen === 'select') {

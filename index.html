@@ -958,6 +958,14 @@ window.addEventListener('resize', alignScoreBar);
 
 
 
+// Edge-only: zoom to 80%
+(function() {
+  if (navigator.userAgent.indexOf("Edg/") === -1) return;
+  var style = document.createElement("style");
+  style.textContent = "body { zoom: 0.80; }";
+  document.head.appendChild(style);
+})();
+
 window.addEventListener('popstate', function(e) {
   if (!e.state || e.state.screen === 'select') {
     document.getElementById('screen-workspace').classList.remove('active');

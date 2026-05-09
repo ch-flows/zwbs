@@ -125,6 +125,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .score-summary-table tr:last-child td{border-bottom:none}
 .score-summary-table tr:hover td{background:#e4f5ec;color:#2a7a4a;cursor:pointer}
 .score-summary-table tr.editing td{background:#e4f5ec;color:#2a7a4a}
+.score-summary-table .group-header-row td{background:#e8f5ee;color:#7aaa8a;font-family:'Noto Serif SC',serif;font-weight:300;font-size:12px;letter-spacing:.04em;border-top:1px solid #c8e8d8;padding:8px 10px 4px;cursor:default}
+.score-summary-table .group-header-row:hover td{background:#e8f5ee;color:#7aaa8a;cursor:default}
 .ss-code{font-family:'Courier New',monospace;font-size:12px;color:#555;white-space:nowrap}
 .ss-total{font-family:inherit;font-weight:400}
 .ss-pending{color:#bbb;font-style:italic}
@@ -347,8 +349,6 @@ async function init() {
   }
 }
 
-// Realtime disabled
-
 // ── Helpers ──────────────────────────────────
 function getJudgeStudents(judgeId) {
   const judge = state.judges.find(j => j.id === judgeId);
@@ -528,7 +528,6 @@ document.addEventListener('click', function(){
 function selectStudentFromDrop(studentId, ddId) {
   if (!studentId) return;
   state.currentStudent = studentId;
-  // Close dropdown
   if (ddId) {
     var menu = document.getElementById(ddId);
     if (menu) menu.classList.remove('open');
@@ -553,9 +552,7 @@ function renderEssayPanel(studentId) {
   const studentSubmitted = sc && sc.submitted;
   const tot = totalScore(sc);
 
-  // populate inline score bar
   scoreBarWrap.style.display = 'block';
-  requestAnimationFrame(() => { alignScoreBar(); setTimeout(alignScoreBar, 200); });
   requestAnimationFrame(() => { alignScoreBar(); setTimeout(alignScoreBar, 200); });
   ['content','expression','creativity'].forEach(function(field) {
     const inp = document.getElementById('si-' + field);
@@ -567,7 +564,6 @@ function renderEssayPanel(studentId) {
   const totEl = document.getElementById('si-total');
   if (totEl) totEl.textContent = (tot !== null && !isNaN(tot)) ? (tot + '/100') : '—/100';
 
-  // store current student for save
   state.currentStudent = studentId;
 
   const msHtml = buildManuscriptHtml(s.essay || '');
@@ -612,15 +608,10 @@ function onScoreInline(field, val, max) {
 function saveCurrentScore() {
   const studentId = state.currentStudent;
   if (!studentId) { toast('请先选择考生'); return; }
-  // Read values from inline inputs
   const maxes = { content: 40, expression: 35, creativity: 25 };
   Object.keys(maxes).forEach(function(field) {
     const inp = document.getElementById('si-' + field);
-    if (inp) {
-      let n = parseInt(inp.value);
-      if (isNaN(n)) n = null;
-      onScoreInline(field, inp.value, maxes[field]);
-    }
+    if (inp) onScoreInline(field, inp.value, maxes[field]);
   });
   saveScore(studentId);
 }
@@ -633,7 +624,6 @@ function onScoreChange(studentId, field, val, max) {
   const pct = n !== null ? Math.round(n / max * 100) : 0;
   const bar = document.getElementById(`bar-${field}`);
   if (bar) bar.style.width = pct + '%';
-  // Update local cache so total updates immediately
   if (!state.scores[state.currentJudge]) state.scores[state.currentJudge] = {};
   if (!state.scores[state.currentJudge][studentId]) state.scores[state.currentJudge][studentId] = {};
   state.scores[state.currentJudge][studentId][field] = n;
@@ -651,7 +641,6 @@ async function saveScore(studentId) {
     toast('请填写全部三项分数');
     return;
   }
-  // Validate ranges
   if (sc.content > 40) { toast('内容满分为 40 分'); return; }
   if (sc.expression > 35) { toast('表达满分为 35 分'); return; }
   if (sc.creativity > 25) { toast('创意满分为 25 分'); return; }
@@ -699,7 +688,6 @@ async function submitAll() {
     toast(`还有 ${unscored.length} 位考生未完成评分`);
     return;
   }
-  // confirm removed - direct submit
   try {
     for (const s of students) {
       const sc = state.scores[state.currentJudge][s.id];
@@ -734,7 +722,6 @@ async function submitAll() {
 const MS_COLS = 20, MS_ROWS = 22;
 const MS_GRID_COLOR = '#6db86d';
 
-// 全角空格（用于段首缩进检测与补充）
 const INDENT = '\u3000';
 
 function buildManuscriptHtml(text) {
@@ -753,7 +740,6 @@ function buildManuscriptHtml(text) {
 }
 
 function paginateText(text) {
-  // 第一段开头没有全角空格缩进，直接补上
   if (text.length > 0 && text[0] !== INDENT) {
     text = INDENT + INDENT + text;
   }
@@ -801,7 +787,6 @@ function renderManuscript(containerId, text) {
     const TH = (MS_ROWS - 1) * gH + cH;
     const BOT = 2;
 
-    // Draw grid on canvas
     cv.width = Math.round(TW * dpr);
     cv.height = Math.round((TH + BOT) * dpr);
     cv.style.width = TW + 'px';
@@ -827,16 +812,13 @@ function renderManuscript(containerId, text) {
     ctx.lineWidth = 0.8;
     ctx.strokeRect(0.4, 0.4, TW - 0.8, TH + BOT - 0.8);
 
-    // Render characters
     textLayer.innerHTML = '';
     textLayer.style.width = TW + 'px';
     textLayer.style.height = TH + 'px';
 
     const fs = Math.round(cH * 0.62);
     const topOffset = Math.round((cH - fs) / 2) + Math.round(cH * 0.03);
-    const translateY = 0;
 
-    // Re-paginate to get this page's chars
     const pages = paginateText(text);
     const pageChars = pages[pi] || [];
 
@@ -847,14 +829,13 @@ function renderManuscript(containerId, text) {
         `width:${cW}px;height:${fs}px;display:flex;align-items:center;justify-content:center;` +
         `font-size:${fs}px;font-weight:100;line-height:1;color:#2a6a3a;` +
         `font-family:"Noto Serif SC","SimSun","宋体","STSong",serif;box-sizing:border-box;` +
-        `-webkit-font-smoothing:antialiased;transform:translateY(-${translateY}px);`;
+        `-webkit-font-smoothing:antialiased;`;
       textLayer.appendChild(span);
     });
   });
 }
 
 function initManuscriptForStudent(studentId) {
-  // Run after DOM is painted
   requestAnimationFrame(() => {
     const s = state.students.find(x => x.id === studentId);
     if (!s) return;
@@ -881,49 +862,74 @@ function renderScoreSummary() {
   const wrap = document.getElementById('score-summary-wrap');
   const boardSummary = document.getElementById('board-summary');
   const boardPaper = document.getElementById('board-paper');
+
   if (!scored.length) {
-    if(wrap) wrap.style.display='none';
-    if(boardSummary) boardSummary.style.display='none';
-    if(boardPaper) boardPaper.style.borderRadius='0 0 12px 12px';
+    if (wrap) wrap.style.display = 'none';
+    if (boardSummary) boardSummary.style.display = 'none';
+    if (boardPaper) boardPaper.style.borderRadius = '0 0 12px 12px';
     return;
   }
-  if(wrap) wrap.style.display='block';
-  if(boardPaper) boardPaper.style.borderRadius='0';
-  if(boardSummary) { boardSummary.style.display='block'; boardSummary.style.background='#f0f8f4'; boardSummary.style.border='0.5px solid #a8c8be'; boardSummary.style.boxShadow='0 3px 14px rgba(20,70,55,0.15)'; }
 
-  var rows = scored.map(function(s) {
-    var sc = getScore(state.currentJudge, s.id) || {};
-    var tot = totalScore(sc);
-    return { s: s, sc: sc, tot: tot };
-  });
-
-  if (_sortMode === 'score') {
-    rows.sort(function(a,b) { return (b.tot||0)-(a.tot||0); });
+  if (wrap) wrap.style.display = 'block';
+  if (boardPaper) boardPaper.style.borderRadius = '0';
+  if (boardSummary) {
+    boardSummary.style.display = 'block';
+    boardSummary.style.background = '#f0f8f4';
+    boardSummary.style.border = '0.5px solid #a8c8be';
+    boardSummary.style.boxShadow = '0 3px 14px rgba(20,70,55,0.15)';
   }
 
-  var tbody = document.getElementById('score-summary-tbody');
+  const groups = getGroups(state.currentJudge);
+  const tbody = document.getElementById('score-summary-tbody');
   if (!tbody) return;
-  tbody.innerHTML = rows.map(function(r) {
-    var active = state.currentStudent === r.s.id ? ' class="editing"' : '';
-    var seqNum = _sortMode === 'orig' ? (rows.indexOf(r) + 1) : (rows.indexOf(r) + 1);
-    return '<tr' + active + ' onclick="selectStudentFromSummary(&quot;' + r.s.id + '&quot;)" title="点击修改">' +
-      '<td class="seq" style="text-align:center">' + seqNum + '</td>' +
-      '<td class="ss-code" style="text-align:left;padding-left:8px">' + r.s.name + '</td>' +
-      '<td>' + (r.sc.content!==null&&r.sc.content!==undefined?r.sc.content:'<span class="ss-pending">—</span>') + '</td>' +
-      '<td>' + (r.sc.expression!==null&&r.sc.expression!==undefined?r.sc.expression:'<span class="ss-pending">—</span>') + '</td>' +
-      '<td>' + (r.sc.creativity!==null&&r.sc.creativity!==undefined?r.sc.creativity:'<span class="ss-pending">—</span>') + '</td>' +
-      '<td><span class="ss-total">' + (r.tot!==null?r.tot:'—') + '</span></td>' +
-    '</tr>';
-  }).join('');
+
+  let html = '';
+  let globalSeq = 0;
+
+  groups.forEach(function(g) {
+    const grades = g.grades || [g.grade];
+    // 只显示本组已评的考生
+    const groupScored = scored.filter(function(s) {
+      return grades.includes(s.grade) && s.stream === g.stream;
+    });
+    if (!groupScored.length) return;
+
+    var rows = groupScored.map(function(s) {
+      var sc = getScore(state.currentJudge, s.id) || {};
+      var tot = totalScore(sc);
+      return { s: s, sc: sc, tot: tot };
+    });
+
+    if (_sortMode === 'score') {
+      rows.sort(function(a, b) { return (b.tot || 0) - (a.tot || 0); });
+    }
+
+    // 分组标题行
+    var groupLabel = getGroupLabel(g);
+    html += '<tr class="group-header-row"><td colspan="6">' + groupLabel + '</td></tr>';
+
+    rows.forEach(function(r) {
+      globalSeq++;
+      var active = state.currentStudent === r.s.id ? ' class="editing"' : '';
+      html += '<tr' + active + ' onclick="selectStudentFromSummary(&quot;' + r.s.id + '&quot;)" title="点击修改">' +
+        '<td class="seq">' + globalSeq + '</td>' +
+        '<td class="ss-code" style="text-align:left;padding-left:8px">' + r.s.name + '</td>' +
+        '<td>' + (r.sc.content !== null && r.sc.content !== undefined ? r.sc.content : '<span class="ss-pending">—</span>') + '</td>' +
+        '<td>' + (r.sc.expression !== null && r.sc.expression !== undefined ? r.sc.expression : '<span class="ss-pending">—</span>') + '</td>' +
+        '<td>' + (r.sc.creativity !== null && r.sc.creativity !== undefined ? r.sc.creativity : '<span class="ss-pending">—</span>') + '</td>' +
+        '<td><span class="ss-total">' + (r.tot !== null ? r.tot : '—') + '</span></td>' +
+      '</tr>';
+    });
+  });
+
+  tbody.innerHTML = html;
 }
 
 function selectStudentFromSummary(studentId) {
-  // sync dropdown
   state.currentStudent = studentId;
   renderStreamSelectors();
   renderEssayPanel(studentId);
   renderScoreSummary();
-  // scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -955,8 +961,6 @@ function alignScoreBar() {
   streamSel.style.minHeight = (maxH + 20) + 'px';
 }
 window.addEventListener('resize', alignScoreBar);
-
-
 
 // Edge-only: zoom to 80%
 (function() {

@@ -89,6 +89,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ms-text-layer{position:absolute;top:0;left:0;pointer-events:none;overflow:hidden}
 .ms-page-num{font-size:8pt;color:#aaa;text-align:right;padding-right:4px;margin-top:4px;font-family:sans-serif}
 .last-updated{font-size:11px;color:#b8c8d8;font-family:'Noto Serif SC',serif}
+
+/* 排名说明提示 */
+.rank-method-note{font-size:11px;color:#8a9aaa;font-family:'Noto Serif SC',serif;padding:6px 20px 8px;background:#f8f8f8;border-bottom:0.5px solid #efefef}
+
+/* 平局标记 */
+.tie-mark{font-size:10px;color:#c07830;margin-left:3px;font-family:'Noto Serif SC',serif}
+
 @media(max-width:680px){.admin-wrap{padding:16px 4%}}
 </style>
 </head>
@@ -119,13 +126,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5a7a9a" stroke-width="1.8" style="margin-right:7px;vertical-align:middle"><circle cx="12" cy="8" r="6"/><path d="M8 14l-4 7h16l-4-7"/></svg>最终排名</h2>
         <div class="filter-row" id="result-filters"></div>
       </div>
+      <div class="rank-method-note">按各老师名次平均排列 · 名次越小越优 · 平局时以原始总分决胜</div>
       <div style="overflow-x:auto">
         <table class="rtable" id="result-table">
           <thead><tr>
             <th style="width:70px;padding-left:32px">名次</th>
             <th style="width:140px">考生</th>
-            <th style="width:80px">综合分</th>
-            <th>各老师评分</th>
+            <th style="width:80px">平均名次</th>
+            <th>各老师评分 · 组内名次</th>
           </tr></thead>
           <tbody id="result-tbody"></tbody>
         </table>
@@ -204,11 +212,9 @@ function totalOf(sc) {
   return sc.content + sc.expression + sc.creativity;
 }
 
-// ── G3华文 组别映射 ──────────────────────────────
 var G3_HIGH_GRADES = ['中三','中四'];
 var G3_LOW_GRADES  = ['中一','中二'];
 
-// 将学生映射到主控台显示的组别标签
 function getGroupKey(s) {
   if (s.stream === 'G3华文') {
     return G3_HIGH_GRADES.indexOf(s.grade) >= 0 ? 'G3华文 · 高年级组' : 'G3华文 · 低年级组';
@@ -216,7 +222,6 @@ function getGroupKey(s) {
   return s.grade + ' ' + s.stream;
 }
 
-// 判断一个 judge group 配置是否匹配某个学生（支持 grades 数组）
 function judgeGroupMatchesStudent(g, s) {
   var grades = g.grades || (g.grade ? [g.grade] : []);
   return grades.indexOf(s.grade) >= 0 && g.stream === s.stream;
@@ -228,21 +233,109 @@ function getGroups() {
   return [...set].sort();
 }
 
+// ════════════════════════════════════════════
+// 核心：按平均名次计算最终排名
+// ════════════════════════════════════════════
 function computeResults() {
-  return state.students.map(s => {
-    const judgeScores = [];
-    let sum = 0, count = 0;
-    state.judges.forEach(j => {
-      const assigned = j.groups.some(g => judgeGroupMatchesStudent(g, s));
-      if (!assigned) return;
-      const sc = getScoreObj(j.id, s.id);
-      const tot = totalOf(sc);
-      judgeScores.push({ judge: j, sc, total: tot });
-      if (tot !== null) { sum += tot; count++; }
+  // 先按组分别计算，确保名次是组内名次
+  const allResults = [];
+
+  const groups = getGroups();
+  groups.forEach(function(grp) {
+    const grpStudents = state.students.filter(function(s) {
+      return getGroupKey(s) === grp;
     });
-    const avg = count > 0 ? Math.round(sum / count * 10) / 10 : null;
-    return { student: s, avg, judgeScores };
-  }).sort((a, b) => (b.avg || 0) - (a.avg || 0));
+
+    // 找出负责本组的老师
+    const grpJudges = state.judges.filter(function(j) {
+      return j.groups.some(function(g) {
+        return grpStudents.some(function(s) { return judgeGroupMatchesStudent(g, s); });
+      });
+    });
+
+    // 每位老师给本组考生排名（按总分降序，同分同名次）
+    // judgeRanks[judgeId][studentId] = 名次（1-based）
+    var judgeRanks = {};
+    grpJudges.forEach(function(j) {
+      var scored = grpStudents
+        .map(function(s) { return { id: s.id, tot: totalOf(getScoreObj(j.id, s.id)) }; })
+        .filter(function(x) { return x.tot !== null; })
+        .sort(function(a, b) { return b.tot - a.tot; });
+
+      judgeRanks[j.id] = {};
+      var rank = 1;
+      for (var i = 0; i < scored.length; i++) {
+        // 同分同名次
+        if (i > 0 && scored[i].tot === scored[i-1].tot) {
+          judgeRanks[j.id][scored[i].id] = judgeRanks[j.id][scored[i-1].id];
+        } else {
+          judgeRanks[j.id][scored[i].id] = rank;
+        }
+        rank++;
+      }
+    });
+
+    // 每位考生：收集各老师给的名次，算平均名次
+    grpStudents.forEach(function(s) {
+      var judgeDetails = [];
+      var rankSum = 0, rankCount = 0;
+      var totalSum = 0, totalCount = 0;
+
+      grpJudges.forEach(function(j) {
+        var assigned = j.groups.some(function(g) { return judgeGroupMatchesStudent(g, s); });
+        if (!assigned) return;
+        var sc = getScoreObj(j.id, s.id);
+        var tot = totalOf(sc);
+        var rank = (judgeRanks[j.id] && judgeRanks[j.id][s.id] !== undefined)
+          ? judgeRanks[j.id][s.id] : null;
+
+        judgeDetails.push({ judge: j, sc: sc, total: tot, rank: rank });
+
+        if (rank !== null) { rankSum += rank; rankCount++; }
+        if (tot !== null) { totalSum += tot; totalCount++; }
+      });
+
+      var avgRank = rankCount > 0 ? Math.round(rankSum / rankCount * 100) / 100 : null;
+      var avgTotal = totalCount > 0 ? Math.round(totalSum / totalCount * 10) / 10 : null;
+
+      allResults.push({
+        student: s,
+        group: grp,
+        avgRank: avgRank,       // 平均名次（越小越好）
+        avgTotal: avgTotal,     // 原始平均分（平局决胜用）
+        judgeDetails: judgeDetails,
+      });
+    });
+  });
+
+  return allResults;
+}
+
+// 对某一组的结果排最终名次
+function rankGroupResults(grpResults) {
+  // 先按平均名次升序，平局按原始平均分降序
+  var sorted = grpResults.slice().sort(function(a, b) {
+    if (a.avgRank === null && b.avgRank === null) return 0;
+    if (a.avgRank === null) return 1;
+    if (b.avgRank === null) return -1;
+    if (a.avgRank !== b.avgRank) return a.avgRank - b.avgRank;
+    // 平局：原始分高者优先
+    return (b.avgTotal || 0) - (a.avgTotal || 0);
+  });
+
+  // 标注最终名次（平均名次相同且原始分也相同则同名次）
+  var finalRank = 1;
+  for (var i = 0; i < sorted.length; i++) {
+    if (i > 0) {
+      var prev = sorted[i-1], cur = sorted[i];
+      var sameRank = prev.avgRank !== null && cur.avgRank !== null &&
+                     prev.avgRank === cur.avgRank &&
+                     prev.avgTotal === cur.avgTotal;
+      if (!sameRank) finalRank = i + 1;
+    }
+    sorted[i].finalRank = finalRank;
+  }
+  return sorted;
 }
 
 function gradeLabel(avg) {
@@ -305,23 +398,30 @@ function selectGroup(g) {
 }
 
 function renderResults(results) {
-  const filtered = results.filter(r => getGroupKey(r.student) === resultGroup);
-  filtered.forEach((r, i) => r.rank = i + 1);
+  const grpResults = results.filter(r => r.group === resultGroup);
+  const ranked = rankGroupResults(grpResults);
 
-  document.getElementById('result-tbody').innerHTML = filtered.map(r => {
-    const { text: glabel, cls: gcls } = gradeLabel(r.avg);
-    const rankClass = r.rank <= 3 ? `rank-${r.rank}` : '';
-    const judgeList = r.judgeScores.map(js =>
+  document.getElementById('result-tbody').innerHTML = ranked.map(r => {
+    const rankClass = r.finalRank <= 3 ? `rank-${r.finalRank}` : '';
+    // 检查是否平局（同名次）
+    const isTie = ranked.filter(x => x.finalRank === r.finalRank).length > 1;
+    const tieNote = isTie ? '<span class="tie-mark">并</span>' : '';
+
+    const judgeList = r.judgeDetails.map(js =>
       `<div class="judge-score-row">${js.judge.name}：<strong>${js.total !== null ? js.total : '—'}</strong>
+       ${js.rank !== null ? `<span style="font-size:11px;color:#2563a8;margin-left:4px">第${js.rank}名</span>` : ''}
        ${js.sc ? `<span class="subscores">（内${js.sc.content} 表${js.sc.expression} 创${js.sc.creativity}）</span>` : ''}</div>`
     ).join('');
+
+    const avgRankDisplay = r.avgRank !== null ? r.avgRank.toFixed(2) : '—';
+
     return `<tr>
-      <td style="padding-left:32px"><span class="rank-num ${rankClass}">${r.rank}</span></td>
+      <td style="padding-left:32px"><span class="rank-num ${rankClass}">${r.finalRank}</span>${tieNote}</td>
       <td><div class="student-name">${r.student.name}</div></td>
-      <td><span class="avg-score">${r.avg !== null ? r.avg : '—'}</span></td>
+      <td><span class="avg-score">${avgRankDisplay}</span></td>
       <td><div class="judge-scores-list">${judgeList}</div></td>
     </tr>`;
-  }).join('') || '<tr><td colspan="5" style="padding:1.5rem;text-align:center;color:#aaa;font-size:13px">暂无数据</td></tr>';
+  }).join('') || '<tr><td colspan="4" style="padding:1.5rem;text-align:center;color:#aaa;font-size:13px">暂无数据</td></tr>';
 }
 
 function renderBreakdown(results) {
@@ -332,7 +432,6 @@ function renderBreakdown(results) {
       j.groups.some(g => judgeGroupMatchesStudent(g, s)));
     if (!jStudents.length) return '';
 
-    // Build tab labels using getGroupKey (so G3 shows as 高年级组/低年级组)
     const tabSet = new Set();
     jStudents.forEach(function(s) { tabSet.add(getGroupKey(s)); });
     const tabs = Array.from(tabSet);
@@ -363,17 +462,31 @@ function setBdTab(jId, tab) {
 }
 
 function renderBreakdownTable(j, jStudents, activeTab) {
-  // Filter students whose group key matches the active tab
   var filtered = jStudents.filter(function(s) {
     return getGroupKey(s) === activeTab;
   });
 
+  // 按本老师的总分排名
+  var withTotals = filtered.map(function(s) {
+    var sc = getScoreObj(j.id, s.id);
+    return { s: s, sc: sc, tot: totalOf(sc) };
+  }).sort(function(a, b) { return (b.tot || 0) - (a.tot || 0); });
+
+  // 计算组内排名（同分同名次）
+  var rankMap = {};
+  var rank = 1;
+  for (var i = 0; i < withTotals.length; i++) {
+    if (i > 0 && withTotals[i].tot !== null && withTotals[i].tot === withTotals[i-1].tot) {
+      rankMap[withTotals[i].s.id] = rankMap[withTotals[i-1].s.id];
+    } else {
+      rankMap[withTotals[i].s.id] = withTotals[i].tot !== null ? rank : '—';
+    }
+    rank++;
+  }
+
   var rows = filtered.map(function(s, si) {
     var sc = getScoreObj(j.id, s.id);
     var tot = totalOf(sc);
-    var sorted = filtered.map(function(p) { return { id: p.id, tot: totalOf(getScoreObj(j.id, p.id)) || 0 }; })
-      .sort(function(a, b) { return b.tot - a.tot; });
-    var rank = sorted.findIndex(function(p) { return p.id === s.id; }) + 1;
     return '<tr>' +
       '<td style="text-align:center;color:#8a9aaa;font-size:12px">' + (si+1) + '</td>' +
       '<td>' + s.name + '</td>' +
@@ -382,7 +495,7 @@ function renderBreakdownTable(j, jStudents, activeTab) {
       '<td>' + (sc ? (sc.expression !== null ? sc.expression : '—') : '—') + '</td>' +
       '<td>' + (sc ? (sc.creativity !== null ? sc.creativity : '—') : '—') + '</td>' +
       '<td>' + (tot !== null ? tot : '—') + '</td>' +
-      '<td style="text-align:center">' + (sc && tot !== null ? rank : '—') + '</td>' +
+      '<td style="text-align:center">' + (rankMap[s.id] !== undefined ? rankMap[s.id] : '—') + '</td>' +
       '<td style="font-size:11px;color:' + (sc && sc.submitted ? '#3a6a4a' : '#8a9aaa') + '">' + (sc && sc.submitted ? '已提交' : (sc ? '已储存' : '未评')) + '</td>' +
     '</tr>';
   }).join('');
@@ -394,125 +507,6 @@ function renderBreakdownTable(j, jStudents, activeTab) {
     '</tr></thead>' +
     '<tbody>' + (rows || '<tr><td colspan="9" style="text-align:center;color:#8a9aaa;padding:16px">暂无数据</td></tr>') + '</tbody>' +
   '</table>';
-}
-
-function exportCSV() {
-  const results = computeResults();
-  const groups = getGroups();
-  let csv = '组别,考生,综合平均分,等级';
-  state.judges.forEach(j => { csv += `,${j.name}总分,${j.name}内容,${j.name}表达,${j.name}创意`; });
-  csv += ',组内排名\n';
-  groups.forEach(grp => {
-    const filtered = results.filter(r => getGroupKey(r.student) === grp);
-    filtered.forEach((r, i) => {
-      const { text: gl } = gradeLabel(r.avg);
-      let row = `"${grp}","${r.student.name}",${r.avg ?? ''},${gl}`;
-      state.judges.forEach(j => {
-        const assigned = j.groups.some(g => judgeGroupMatchesStudent(g, r.student));
-        const sc = assigned ? getScoreObj(j.id, r.student.id) : null;
-        const tot = totalOf(sc);
-        row += `,${tot ?? ''},${sc?.content ?? ''},${sc?.expression ?? ''},${sc?.creativity ?? ''}`;
-      });
-      row += `,${i + 1}`;
-      csv += row + '\n';
-    });
-  });
-  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = '作文比赛评分结果.csv'; a.click();
-}
-
-var MS_COLS = 20, MS_ROWS = 22, MS_G = '#4caf50';
-
-function paginateText(text) {
-  var pages = [], row = 0, col = 0, page = [];
-  var NL = '\n';
-  for (var i = 0; i < text.length; i++) {
-    var ch = text[i];
-    if (ch === NL) { row++; col = 0; }
-    else {
-      page.push({ ch: ch, row: row % MS_ROWS, col: col });
-      col++;
-      if (col >= MS_COLS) { row++; col = 0; }
-    }
-    if (row >= MS_ROWS) { pages.push(page); page = []; row = 0; col = 0; }
-  }
-  if (page.length || !pages.length) pages.push(page);
-  return pages;
-}
-
-function buildMsHtml(text) {
-  var pages = paginateText(text || '');
-  if (!pages.length) pages.push([]);
-  return pages.map(function(pg, pi) {
-    var pageNum = pages.length > 1 ? '<div class="ms-page-num">第 ' + (pi+1) + ' 页</div>' : '';
-    return '<div class="ms-page-block" data-page="' + pi + '">' +
-      '<div class="ms-grid-wrap"><canvas class="ms-grid-canvas"></canvas>' +
-      '<div class="ms-text-layer"></div></div>' + pageNum + '</div>';
-  }).join('');
-}
-
-function renderMsInContainer(containerId, text) {
-  var container = document.getElementById(containerId);
-  if (!container) return;
-  var dpr = window.devicePixelRatio || 1;
-  var pages = paginateText(text || '');
-  container.querySelectorAll('.ms-page-block').forEach(function(block, pi) {
-    var wrap = block.querySelector('.ms-grid-wrap');
-    var cv = block.querySelector('.ms-grid-canvas');
-    var tl = block.querySelector('.ms-text-layer');
-    if (!wrap || !cv || !tl) return;
-    var TW = wrap.clientWidth || 600;
-    var cW = TW / MS_COLS;
-    var cH = Math.min(cW, Math.floor(957/31.8));
-    var auxH = Math.round(cH * 0.4);
-    var gH = cH + auxH;
-    var TH = (MS_ROWS - 1) * gH + cH;
-    var BOT = 2;
-    cv.width = Math.round(TW * dpr);
-    cv.height = Math.round((TH + BOT) * dpr);
-    cv.style.width = TW + 'px';
-    cv.style.height = (TH + BOT) + 'px';
-    wrap.style.height = (TH + BOT) + 'px';
-    var ctx = cv.getContext('2d');
-    ctx.scale(dpr, dpr);
-    ctx.clearRect(0, 0, TW, TH + BOT);
-    ctx.strokeStyle = MS_G; ctx.lineWidth = 0.7;
-    for (var r = 0; r < MS_ROWS; r++) {
-      var base = r * gH, wb = base + cH, ab = wb + auxH;
-      if (r < MS_ROWS - 1) {
-        ctx.beginPath(); ctx.moveTo(0, wb); ctx.lineTo(TW, wb); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(0, ab); ctx.lineTo(TW, ab); ctx.stroke();
-      }
-      for (var c = 1; c < MS_COLS; c++) {
-        ctx.beginPath(); ctx.moveTo(c*cW, base); ctx.lineTo(c*cW, wb); ctx.stroke();
-      }
-    }
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(0.75, 0.75, TW - 1.5, TH + BOT - 1.5);
-    tl.innerHTML = '';
-    tl.style.width = TW + 'px';
-    tl.style.height = TH + 'px';
-    var fs = Math.round(cH * 0.60);
-    var topOff = Math.round((cH - fs) / 2);
-    var ty = Math.round(fs * 0.08);
-    var pageChars = pages[pi] || [];
-    pageChars.forEach(function(item) {
-      var span = document.createElement('span');
-      span.textContent = item.ch;
-      span.style.cssText = 'position:absolute;left:' + (item.col*cW) + 'px;top:' + (item.row*gH+topOff) + 'px;' +
-        'width:' + cW + 'px;height:' + fs + 'px;display:flex;align-items:center;justify-content:center;' +
-        'font-size:' + fs + 'px;font-weight:100;line-height:1;color:#1a2a3a;' +
-        'font-family:"SimSun","宋体","STSong",serif;box-sizing:border-box;-webkit-font-smoothing:antialiased;' +
-        'transform:translateY(-' + ty + 'px);';
-      tl.appendChild(span);
-    });
-  });
-}
-
-function onQuerySelect(studentId) {
-  renderQueryResult(studentId);
 }
 
 function populateQuerySelect() {
@@ -538,6 +532,10 @@ function populateQuerySelect() {
   });
 }
 
+function onQuerySelect(studentId) {
+  renderQueryResult(studentId);
+}
+
 function renderQueryResult(studentId) {
   var container = document.getElementById('query-result');
   if (!studentId) { container.innerHTML = ''; return; }
@@ -548,14 +546,26 @@ function renderQueryResult(studentId) {
     return j.groups.some(function(g) { return judgeGroupMatchesStudent(g, s); });
   });
 
+  // 算该考生在每位老师下的组内名次
+  var grpStudents = state.students.filter(function(x) { return getGroupKey(x) === getGroupKey(s); });
+
   var cards = assignedJudges.map(function(j) {
     var sc = getScoreObj(j.id, s.id);
     var tot = totalOf(sc);
+
+    // 组内排名
+    var sorted = grpStudents
+      .map(function(x) { return totalOf(getScoreObj(j.id, x.id)); })
+      .filter(function(t) { return t !== null; })
+      .sort(function(a, b) { return b - a; });
+    var myTot = tot;
+    var rank = myTot !== null ? sorted.indexOf(myTot) + 1 : null;
+
     var breakdown = sc ? '内' + (sc.content||'—') + ' 表' + (sc.expression||'—') + ' 创' + (sc.creativity||'—') : '未评分';
     return '<div class="score-compare-card">' +
       '<div class="scc-judge">' + j.name + '</div>' +
       '<div class="scc-total">' + (tot !== null ? tot : '—') + '</div>' +
-      '<div class="scc-denom">/ 100</div>' +
+      '<div class="scc-denom">/ 100' + (rank ? ' · 第' + rank + '名' : '') + '</div>' +
       '<div class="scc-breakdown">' + breakdown + '</div>' +
     '</div>';
   }).join('');
@@ -563,7 +573,7 @@ function renderQueryResult(studentId) {
   var totals = assignedJudges.map(function(j) { return totalOf(getScoreObj(j.id, s.id)); }).filter(function(t) { return t !== null; });
   var avg = totals.length > 0 ? (totals.reduce(function(a,b){return a+b;},0) / totals.length).toFixed(1) : '—';
   var avgCard = '<div class="scc-avg-card">' +
-    '<div class="scc-judge">综合平均</div>' +
+    '<div class="scc-judge">综合平均分</div>' +
     '<div class="scc-total">' + avg + '</div>' +
     '<div class="scc-denom">/ 100</div>' +
     '<div class="scc-breakdown">' + totals.length + ' 位老师已评</div>' +

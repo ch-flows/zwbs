@@ -237,7 +237,6 @@ function getGroups() {
 // 核心：按平均名次计算最终排名
 // ════════════════════════════════════════════
 function computeResults() {
-  // 先按组分别计算，确保名次是组内名次
   const allResults = [];
 
   const groups = getGroups();
@@ -246,15 +245,12 @@ function computeResults() {
       return getGroupKey(s) === grp;
     });
 
-    // 找出负责本组的老师
     const grpJudges = state.judges.filter(function(j) {
       return j.groups.some(function(g) {
         return grpStudents.some(function(s) { return judgeGroupMatchesStudent(g, s); });
       });
     });
 
-    // 每位老师给本组考生排名（按总分降序，同分同名次）
-    // judgeRanks[judgeId][studentId] = 名次（1-based）
     var judgeRanks = {};
     grpJudges.forEach(function(j) {
       var scored = grpStudents
@@ -265,7 +261,6 @@ function computeResults() {
       judgeRanks[j.id] = {};
       var rank = 1;
       for (var i = 0; i < scored.length; i++) {
-        // 同分同名次
         if (i > 0 && scored[i].tot === scored[i-1].tot) {
           judgeRanks[j.id][scored[i].id] = judgeRanks[j.id][scored[i-1].id];
         } else {
@@ -275,7 +270,6 @@ function computeResults() {
       }
     });
 
-    // 每位考生：收集各老师给的名次，算平均名次
     grpStudents.forEach(function(s) {
       var judgeDetails = [];
       var rankSum = 0, rankCount = 0;
@@ -301,8 +295,8 @@ function computeResults() {
       allResults.push({
         student: s,
         group: grp,
-        avgRank: avgRank,       // 平均名次（越小越好）
-        avgTotal: avgTotal,     // 原始平均分（平局决胜用）
+        avgRank: avgRank,
+        avgTotal: avgTotal,
         judgeDetails: judgeDetails,
       });
     });
@@ -311,19 +305,15 @@ function computeResults() {
   return allResults;
 }
 
-// 对某一组的结果排最终名次
 function rankGroupResults(grpResults) {
-  // 先按平均名次升序，平局按原始平均分降序
   var sorted = grpResults.slice().sort(function(a, b) {
     if (a.avgRank === null && b.avgRank === null) return 0;
     if (a.avgRank === null) return 1;
     if (b.avgRank === null) return -1;
     if (a.avgRank !== b.avgRank) return a.avgRank - b.avgRank;
-    // 平局：原始分高者优先
     return (b.avgTotal || 0) - (a.avgTotal || 0);
   });
 
-  // 标注最终名次（平均名次相同且原始分也相同则同名次）
   var finalRank = 1;
   for (var i = 0; i < sorted.length; i++) {
     if (i > 0) {
@@ -403,7 +393,6 @@ function renderResults(results) {
 
   document.getElementById('result-tbody').innerHTML = ranked.map(r => {
     const rankClass = r.finalRank <= 3 ? `rank-${r.finalRank}` : '';
-    // 检查是否平局（同名次）
     const isTie = ranked.filter(x => x.finalRank === r.finalRank).length > 1;
     const tieNote = isTie ? '<span class="tie-mark">并</span>' : '';
 
@@ -466,13 +455,11 @@ function renderBreakdownTable(j, jStudents, activeTab) {
     return getGroupKey(s) === activeTab;
   });
 
-  // 按本老师的总分排名
   var withTotals = filtered.map(function(s) {
     var sc = getScoreObj(j.id, s.id);
     return { s: s, sc: sc, tot: totalOf(sc) };
   }).sort(function(a, b) { return (b.tot || 0) - (a.tot || 0); });
 
-  // 计算组内排名（同分同名次）
   var rankMap = {};
   var rank = 1;
   for (var i = 0; i < withTotals.length; i++) {
@@ -546,20 +533,39 @@ function renderQueryResult(studentId) {
     return j.groups.some(function(g) { return judgeGroupMatchesStudent(g, s); });
   });
 
-  // 算该考生在每位老师下的组内名次
   var grpStudents = state.students.filter(function(x) { return getGroupKey(x) === getGroupKey(s); });
+
+  // 计算每位老师给该考生的组内名次
+  var judgeRankMap = {};
+  assignedJudges.forEach(function(j) {
+    var sorted = grpStudents
+      .map(function(x) { return { id: x.id, tot: totalOf(getScoreObj(j.id, x.id)) }; })
+      .filter(function(x) { return x.tot !== null; })
+      .sort(function(a, b) { return b.tot - a.tot; });
+    var rank = 1;
+    for (var i = 0; i < sorted.length; i++) {
+      if (i > 0 && sorted[i].tot === sorted[i-1].tot) {
+        judgeRankMap[j.id] = judgeRankMap[j.id] || {};
+        judgeRankMap[j.id][sorted[i].id] = judgeRankMap[j.id][sorted[i-1].id];
+      } else {
+        if (!judgeRankMap[j.id]) judgeRankMap[j.id] = {};
+        judgeRankMap[j.id][sorted[i].id] = rank;
+      }
+      rank++;
+    }
+  });
+
+  // 各老师分数卡
+  var rankSum = 0, rankCount = 0;
+  var totalSum = 0, totalCount = 0;
 
   var cards = assignedJudges.map(function(j) {
     var sc = getScoreObj(j.id, s.id);
     var tot = totalOf(sc);
+    var rank = judgeRankMap[j.id] ? judgeRankMap[j.id][s.id] : null;
 
-    // 组内排名
-    var sorted = grpStudents
-      .map(function(x) { return totalOf(getScoreObj(j.id, x.id)); })
-      .filter(function(t) { return t !== null; })
-      .sort(function(a, b) { return b - a; });
-    var myTot = tot;
-    var rank = myTot !== null ? sorted.indexOf(myTot) + 1 : null;
+    if (rank !== null && rank !== undefined) { rankSum += rank; rankCount++; }
+    if (tot !== null) { totalSum += tot; totalCount++; }
 
     var breakdown = sc ? '内' + (sc.content||'—') + ' 表' + (sc.expression||'—') + ' 创' + (sc.creativity||'—') : '未评分';
     return '<div class="score-compare-card">' +
@@ -570,13 +576,17 @@ function renderQueryResult(studentId) {
     '</div>';
   }).join('');
 
-  var totals = assignedJudges.map(function(j) { return totalOf(getScoreObj(j.id, s.id)); }).filter(function(t) { return t !== null; });
-  var avg = totals.length > 0 ? (totals.reduce(function(a,b){return a+b;},0) / totals.length).toFixed(1) : '—';
-  var avgCard = '<div class="scc-avg-card">' +
+  var avg = totalCount > 0 ? (totalSum / totalCount).toFixed(1) : '—';
+  var avgRank = rankCount > 0 ? (rankSum / rankCount).toFixed(2) : '—';
+
+  var summaryCard = '<div class="scc-avg-card">' +
     '<div class="scc-judge">综合平均分</div>' +
     '<div class="scc-total">' + avg + '</div>' +
     '<div class="scc-denom">/ 100</div>' +
-    '<div class="scc-breakdown">' + totals.length + ' 位老师已评</div>' +
+    '<div class="scc-breakdown" style="margin-top:10px;border-top:0.5px solid #c0d0e0;padding-top:8px">' +
+      '<div style="font-size:12px;color:#2563a8;font-family:\'Courier New\',monospace">平均名次 ' + avgRank + '</div>' +
+      '<div style="margin-top:3px">' + rankCount + ' 位老师已评</div>' +
+    '</div>' +
   '</div>';
 
   container.innerHTML =
@@ -585,7 +595,7 @@ function renderQueryResult(studentId) {
         '<span class="query-student-name">' + s.name + '</span>' +
         '<span class="query-student-meta">' + s.grade + ' · ' + s.stream + '</span>' +
       '</div>' +
-      '<div class="score-compare-grid">' + cards + avgCard + '</div>' +
+      '<div class="score-compare-grid">' + cards + summaryCard + '</div>' +
     '</div>';
 }
 

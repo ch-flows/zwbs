@@ -593,6 +593,12 @@ function onScoreInline(field, val, max) {
   const tot = totalScore(sc);
   const totEl = document.getElementById('si-total');
   if (totEl) totEl.textContent = (tot !== null && !isNaN(tot)) ? tot + '/100' : '—/100';
+  // Auto-save when all three scores are filled
+  if (sc.content !== null && sc.content !== undefined &&
+      sc.expression !== null && sc.expression !== undefined &&
+      sc.creativity !== null && sc.creativity !== undefined) {
+    saveScore(studentId);
+  }
 }
 
 function saveCurrentScore() {

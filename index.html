@@ -54,7 +54,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-submit:active{background:#a8ccc4;transform:scale(0.96)}
 .btn-submit:disabled{opacity:.5;cursor:default}
 
-/* ── Inline feedback label (next to buttons) ── */
+/* ── Inline feedback label (fixed left of save button) ── */
 .btn-feedback{font-size:12px;color:#3a7a4a;white-space:nowrap;opacity:0;transition:opacity 0.25s;pointer-events:none;font-family:'Noto Serif SC',serif;font-weight:300;min-width:0}
 .btn-feedback.show{opacity:1}
 .btn-feedback.err{color:#c0392b}
@@ -131,7 +131,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ss-pending{color:#bbb;font-style:italic}
 .seq{font-size:11px;color:#8ab89a;text-align:center;width:28px}
 
-/* ── Toast hidden (replaced by inline feedback) ── */
+/* ── Toast hidden ── */
 .toast{display:none}
 
 @media(max-width:680px){
@@ -199,6 +199,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="ws-title" id="ws-title"></div>
     </div>
     <div class="ws-actions">
+      <!-- Unified feedback — always in this fixed spot, left of save button -->
+      <span class="btn-feedback" id="save-feedback"></span>
       <!-- Save button with unsaved dot -->
       <div class="save-wrap">
         <button class="btn" id="btn-save-cur"
@@ -213,11 +215,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         </button>
         <span class="save-dot" id="save-dot"></span>
       </div>
-      <!-- Inline save feedback — right next to save button -->
-      <span class="btn-feedback" id="save-feedback"></span>
       <button class="btn btn-submit" id="btn-submit-all" onclick="submitAll()">提交</button>
-      <!-- Inline submit feedback — right next to submit button -->
-      <span class="btn-feedback" id="submit-feedback"></span>
     </div>
   </div>
   <div id="submitted-banner-wrap"></div>
@@ -321,25 +319,21 @@ function markSaved() {
   if (dot) dot.classList.remove('visible');
 }
 
-// ── Inline button feedback ───────────────────
-let _saveFbTimer = null, _submitFbTimer = null;
+// ── Unified inline feedback (one slot, left of save button) ──
+let _fbTimer = null;
 
 function showSaveFeedback(msg, isErr) {
   const el = document.getElementById('save-feedback');
   if (!el) return;
-  clearTimeout(_saveFbTimer);
+  clearTimeout(_fbTimer);
   el.textContent = msg;
   el.className = 'btn-feedback show' + (isErr ? ' err' : '');
-  _saveFbTimer = setTimeout(() => el.classList.remove('show'), isErr ? 3000 : 2000);
+  _fbTimer = setTimeout(() => el.classList.remove('show'), isErr ? 3000 : 2000);
 }
 
+// showSubmitFeedback routes to the same slot
 function showSubmitFeedback(msg, isErr) {
-  const el = document.getElementById('submit-feedback');
-  if (!el) return;
-  clearTimeout(_submitFbTimer);
-  el.textContent = msg;
-  el.className = 'btn-feedback show' + (isErr ? ' err' : '');
-  _submitFbTimer = setTimeout(() => el.classList.remove('show'), isErr ? 3500 : 3000);
+  showSaveFeedback(msg, isErr);
 }
 
 // ── Auto-save before switching student ───────
@@ -350,7 +344,7 @@ async function autoSaveIfNeeded() {
   const allFilled = sc.content !== null && sc.content !== undefined &&
                     sc.expression !== null && sc.expression !== undefined &&
                     sc.creativity !== null && sc.creativity !== undefined;
-  if (!allFilled) return; // incomplete scores — don't auto-save, just switch
+  if (!allFilled) return;
   try {
     const { error } = await db.from('scores').upsert({
       judge_id: state.currentJudge, student_id: studentId,
@@ -362,7 +356,7 @@ async function autoSaveIfNeeded() {
       state.scores[state.currentJudge][studentId] = { ...sc, submitted: false };
       markSaved();
     }
-  } catch(e) { /* silent — user can manually save */ }
+  } catch(e) { /* silent */ }
 }
 
 // ── Init ─────────────────────────────────────
@@ -534,9 +528,9 @@ async function selectStudentFromDrop(studentId, ddId) {
     const menu = document.getElementById(ddId);
     if (menu) menu.classList.remove('open');
   }
-  await autoSaveIfNeeded();  // auto-save current before switching
+  await autoSaveIfNeeded();
   state.currentStudent = studentId;
-  markSaved(); // reset dot for new student
+  markSaved();
   renderStreamSelectors();
   renderEssayPanel(studentId);
   renderScoreSummary();
@@ -825,7 +819,7 @@ function renderScoreSummary() {
 }
 
 async function selectStudentFromSummary(studentId) {
-  await autoSaveIfNeeded();  // auto-save before switching
+  await autoSaveIfNeeded();
   state.currentStudent = studentId;
   markSaved();
   renderStreamSelectors();

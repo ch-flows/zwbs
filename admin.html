@@ -567,12 +567,15 @@ function renderQueryResult(studentId) {
     if (rank !== null && rank !== undefined) { rankSum += rank; rankCount++; }
     if (tot !== null) { totalSum += tot; totalCount++; }
 
-    var breakdown = sc ? '内' + (sc.content||'—') + ' 表' + (sc.expression||'—') + ' 创' + (sc.creativity||'—') : '未评分';
+    var rankStr = (rank !== null && rank !== undefined) ? '第' + rank + '名' : '—';
+    var totStr  = tot !== null ? tot : '—';
     return '<div class="score-compare-card">' +
-      '<div class="scc-judge">' + j.name + '</div>' +
-      '<div class="scc-total">' + (tot !== null ? tot : '—') + '</div>' +
-      '<div class="scc-denom">/ 100' + (rank ? ' · 第' + rank + '名' : '') + '</div>' +
-      '<div class="scc-breakdown">' + breakdown + '</div>' +
+      '<div class="scc-judge" style="font-size:13px;font-weight:400;color:#2a3a50;margin-bottom:8px">' + j.name + '</div>' +
+      '<div style="display:flex;align-items:center;justify-content:center;gap:0">' +
+        '<span style="font-size:15px;font-family:\'Courier New\',monospace;color:#2563a8">' + rankStr + '</span>' +
+        '<span style="color:#c8d8e8;margin:0 6px">|</span>' +
+        '<span style="font-size:15px;font-family:\'Courier New\',monospace;color:#2a3a50">' + totStr + '</span>' +
+      '</div>' +
     '</div>';
   }).join('');
 
@@ -580,12 +583,11 @@ function renderQueryResult(studentId) {
   var avgRank = rankCount > 0 ? (rankSum / rankCount).toFixed(2) : '—';
 
   var summaryCard = '<div class="scc-avg-card">' +
-    '<div class="scc-judge">综合平均分</div>' +
-    '<div class="scc-total">' + avg + '</div>' +
-    '<div class="scc-denom">/ 100</div>' +
-    '<div class="scc-breakdown" style="margin-top:10px;border-top:0.5px solid #c0d0e0;padding-top:8px">' +
-      '<div style="font-size:12px;color:#2563a8;font-family:\'Courier New\',monospace">平均名次 ' + avgRank + '</div>' +
-      '<div style="margin-top:3px">' + rankCount + ' 位老师已评</div>' +
+    '<div class="scc-judge" style="font-size:13px;font-weight:400;color:#2a3a50;margin-bottom:8px">最终排名</div>' +
+    '<div style="display:flex;align-items:center;justify-content:center;gap:0">' +
+      '<span style="font-size:15px;font-family:\'Courier New\',monospace;color:#2563a8">名次 ' + avgRank + '</span>' +
+      '<span style="color:#a8c0d8;margin:0 6px">|</span>' +
+      '<span style="font-size:15px;font-family:\'Courier New\',monospace;color:#2a3a50">' + avg + '</span>' +
     '</div>' +
   '</div>';
 

@@ -9,9 +9,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
-
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#7aa898;color:#111;min-height:100vh;font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
-
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#7aa898;color:#111;min-height:100vh;font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
 /* ── Loading ── */
 .loading{position:fixed;inset:0;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:14px;color:#bbb;z-index:100}
@@ -19,15 +17,15 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
 /* ── Screens ── */
 .screen{padding:20px 5%;max-width:920px;margin:0 auto;width:100%;box-sizing:border-box}
-  #screen-workspace.active{display:flex;flex-direction:column;gap:4px;width:100%}
+#screen-workspace.active{display:flex;flex-direction:column;gap:4px;width:100%}
 .screen.active{display:block}
 .screen:not(.active){display:none}
 
 /* ── Board ── */
 .board{background:#f0f8f4;border-radius:0;overflow:hidden;border:0.5px solid #a8c8be;box-shadow:0 3px 14px rgba(20,70,55,0.15);align-self:stretch;min-width:0;width:100%}
-  #board-ctrl{border-radius:12px 12px 0 0;overflow:visible;position:relative;z-index:10}
-  #board-paper{border-radius:0}
-  #board-summary{border-radius:0 0 12px 12px}
+#board-ctrl{border-radius:12px 12px 0 0;overflow:visible;position:relative;z-index:10}
+#board-paper{border-radius:0}
+#board-summary{border-radius:0 0 12px 12px}
 
 /* ── Judge select ── */
 .welcome-text{text-align:center;margin:3rem 0 2.5rem}
@@ -42,24 +40,29 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .judge-avatar{width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,0.22);display:flex;align-items:center;justify-content:center;font-size:36px;color:#fff;font-family:'Noto Serif SC',serif;font-weight:300;border:1.5px solid rgba(255,255,255,0.5);transition:background .15s,border-color .15s}
 .judge-card:hover .judge-avatar{background:rgba(255,255,255,0.38);border-color:rgba(255,255,255,0.85)}
 .judge-card-name{font-size:14px;color:rgba(255,255,255,0.9);font-weight:300;font-family:'Noto Serif SC',serif;text-align:center}
-.judge-card-sub{display:none}
-.judge-card-progress{display:none}
 
 /* ── Top bar ── */
 .workspace-header{padding:16px 28px;display:flex;align-items:center;gap:14px;background:#c8ddd6;border-bottom:0.5px solid #a8c8be;border-radius:12px 12px 0 0}
-.ws-avatar{width:36px;height:36px;border-radius:50%;background:#e8f4fd;color:#1a6fba;display:flex;align-items:center;justify-content:center;font-size:14px;font-style:italic;font-weight:500;flex-shrink:0}
 .ws-info{flex:1}
 .ws-title{font-size:16px;font-weight:300;color:#1a4a3a;font-family:'Noto Serif SC',serif}
-.ws-sub{display:none}
-.ws-actions{display:flex;gap:8px}
-.btn{padding:6px 16px;border:1px solid #ddd;border-radius:7px;background:#f7f7f7;color:#444;cursor:pointer;font-size:13px;font-family:inherit;transition:all 0.15s}.btn:active{transform:scale(0.94)}
+.ws-actions{display:flex;align-items:center;gap:6px}
+.btn{padding:6px 16px;border:1px solid #ddd;border-radius:7px;background:#f7f7f7;color:#444;cursor:pointer;font-size:13px;font-family:inherit;transition:all 0.15s}
+.btn:active{transform:scale(0.94)}
 .btn:hover{background:#efefef}
-.btn-submit{background:transparent;color:#1a4a3a;border:0.5px solid #80b8a8;font-weight:300;padding:8px 22px;font-size:14px;transition:all 0.15s}.btn-submit:hover{background:#b8d8d0;border-color:#60a890}.btn-submit:active{background:#a8ccc4;transform:scale(0.96)}
+.btn-submit{background:transparent;color:#1a4a3a;border:0.5px solid #80b8a8;font-weight:300;padding:8px 22px;font-size:14px;transition:all 0.15s}
 .btn-submit:hover{background:#d8edd8;border-color:#8ac0a0}
-.btn-submit:disabled{opacity:.5}
+.btn-submit:active{background:#a8ccc4;transform:scale(0.96)}
+.btn-submit:disabled{opacity:.5;cursor:default}
 
-/* ── Submitted banner ── */
-.submitted-banner{display:none}
+/* ── Inline feedback label (next to buttons) ── */
+.btn-feedback{font-size:12px;color:#3a7a4a;white-space:nowrap;opacity:0;transition:opacity 0.25s;pointer-events:none;font-family:'Noto Serif SC',serif;font-weight:300;min-width:0}
+.btn-feedback.show{opacity:1}
+.btn-feedback.err{color:#c0392b}
+
+/* ── Unsaved dot on save icon ── */
+.save-wrap{position:relative;display:inline-flex;align-items:center}
+.save-dot{position:absolute;top:1px;right:1px;width:7px;height:7px;border-radius:50%;background:#e8a020;opacity:0;transition:opacity 0.2s;pointer-events:none}
+.save-dot.visible{opacity:1}
 
 /* ── Custom dropdown ── */
 .custom-dd-wrap{position:relative}
@@ -77,7 +80,6 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .stream-selectors{padding:12px 28px;display:flex;align-items:center;flex-wrap:wrap;row-gap:10px;column-gap:0;background:#c8ddd6;border-bottom:0.5px solid #a8c8be;overflow:visible;position:relative;z-index:9999}
 .stream-group{display:flex;align-items:center;gap:6px}
 .stream-tag{font-size:13px;color:#2a6050;font-weight:300;font-family:'Noto Serif SC',serif}
-.stream-sel{padding:5px 10px;border:1px solid #e0e0e0;border-radius:7px;background:#fff;font-size:13px;color:#111;min-width:120px}
 .stream-prog{display:none}
 .stream-sep{width:1px;height:24px;background:#e8e8e8;margin:0 8px;flex-shrink:0;align-self:center}
 
@@ -86,15 +88,13 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .score-inline-fields{display:flex;align-items:flex-start;gap:8px;flex:1;width:100%}
 .sif{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;min-width:0}
 .sif-lbl{font-size:13px;color:#2a6050;font-family:'Noto Serif SC',serif;font-weight:300}
-.sif input{width:100%;height:44px;border:0.5px solid #90b8a8;border-radius:6px;background:#eef8f4;font-size:15px;font-family:'Courier New',monospace;text-align:center;color:#1a4a3a;outline:none;vertical-align:middle;padding:0;-moz-appearance:textfield}
-.sif input:focus{border-color:#7ab89a}
 .sif-wrap{width:100%;height:44px;border:0.5px solid #90b8a8;border-radius:6px;background:#eef8f4;display:flex;align-items:center;justify-content:center;gap:4px;padding:0 8px}
-.sif-wrap input{border:none;background:transparent;font-family:'Courier New',monospace;font-size:15px;color:#5a9070;text-align:right;width:50%;outline:none;padding:0}
+.sif-wrap input{border:none;background:transparent;font-family:'Courier New',monospace;font-size:15px;color:#5a9070;text-align:right;width:50%;outline:none;padding:0;-moz-appearance:textfield}
 .sif-wrap input::-webkit-inner-spin-button,.sif-wrap input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.sif-wrap input:disabled{opacity:.6}
 .sif-max{font-size:12px;color:#b0c8b8;white-space:nowrap}
 .sif-total-box{font-family:'Courier New',monospace;font-size:15px;color:#1a4a3a;background:#eef8f4}
 .sif-div{width:0.5px;background:#a8c8be;align-self:stretch;margin-top:18px;flex-shrink:0;margin-left:3px;margin-right:3px}
-.sif-total{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1}
 
 /* ── Essay panel ── */
 .essay-panel{background:#eef8f4;border-bottom:1px solid #90b8a8}
@@ -103,7 +103,6 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .essay-student-name{font-size:14px;font-weight:400;color:#60a888;font-family:'Courier New',monospace;margin-right:1em}
 .essay-student-meta{font-size:14px;color:#60a888;font-family:'Noto Serif SC','Georgia',serif;font-weight:300}
 .essay-ms-wrap{padding:14px 24px 28px}
-.submitted-note{font-size:12px;color:#1a6fba;background:#eef6ff;padding:5px 14px;border-radius:7px;margin:0 20px 10px;display:inline-block}
 
 /* ── Manuscript ── */
 .ms-grid-wrap{position:relative;background:#fff}
@@ -132,68 +131,49 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .ss-pending{color:#bbb;font-style:italic}
 .seq{font-size:11px;color:#8ab89a;text-align:center;width:28px}
 
-/* ── Toast ── */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#d8edd8;color:#3a6a4a;border:0.5px solid #a8cca8;padding:10px 22px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:999;white-space:nowrap;box-shadow:0 2px 8px rgba(60,100,60,0.15)}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ── Toast hidden (replaced by inline feedback) ── */
+.toast{display:none}
 
 @media(max-width:680px){
   .screen{padding:12px}
   .stream-selectors{gap:6px}
 }
 
-    @media(min-width:768px){
-    .judge-grid{gap:12px;width:340px}
-    .judge-grid-row{gap:20px}
-    .judge-card{width:100px}
-    .judge-avatar{width:88px;height:88px;font-size:40px;border-width:1.5px}
-    .judge-card-name{font-size:14px}
-    .stream-group{flex-direction:column;align-items:center;gap:4px}
-    .stream-tag{font-size:12px;color:#4a6080;font-weight:400;white-space:nowrap;font-family:'Noto Serif SC',serif}
-    .stream-sep{display:none}
-    .sif{flex-direction:row;align-items:center;gap:6px;flex:0 0 auto}
-    .sif-div{display:none}
-    .sif input{height:36px;font-size:15px;text-align:center;padding:0;line-height:36px;width:80px}
-    .sif-wrap{width:130px;height:36px;flex-shrink:0}
-    .sif-lbl{font-size:13px;color:#6a88a8;font-family:'Noto Serif SC',serif;font-weight:300;white-space:nowrap}
-    .score-inline-fields{display:flex;align-items:center;gap:16px;margin:0;padding:0}
-    .screen{padding:30px 5%}
-    .welcome-text{margin:2.5rem 0 2.5rem}
-    .welcome-text h1{font-size:34px;letter-spacing:-.01em}
-    .site-year{font-size:14px;letter-spacing:.18em}
-    .welcome-text p{font-size:15px}
-    .judge-grid{gap:12px;width:340px}
-    .judge-grid-row{gap:20px}
-    .judge-card{width:76px}
-    .judge-avatar{width:68px;height:68px;font-size:28px;border-width:1.5px}
-    .judge-card-name{font-size:14px}
-    .ws-title{font-size:15px;color:#1a4a3a}
-    .workspace-header{padding:12px 24px}
-    .stream-selectors{padding:10px 24px;row-gap:12px;column-gap:16px}
-    .stream-sep{display:none}
-    .stream-group{flex-direction:column;align-items:center;gap:4px}
-    .stream-tag{font-size:12px;color:#4a6080;font-weight:400;white-space:nowrap;font-family:'Noto Serif SC',serif}
-    .score-bar-row{padding:10px 24px;gap:0}
-    .score-inline-fields{display:flex;align-items:center;gap:16px;margin:0;padding:0}
-    .sif{flex-direction:row;align-items:center;gap:6px;flex:0 0 auto}
-    .sif-div{display:none}
-    .sif input{height:36px;font-size:15px;text-align:center;padding:0;line-height:36px;width:80px}
-    .sif-wrap{width:130px;height:36px;flex-shrink:0}
-    .sif-lbl{font-size:13px;color:#6a88a8;font-family:'Noto Serif SC',serif;font-weight:300;white-space:nowrap}
-    .sif-max{font-size:13px;color:#8ab0a0}
-    .sif-total span:first-child{width:64px;height:40px;font-size:16px}
-    .essay-student-hdr{padding:12px 24px 0}
-    .essay-ms-wrap{padding:16px 8% 32px}
-    .essay-student-name{font-size:13px;color:#7aaa8a}
-    .essay-student-meta{font-size:13px;color:#7aaa8a}
-    .score-summary-table th{padding:9px 14px;font-size:12px}
-    .score-summary-table td{padding:9px 14px;font-size:13px}
-    .sort-btn{padding:7px 18px;font-size:13px}
-    .score-summary-hdr{padding:9px 16px}
-    .custom-dd-btn{font-size:12px;padding:6px 24px 6px 10px;min-width:120px}
-    .stream-prog{font-size:13px}
-    .btn-submit{padding:7px 18px;font-size:13px}
-    .btn-save svg{width:22px;height:22px}
-  }
+@media(min-width:768px){
+  .screen{padding:30px 5%}
+  .welcome-text{margin:2.5rem 0 2.5rem}
+  .welcome-text h1{font-size:34px;letter-spacing:-.01em}
+  .site-year{font-size:14px;letter-spacing:.18em}
+  .judge-grid{gap:12px;width:340px}
+  .judge-grid-row{gap:20px}
+  .judge-card{width:76px}
+  .judge-avatar{width:68px;height:68px;font-size:28px;border-width:1.5px}
+  .judge-card-name{font-size:14px}
+  .ws-title{font-size:15px;color:#1a4a3a}
+  .workspace-header{padding:12px 24px}
+  .stream-selectors{padding:10px 24px;row-gap:12px;column-gap:16px}
+  .stream-sep{display:none}
+  .stream-group{flex-direction:column;align-items:center;gap:4px}
+  .stream-tag{font-size:12px;color:#4a6080;font-weight:400;white-space:nowrap;font-family:'Noto Serif SC',serif}
+  .score-bar-row{padding:10px 24px;gap:0}
+  .score-inline-fields{display:flex;align-items:center;gap:16px;margin:0;padding:0}
+  .sif{flex-direction:row;align-items:center;gap:6px;flex:0 0 auto}
+  .sif-div{display:none}
+  .sif-wrap{width:130px;height:36px;flex-shrink:0}
+  .sif-wrap input{font-size:15px}
+  .sif-lbl{font-size:13px;color:#6a88a8;font-family:'Noto Serif SC',serif;font-weight:300;white-space:nowrap}
+  .sif-max{font-size:13px;color:#8ab0a0}
+  .essay-student-hdr{padding:12px 24px 0}
+  .essay-ms-wrap{padding:16px 8% 32px}
+  .essay-student-name{font-size:13px;color:#7aaa8a}
+  .essay-student-meta{font-size:13px;color:#7aaa8a}
+  .score-summary-table th{padding:9px 14px;font-size:12px}
+  .score-summary-table td{padding:9px 14px;font-size:13px}
+  .sort-btn{padding:7px 18px;font-size:13px}
+  .score-summary-hdr{padding:9px 16px}
+  .custom-dd-btn{font-size:12px;padding:6px 24px 6px 10px;min-width:120px}
+  .btn-submit{padding:7px 18px;font-size:13px}
+}
 </style>
 </head>
 <body>
@@ -205,7 +185,6 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   <div class="welcome-text">
     <div class="site-year">毅道中学 · 2026 年度</div>
     <h1>创意作文比赛 <span class="site-accent">评分系统</span></h1>
-
   </div>
   <div class="judge-grid" id="judge-grid">
     <div style="color:#bbb;font-size:13px">加载中…</div>
@@ -220,14 +199,25 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       <div class="ws-title" id="ws-title"></div>
     </div>
     <div class="ws-actions">
-      <button class="btn" id="btn-save-cur" onclick="saveCurrentScore();this.style.transform='scale(0.85)';setTimeout(()=>this.style.transform='',200)" title="保存" style="background:none;border:none;padding:4px 6px;cursor:pointer;color:#7aaac8;transition:transform 0.15s">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a8878" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
-        <polyline points="17 21 17 13 7 13 7 21"/>
-        <polyline points="7 3 7 8 15 8"/>
-      </svg>
-    </button>
+      <!-- Save button with unsaved dot -->
+      <div class="save-wrap">
+        <button class="btn" id="btn-save-cur"
+          onclick="saveCurrentScore();this.style.transform='scale(0.85)';setTimeout(()=>this.style.transform='',200)"
+          title="保存"
+          style="background:none;border:none;padding:4px 6px;cursor:pointer;transition:transform 0.15s">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a8878" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/>
+            <polyline points="7 3 7 8 15 8"/>
+          </svg>
+        </button>
+        <span class="save-dot" id="save-dot"></span>
+      </div>
+      <!-- Inline save feedback — right next to save button -->
+      <span class="btn-feedback" id="save-feedback"></span>
       <button class="btn btn-submit" id="btn-submit-all" onclick="submitAll()">提交</button>
+      <!-- Inline submit feedback — right next to submit button -->
+      <span class="btn-feedback" id="submit-feedback"></span>
     </div>
   </div>
   <div id="submitted-banner-wrap"></div>
@@ -238,7 +228,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
         <div class="sif">
           <span class="sif-lbl">内容</span>
           <div class="sif-wrap">
-            <input type="number" id="si-content" min="0" max="40" placeholder="" oninput="onScoreInline('content',this.value,40)"/>
+            <input type="number" id="si-content" min="0" max="40" placeholder=""
+              oninput="onScoreInline('content',this.value,40);markUnsaved()"/>
             <span class="sif-max">/ 40</span>
           </div>
         </div>
@@ -246,7 +237,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
         <div class="sif">
           <span class="sif-lbl">表达</span>
           <div class="sif-wrap">
-            <input type="number" id="si-expression" min="0" max="35" placeholder="" oninput="onScoreInline('expression',this.value,35)"/>
+            <input type="number" id="si-expression" min="0" max="35" placeholder=""
+              oninput="onScoreInline('expression',this.value,35);markUnsaved()"/>
             <span class="sif-max">/ 35</span>
           </div>
         </div>
@@ -254,7 +246,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
         <div class="sif">
           <span class="sif-lbl">创意</span>
           <div class="sif-wrap">
-            <input type="number" id="si-creativity" min="0" max="25" placeholder="" oninput="onScoreInline('creativity',this.value,25)"/>
+            <input type="number" id="si-creativity" min="0" max="25" placeholder=""
+              oninput="onScoreInline('creativity',this.value,25);markUnsaved()"/>
             <span class="sif-max">/ 25</span>
           </div>
         </div>
@@ -292,16 +285,14 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       <tbody id="score-summary-tbody"></tbody>
     </table>
   </div>
-  </div>
 </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-
 // ════════════════════════════════════════════
-// CONFIG — replace these two values
+// CONFIG
 // ════════════════════════════════════════════
 const SUPABASE_URL = 'https://cmnueivbcqkgjionubne.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbnVlaXZiY3FrZ2ppb251Ym5lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5MzE2ODQsImV4cCI6MjA5MjUwNzY4NH0.4hESinCQ1zQIAC72lTw2kErDNGkEXb7TZNQipqesEdA';
@@ -311,13 +302,68 @@ const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let state = {
-  judges: [],
-  students: [],
-  scores: {},       // { judgeId: { studentId: {content, expression, creativity, submitted} } }
-  currentJudge: null,
-  currentGroup: null,
-  currentStudent: null,
+  judges: [], students: [], scores: {},
+  currentJudge: null, currentGroup: null, currentStudent: null,
 };
+
+// ── Unsaved tracking ─────────────────────────
+let _unsaved = false;
+
+function markUnsaved() {
+  _unsaved = true;
+  const dot = document.getElementById('save-dot');
+  if (dot) dot.classList.add('visible');
+}
+
+function markSaved() {
+  _unsaved = false;
+  const dot = document.getElementById('save-dot');
+  if (dot) dot.classList.remove('visible');
+}
+
+// ── Inline button feedback ───────────────────
+let _saveFbTimer = null, _submitFbTimer = null;
+
+function showSaveFeedback(msg, isErr) {
+  const el = document.getElementById('save-feedback');
+  if (!el) return;
+  clearTimeout(_saveFbTimer);
+  el.textContent = msg;
+  el.className = 'btn-feedback show' + (isErr ? ' err' : '');
+  _saveFbTimer = setTimeout(() => el.classList.remove('show'), isErr ? 3000 : 2000);
+}
+
+function showSubmitFeedback(msg, isErr) {
+  const el = document.getElementById('submit-feedback');
+  if (!el) return;
+  clearTimeout(_submitFbTimer);
+  el.textContent = msg;
+  el.className = 'btn-feedback show' + (isErr ? ' err' : '');
+  _submitFbTimer = setTimeout(() => el.classList.remove('show'), isErr ? 3500 : 3000);
+}
+
+// ── Auto-save before switching student ───────
+async function autoSaveIfNeeded() {
+  const studentId = state.currentStudent;
+  if (!studentId || !_unsaved) return;
+  const sc = state.scores[state.currentJudge]?.[studentId] || {};
+  const allFilled = sc.content !== null && sc.content !== undefined &&
+                    sc.expression !== null && sc.expression !== undefined &&
+                    sc.creativity !== null && sc.creativity !== undefined;
+  if (!allFilled) return; // incomplete scores — don't auto-save, just switch
+  try {
+    const { error } = await db.from('scores').upsert({
+      judge_id: state.currentJudge, student_id: studentId,
+      content: sc.content, expression: sc.expression, creativity: sc.creativity,
+      submitted: false, updated_at: new Date().toISOString(),
+    }, { onConflict: 'judge_id,student_id' });
+    if (!error) {
+      if (!state.scores[state.currentJudge]) state.scores[state.currentJudge] = {};
+      state.scores[state.currentJudge][studentId] = { ...sc, submitted: false };
+      markSaved();
+    }
+  } catch(e) { /* silent — user can manually save */ }
+}
 
 // ── Init ─────────────────────────────────────
 async function init() {
@@ -360,21 +406,15 @@ function getJudgeStudents(judgeId) {
     })
   );
 }
-
-function getScore(judgeId, studentId) {
-  return state.scores[judgeId]?.[studentId] || null;
-}
-
+function getScore(judgeId, studentId) { return state.scores[judgeId]?.[studentId] || null; }
 function isScored(judgeId, studentId) {
   const sc = getScore(judgeId, studentId);
   return sc && sc.content !== null && sc.expression !== null && sc.creativity !== null;
 }
-
 function totalScore(sc) {
   if (!sc || sc.content === null || sc.expression === null || sc.creativity === null) return null;
   return sc.content + sc.expression + sc.creativity;
 }
-
 function isSubmitted(judgeId) {
   const students = getJudgeStudents(judgeId);
   return students.length > 0 && students.every(s => {
@@ -382,50 +422,33 @@ function isSubmitted(judgeId) {
     return sc && sc.submitted;
   });
 }
-
 function getGroups(judgeId) {
   const judge = state.judges.find(j => j.id === judgeId);
   return judge ? judge.groups : [];
 }
-
 function getGroupLabel(g) {
   return g.label || ((g.grade || (g.grades && g.grades[0]) || '') + ' ' + g.stream);
-}
-
-function gradeLabel(grade) {
-  const map = { '中一':'1', '中二':'2', '中三':'3', '中四':'4' };
-  return map[grade] || grade;
-}
-
-// ── Toast ─────────────────────────────────────
-function toast(msg, duration = 2000) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), duration);
 }
 
 // ── Screen 1: Judge Grid ──────────────────────
 function renderJudgeGrid() {
   const grid = document.getElementById('judge-grid');
   if (!state.judges.length) {
-    grid.innerHTML = '<div style="color:rgba(255,255,255,0.6);font-size:13px">暂无老师数据，请先在 Supabase 插入数据。</div>';
+    grid.innerHTML = '<div style="color:rgba(255,255,255,0.6);font-size:13px">暂无老师数据。</div>';
     return;
   }
   const sorted = [...state.judges].sort((a, b) =>
     a.name.localeCompare(b.name, 'zh-Hans-CN', { sensitivity: 'base' })
   );
   const pattern = [2, 3, 3, 2];
-  let idx = 0;
-  let html = '';
+  let idx = 0, html = '';
   for (const count of pattern) {
     html += '<div class="judge-grid-row">';
     for (let i = 0; i < count && idx < sorted.length; i++, idx++) {
       const j = sorted[idx];
       html += '<div class="judge-card" onclick="selectJudge(&quot;' + j.id + '&quot;)">' +
         '<div class="judge-avatar">' + j.name[0] + '</div>' +
-        '<div class="judge-card-name">' + j.name + '</div>' +
-        '</div>';
+        '<div class="judge-card-name">' + j.name + '</div></div>';
     }
     html += '</div>';
     if (idx >= sorted.length) break;
@@ -438,17 +461,15 @@ function selectJudge(judgeId) {
   state.currentJudge = judgeId;
   const judge = state.judges.find(j => j.id === judgeId);
   state.currentStudent = null;
+  _unsaved = false;
+  markSaved();
 
-  const wsTitleEl = document.getElementById('ws-title');
-  if (wsTitleEl) wsTitleEl.textContent = '评审：' + judge.name;
-  updateWsSub();
-
-  history.pushState({ screen: 'workspace', judgeId: judgeId }, '', '');
-
+  document.getElementById('ws-title').textContent = '评审：' + judge.name;
+  history.pushState({ screen: 'workspace', judgeId }, '', '');
   document.getElementById('screen-select').classList.remove('active');
   document.getElementById('screen-workspace').classList.add('active');
-  document.getElementById('board-summary').style.display='none';
-  document.getElementById('board-paper').style.borderRadius='0 0 12px 12px';
+  document.getElementById('board-summary').style.display = 'none';
+  document.getElementById('board-paper').style.borderRadius = '0 0 12px 12px';
 
   const sub = isSubmitted(judgeId);
   document.getElementById('submitted-banner-wrap').innerHTML = '';
@@ -460,78 +481,62 @@ function selectJudge(judgeId) {
   renderScoreSummary();
 }
 
-function updateWsSub() {
-  renderStreamSelectors();
-}
-
-function backToSelect() {
-  state.currentJudge = null;
-  state.currentStudent = null;
-  document.getElementById('screen-workspace').classList.remove('active');
-  document.getElementById('screen-select').classList.add('active');
-  const sb = document.getElementById('score-bar-wrap');
-  if (sb) sb.style.display = 'none';
-  renderJudgeGrid();
-}
-
 // ── Stream Selectors ─────────────────────────
 function renderStreamSelectors() {
-  var groups = getGroups(state.currentJudge);
-  var container = document.getElementById('stream-selectors');
+  const groups = getGroups(state.currentJudge);
+  const container = document.getElementById('stream-selectors');
   if (!groups.length) { container.innerHTML = ''; return; }
   container.innerHTML = groups.map(function(g, gi) {
-    var label = getGroupLabel(g);
-    var grades = g.grades || [g.grade];
-    var students = getJudgeStudents(state.currentJudge)
-      .filter(function(s) { return grades.includes(s.grade) && s.stream === g.stream; });
-    var scored = students.filter(function(s) { return isScored(state.currentJudge, s.id); }).length;
-    var sep = gi < groups.length - 1 ? '<div class="stream-sep"></div>' : '';
-    var ddId = 'dd' + gi;
-    var current = students.find(function(s) { return s.id === state.currentStudent; });
-    var btnLabel = current ? current.name : '选择考生';
-    var items = students.map(function(s) {
-      var sc = isScored(state.currentJudge, s.id);
-      var isCur = state.currentStudent === s.id;
-      return '<div class="custom-dd-item" onclick="selectStudentFromDrop(\''+s.id+'\',\''+ddId+'\')">'+
-        '<span class="dd-check">'+(isCur?'✓':'')+'</span>'+
-        s.name+
-        (sc?'<span class="dd-scored">已评</span>':'')+
-        '</div>';
+    const label = getGroupLabel(g);
+    const grades = g.grades || [g.grade];
+    const students = getJudgeStudents(state.currentJudge)
+      .filter(s => grades.includes(s.grade) && s.stream === g.stream);
+    const scored = students.filter(s => isScored(state.currentJudge, s.id)).length;
+    const sep = gi < groups.length - 1 ? '<div class="stream-sep"></div>' : '';
+    const ddId = 'dd' + gi;
+    const current = students.find(s => s.id === state.currentStudent);
+    const btnLabel = current ? current.name : '选择考生';
+    const items = students.map(function(s) {
+      const sc = isScored(state.currentJudge, s.id);
+      const isCur = state.currentStudent === s.id;
+      return '<div class="custom-dd-item" onclick="selectStudentFromDrop(\'' + s.id + '\',\'' + ddId + '\')">' +
+        '<span class="dd-check">' + (isCur ? '✓' : '') + '</span>' +
+        s.name + (sc ? '<span class="dd-scored">已评</span>' : '') + '</div>';
     }).join('');
-    return '<div class="stream-group">'+
-      '<span class="stream-tag">'+label+'</span>'+
-      '<div class="custom-dd-wrap">'+
-        '<button class="custom-dd-btn" onclick="toggleDrop(\''+ddId+'\',event)" type="button">'+
-          '<span id="'+ddId+'-label">'+btnLabel+'</span>'+
-          '<span class="arrow"></span>'+
-        '</button>'+
-        '<div class="custom-dd-menu" id="'+ddId+'">'+items+'</div>'+
-      '</div>'+
-      '<span class="stream-prog">'+scored+'/'+students.length+' 已评</span>'+
-    '</div>'+sep;
+    return '<div class="stream-group">' +
+      '<span class="stream-tag">' + label + '</span>' +
+      '<div class="custom-dd-wrap">' +
+        '<button class="custom-dd-btn" onclick="toggleDrop(\'' + ddId + '\',event)" type="button">' +
+          '<span id="' + ddId + '-label">' + btnLabel + '</span><span class="arrow"></span>' +
+        '</button>' +
+        '<div class="custom-dd-menu" id="' + ddId + '">' + items + '</div>' +
+      '</div>' +
+      '<span class="stream-prog">' + scored + '/' + students.length + ' 已评</span>' +
+    '</div>' + sep;
   }).join('');
 }
 
 function toggleDrop(ddId, e) {
   if (e) e.stopPropagation();
-  var menu = document.getElementById(ddId);
-  var isOpen = menu.classList.contains('open');
-  document.querySelectorAll('.custom-dd-menu.open').forEach(function(m){m.classList.remove('open');});
+  const menu = document.getElementById(ddId);
+  const isOpen = menu.classList.contains('open');
+  document.querySelectorAll('.custom-dd-menu.open').forEach(m => m.classList.remove('open'));
   if (!isOpen) menu.classList.add('open');
 }
-
-document.addEventListener('click', function(){
-  document.querySelectorAll('.custom-dd-menu.open').forEach(function(m){m.classList.remove('open');});
+document.addEventListener('click', () => {
+  document.querySelectorAll('.custom-dd-menu.open').forEach(m => m.classList.remove('open'));
 });
 
-
-function selectStudentFromDrop(studentId, ddId) {
+// ── Switch student (from dropdown) ───────────
+async function selectStudentFromDrop(studentId, ddId) {
   if (!studentId) return;
-  state.currentStudent = studentId;
   if (ddId) {
-    var menu = document.getElementById(ddId);
+    const menu = document.getElementById(ddId);
     if (menu) menu.classList.remove('open');
   }
+  await autoSaveIfNeeded();  // auto-save current before switching
+  state.currentStudent = studentId;
+  markSaved(); // reset dot for new student
   renderStreamSelectors();
   renderEssayPanel(studentId);
   renderScoreSummary();
@@ -548,13 +553,13 @@ function renderEssayPanel(studentId) {
   }
   const s = state.students.find(x => x.id === studentId);
   const sc = getScore(state.currentJudge, studentId) || {};
-  const sub = isSubmitted(state.currentJudge);
   const studentSubmitted = sc && sc.submitted;
   const tot = totalScore(sc);
 
   scoreBarWrap.style.display = 'block';
   requestAnimationFrame(() => { alignScoreBar(); setTimeout(alignScoreBar, 200); });
-  ['content','expression','creativity'].forEach(function(field) {
+
+  ['content', 'expression', 'creativity'].forEach(function(field) {
     const inp = document.getElementById('si-' + field);
     if (inp) {
       inp.value = (sc[field] !== null && sc[field] !== undefined) ? sc[field] : '';
@@ -567,26 +572,17 @@ function renderEssayPanel(studentId) {
   state.currentStudent = studentId;
 
   const msHtml = buildManuscriptHtml(s.essay || '');
-  const subNote = sub ? '' : '';
-
   panel.innerHTML =
     '<div class="essay-student-hdr">' +
       '<span class="essay-student-name">' + s.name + '</span>' +
       '<span class="essay-student-meta">' + (s.title || (s.grade + ' · ' + s.stream)) + '</span>' +
       '<span class="ms-word-count" style="margin-left:auto">' + (s.essay ? s.essay.replace(/\s/g,'').length + '字' : '') + '</span>' +
     '</div>' +
-    subNote +
     '<div class="essay-ms-wrap">' +
       '<div class="manuscript-pages" id="ms-pages-' + studentId + '">' + msHtml + '</div>' +
     '</div>';
 
   initManuscriptForStudent(studentId);
-}
-
-function selectStudent(studentId) {
-  state.currentStudent = studentId;
-  renderStudentList();
-  renderEssayPanel(studentId);
 }
 
 function onScoreInline(field, val, max) {
@@ -602,12 +598,12 @@ function onScoreInline(field, val, max) {
   const sc = state.scores[state.currentJudge][studentId];
   const tot = totalScore(sc);
   const totEl = document.getElementById('si-total');
-  if (totEl) totEl.textContent = (tot !== null && !isNaN(tot)) ? tot : '—';
+  if (totEl) totEl.textContent = (tot !== null && !isNaN(tot)) ? tot + '/100' : '—/100';
 }
 
 function saveCurrentScore() {
   const studentId = state.currentStudent;
-  if (!studentId) { toast('请先选择考生'); return; }
+  if (!studentId) { showSaveFeedback('请先选择考生', true); return; }
   const maxes = { content: 40, expression: 35, creativity: 25 };
   Object.keys(maxes).forEach(function(field) {
     const inp = document.getElementById('si-' + field);
@@ -616,102 +612,57 @@ function saveCurrentScore() {
   saveScore(studentId);
 }
 
-function onScoreChange(studentId, field, val, max) {
-  let n = parseInt(val);
-  if (isNaN(n)) n = null;
-  else if (n < 0) n = 0;
-  else if (n > max) n = max;
-  const pct = n !== null ? Math.round(n / max * 100) : 0;
-  const bar = document.getElementById(`bar-${field}`);
-  if (bar) bar.style.width = pct + '%';
-  if (!state.scores[state.currentJudge]) state.scores[state.currentJudge] = {};
-  if (!state.scores[state.currentJudge][studentId]) state.scores[state.currentJudge][studentId] = {};
-  state.scores[state.currentJudge][studentId][field] = n;
-  const sc = state.scores[state.currentJudge][studentId];
-  const tot = totalScore(sc);
-  const tn = document.getElementById('total-num');
-  if (tn) tn.textContent = tot !== null ? tot : '—';
-}
-
 async function saveScore(studentId) {
   const sc = state.scores[state.currentJudge]?.[studentId] || {};
   if (sc.content === null || sc.content === undefined ||
       sc.expression === null || sc.expression === undefined ||
       sc.creativity === null || sc.creativity === undefined) {
-    toast('请填写全部三项分数');
-    return;
+    showSaveFeedback('请填写全部三项分数', true); return;
   }
-  if (sc.content > 40) { toast('内容满分为 40 分'); return; }
-  if (sc.expression > 35) { toast('表达满分为 35 分'); return; }
-  if (sc.creativity > 25) { toast('创意满分为 25 分'); return; }
+  if (sc.content > 40)   { showSaveFeedback('内容满分为 40 分', true); return; }
+  if (sc.expression > 35){ showSaveFeedback('表达满分为 35 分', true); return; }
+  if (sc.creativity > 25){ showSaveFeedback('创意满分为 25 分', true); return; }
   try {
     const { error } = await db.from('scores').upsert({
-      judge_id: state.currentJudge,
-      student_id: studentId,
-      content: sc.content,
-      expression: sc.expression,
-      creativity: sc.creativity,
-      submitted: false,
-      updated_at: new Date().toISOString(),
+      judge_id: state.currentJudge, student_id: studentId,
+      content: sc.content, expression: sc.expression, creativity: sc.creativity,
+      submitted: false, updated_at: new Date().toISOString(),
     }, { onConflict: 'judge_id,student_id' });
     if (error) throw error;
-    if (!state.scores[state.currentJudge]) state.scores[state.currentJudge] = {};
     state.scores[state.currentJudge][studentId] = { ...sc, submitted: false };
-    updateWsSub();
+    markSaved();
     renderStreamSelectors();
     renderScoreSummary();
-    toast('已储存 ✓');
-  } catch (e) {
-    toast('储存失败，请重试');
+    showSaveFeedback('已储存 ✓');
+  } catch(e) {
+    showSaveFeedback('储存失败，请重试', true);
     console.error(e);
   }
-}
-
-function nextStudent(studentId) {
-  saveScore(studentId).then(() => {
-    const [grade, stream] = (state.currentGroup || '').split(' ');
-    const students = getJudgeStudents(state.currentJudge)
-      .filter(s => s.grade === grade && s.stream === stream);
-    const idx = students.findIndex(s => s.id === studentId);
-    if (idx < students.length - 1) {
-      selectStudent(students[idx + 1].id);
-    } else {
-      toast('本组已到最后一位');
-    }
-  });
 }
 
 async function submitAll() {
   const students = getJudgeStudents(state.currentJudge);
   const unscored = students.filter(s => !isScored(state.currentJudge, s.id));
   if (unscored.length > 0) {
-    toast(`还有 ${unscored.length} 位考生未完成评分`);
-    return;
+    showSubmitFeedback('还有 ' + unscored.length + ' 位考生未完成评分', true); return;
   }
   try {
     for (const s of students) {
       const sc = state.scores[state.currentJudge][s.id];
       const { error } = await db.from('scores').upsert({
-        judge_id: state.currentJudge,
-        student_id: s.id,
-        content: sc.content,
-        expression: sc.expression,
-        creativity: sc.creativity,
-        submitted: true,
-        updated_at: new Date().toISOString(),
+        judge_id: state.currentJudge, student_id: s.id,
+        content: sc.content, expression: sc.expression, creativity: sc.creativity,
+        submitted: true, updated_at: new Date().toISOString(),
       }, { onConflict: 'judge_id,student_id' });
-      if (error) { toast('提交失败：' + error.message); return; }
+      if (error) { showSubmitFeedback('提交失败：' + error.message, true); return; }
     }
-    students.forEach(s => {
-      state.scores[state.currentJudge][s.id].submitted = true;
-    });
-    toast('评分已提交 ✓', 3000);
-    document.getElementById('submitted-banner-wrap').innerHTML = '';
+    students.forEach(s => { state.scores[state.currentJudge][s.id].submitted = true; });
+    showSubmitFeedback('评分已提交 ✓');
     document.getElementById('btn-submit-all').disabled = true;
     document.getElementById('btn-submit-all').style.opacity = '.5';
     renderStreamSelectors();
-  } catch (e) {
-    toast('提交失败：' + e.message);
+  } catch(e) {
+    showSubmitFeedback('提交失败：' + e.message, true);
     console.error(e);
   }
 }
@@ -721,49 +672,33 @@ async function submitAll() {
 // ════════════════════════════════════════════
 const MS_COLS = 20, MS_ROWS = 22;
 const MS_GRID_COLOR = '#6db86d';
-
 const INDENT = '\u3000';
 
 function buildManuscriptHtml(text) {
   const pages = paginateText(text);
   if (!pages.length) pages.push([]);
   return pages.map(function(pageChars, pi) {
-    var pageNum = pages.length > 1 ? '<div class="ms-page-num">第 ' + (pi+1) + ' 页</div>' : '';
+    const pageNum = pages.length > 1 ? '<div class="ms-page-num">第 ' + (pi+1) + ' 页</div>' : '';
     return '<div class="ms-page-block" data-page="' + pi + '">' +
-      '<div class="ms-grid-wrap">' +
-        '<canvas class="ms-grid-canvas"></canvas>' +
-        '<div class="ms-text-layer"></div>' +
-      '</div>' +
-      pageNum +
-    '</div>';
+      '<div class="ms-grid-wrap"><canvas class="ms-grid-canvas"></canvas><div class="ms-text-layer"></div></div>' +
+      pageNum + '</div>';
   }).join('');
 }
 
 function paginateText(text) {
-  if (text.length > 0 && text[0] !== INDENT) {
-    text = INDENT + INDENT + text;
-  }
-
-  var pages = [];
-  var row = 0, col = 0, page = [];
-  var NEWLINE = '\n';
-
-  for (var i = 0; i < text.length; i++) {
-    var ch = text[i];
-
-    if (ch === NEWLINE) {
-      row++; col = 0;
-    } else {
-      page.push({ ch: ch, row: row % MS_ROWS, col: col });
+  if (text.length > 0 && text[0] !== INDENT) text = INDENT + INDENT + text;
+  const pages = [];
+  let row = 0, col = 0, page = [];
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '\n') { row++; col = 0; }
+    else {
+      page.push({ ch, row: row % MS_ROWS, col });
       col++;
       if (col >= MS_COLS) { row++; col = 0; }
     }
-
-    if (row >= MS_ROWS) {
-      pages.push(page); page = []; row = 0; col = 0;
-    }
+    if (row >= MS_ROWS) { pages.push(page); page = []; row = 0; col = 0; }
   }
-
   if (page.length || !pages.length) pages.push(page);
   return pages;
 }
@@ -772,33 +707,22 @@ function renderManuscript(containerId, text) {
   const container = document.getElementById('ms-pages-' + containerId);
   if (!container) return;
   const dpr = window.devicePixelRatio || 1;
-
   container.querySelectorAll('.ms-page-block').forEach((block, pi) => {
     const wrap = block.querySelector('.ms-grid-wrap');
     const cv = block.querySelector('.ms-grid-canvas');
     const textLayer = block.querySelector('.ms-text-layer');
     if (!wrap || !cv || !textLayer) return;
-
     const TW = wrap.clientWidth || wrap.parentNode.clientWidth || 400;
-    const cW = TW / MS_COLS;
-    const cH = cW;
-    const auxH = Math.round(cH * 0.3);
-    const gH = cH + auxH;
-    const TH = (MS_ROWS - 1) * gH + cH;
-    const BOT = 2;
-
-    cv.width = Math.round(TW * dpr);
-    cv.height = Math.round((TH + BOT) * dpr);
-    cv.style.width = TW + 'px';
-    cv.style.height = (TH + BOT) + 'px';
+    const cW = TW / MS_COLS, cH = cW;
+    const auxH = Math.round(cH * 0.3), gH = cH + auxH;
+    const TH = (MS_ROWS - 1) * gH + cH, BOT = 2;
+    cv.width = Math.round(TW * dpr); cv.height = Math.round((TH + BOT) * dpr);
+    cv.style.width = TW + 'px'; cv.style.height = (TH + BOT) + 'px';
     wrap.style.height = (TH + BOT) + 'px';
-
     const ctx = cv.getContext('2d');
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, TW, TH + BOT);
-    ctx.strokeStyle = MS_GRID_COLOR;
-    ctx.lineWidth = 0.4;
-
+    ctx.strokeStyle = MS_GRID_COLOR; ctx.lineWidth = 0.4;
     for (let r = 0; r < MS_ROWS; r++) {
       const base = r * gH, wb = base + cH, ab = wb + auxH;
       if (r < MS_ROWS - 1) {
@@ -811,25 +735,19 @@ function renderManuscript(containerId, text) {
     }
     ctx.lineWidth = 0.8;
     ctx.strokeRect(0.4, 0.4, TW - 0.8, TH + BOT - 0.8);
-
     textLayer.innerHTML = '';
-    textLayer.style.width = TW + 'px';
-    textLayer.style.height = TH + 'px';
-
+    textLayer.style.width = TW + 'px'; textLayer.style.height = TH + 'px';
     const fs = Math.round(cH * 0.62);
     const topOffset = Math.round((cH - fs) / 2) + Math.round(cH * 0.03);
-
     const pages = paginateText(text);
     const pageChars = pages[pi] || [];
-
     pageChars.forEach(({ ch, row: r, col: c }) => {
       const span = document.createElement('span');
       span.textContent = ch;
       span.style.cssText = `position:absolute;left:${c*cW}px;top:${r*gH+topOffset}px;` +
         `width:${cW}px;height:${fs}px;display:flex;align-items:center;justify-content:center;` +
         `font-size:${fs}px;font-weight:100;line-height:1;color:#2a6a3a;` +
-        `font-family:"Noto Serif SC","SimSun","宋体","STSong",serif;box-sizing:border-box;` +
-        `-webkit-font-smoothing:antialiased;`;
+        `font-family:"Noto Serif SC","SimSun","宋体","STSong",serif;box-sizing:border-box;-webkit-font-smoothing:antialiased;`;
       textLayer.appendChild(span);
     });
   });
@@ -842,8 +760,6 @@ function initManuscriptForStudent(studentId) {
     renderManuscript(studentId, s.essay || '');
   });
 }
-// ════════════════════════════════════════════
-
 
 // ── Score Summary ─────────────────────────────
 var _sortMode = 'orig';
@@ -869,7 +785,6 @@ function renderScoreSummary() {
     if (boardPaper) boardPaper.style.borderRadius = '0 0 12px 12px';
     return;
   }
-
   if (wrap) wrap.style.display = 'block';
   if (boardPaper) boardPaper.style.borderRadius = '0';
   if (boardSummary) {
@@ -883,50 +798,36 @@ function renderScoreSummary() {
   const tbody = document.getElementById('score-summary-tbody');
   if (!tbody) return;
 
-  let html = '';
-  let globalSeq = 0;
-
+  let html = '', globalSeq = 0;
   groups.forEach(function(g) {
     const grades = g.grades || [g.grade];
-    // 只显示本组已评的考生
-    const groupScored = scored.filter(function(s) {
-      return grades.includes(s.grade) && s.stream === g.stream;
-    });
+    const groupScored = scored.filter(s => grades.includes(s.grade) && s.stream === g.stream);
     if (!groupScored.length) return;
-
-    var rows = groupScored.map(function(s) {
-      var sc = getScore(state.currentJudge, s.id) || {};
-      var tot = totalScore(sc);
-      return { s: s, sc: sc, tot: tot };
+    let rows = groupScored.map(s => {
+      const sc = getScore(state.currentJudge, s.id) || {};
+      return { s, sc, tot: totalScore(sc) };
     });
-
-    if (_sortMode === 'score') {
-      rows.sort(function(a, b) { return (b.tot || 0) - (a.tot || 0); });
-    }
-
-    // 分组标题行
-    var groupLabel = getGroupLabel(g);
-    html += '<tr class="group-header-row"><td colspan="6">' + groupLabel + '</td></tr>';
-
+    if (_sortMode === 'score') rows.sort((a, b) => (b.tot || 0) - (a.tot || 0));
+    html += '<tr class="group-header-row"><td colspan="6">' + getGroupLabel(g) + '</td></tr>';
     rows.forEach(function(r) {
       globalSeq++;
-      var active = state.currentStudent === r.s.id ? ' class="editing"' : '';
+      const active = state.currentStudent === r.s.id ? ' class="editing"' : '';
       html += '<tr' + active + ' onclick="selectStudentFromSummary(&quot;' + r.s.id + '&quot;)" title="点击修改">' +
         '<td class="seq">' + globalSeq + '</td>' +
         '<td class="ss-code" style="text-align:left;padding-left:8px">' + r.s.name + '</td>' +
         '<td>' + (r.sc.content !== null && r.sc.content !== undefined ? r.sc.content : '<span class="ss-pending">—</span>') + '</td>' +
         '<td>' + (r.sc.expression !== null && r.sc.expression !== undefined ? r.sc.expression : '<span class="ss-pending">—</span>') + '</td>' +
         '<td>' + (r.sc.creativity !== null && r.sc.creativity !== undefined ? r.sc.creativity : '<span class="ss-pending">—</span>') + '</td>' +
-        '<td><span class="ss-total">' + (r.tot !== null ? r.tot : '—') + '</span></td>' +
-      '</tr>';
+        '<td><span class="ss-total">' + (r.tot !== null ? r.tot : '—') + '</span></td></tr>';
     });
   });
-
   tbody.innerHTML = html;
 }
 
-function selectStudentFromSummary(studentId) {
+async function selectStudentFromSummary(studentId) {
+  await autoSaveIfNeeded();  // auto-save before switching
   state.currentStudent = studentId;
+  markSaved();
   renderStreamSelectors();
   renderEssayPanel(studentId);
   renderScoreSummary();
@@ -962,10 +863,10 @@ function alignScoreBar() {
 }
 window.addEventListener('resize', alignScoreBar);
 
-// Edge-only: zoom to 80%
+// Edge zoom
 (function() {
   if (navigator.userAgent.indexOf("Edg/") === -1) return;
-  var style = document.createElement("style");
+  const style = document.createElement("style");
   style.textContent = "body { zoom: 0.80; }";
   document.head.appendChild(style);
 })();
@@ -974,13 +875,12 @@ window.addEventListener('popstate', function(e) {
   if (!e.state || e.state.screen === 'select') {
     document.getElementById('screen-workspace').classList.remove('active');
     document.getElementById('screen-select').classList.add('active');
-    state.currentJudge = null;
-    state.currentStudent = null;
+    state.currentJudge = null; state.currentStudent = null; _unsaved = false;
+    markSaved();
   }
 });
 
 init();
-
 </script>
 </body>
 </html>

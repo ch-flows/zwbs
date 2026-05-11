@@ -626,10 +626,9 @@ function renderQueryResult(studentId) {
 }
 
 // ════════════════════════════════════════════
-// 稿纸渲染引擎
+// 稿纸打印引擎（纯CSS表格，无Canvas）
 // ════════════════════════════════════════════
 const MS_COLS = 20, MS_ROWS = 22;
-const MS_GRID_COLOR = '#6db86d';
 const INDENT = '\u3000';
 
 function paginateText(text) {
@@ -650,64 +649,40 @@ function paginateText(text) {
   return pages;
 }
 
-function buildManuscriptHtml(text) {
+function buildPrintManuscript(text) {
   const pages = paginateText(text);
   if (!pages.length) pages.push([]);
-  return pages.map(function(pageChars, pi) {
-    const pageNum = pages.length > 1 ? '<div class="ms-page-num">第 ' + (pi+1) + ' 页</div>' : '';
-    return '<div class="ms-page-block" data-page="' + pi + '">' +
-      '<div class="ms-grid-wrap"><canvas class="ms-grid-canvas"></canvas><div class="ms-text-layer"></div></div>' +
-      pageNum + '</div>';
-  }).join('');
-}
 
-function renderManuscriptInContainer(container, text) {
-  if (!container) return;
-  const dpr = window.devicePixelRatio || 1;
-  container.querySelectorAll('.ms-page-block').forEach((block, pi) => {
-    const wrap = block.querySelector('.ms-grid-wrap');
-    const cv = block.querySelector('.ms-grid-canvas');
-    const textLayer = block.querySelector('.ms-text-layer');
-    if (!wrap || !cv || !textLayer) return;
-    const TW = wrap.clientWidth || 600;
-    const cW = TW / MS_COLS, cH = cW;
-    const auxH = Math.round(cH * 0.3), gH = cH + auxH;
-    const TH = (MS_ROWS - 1) * gH + cH, BOT = 2;
-    cv.width = Math.round(TW * dpr); cv.height = Math.round((TH + BOT) * dpr);
-    cv.style.width = TW + 'px'; cv.style.height = (TH + BOT) + 'px';
-    wrap.style.height = (TH + BOT) + 'px';
-    const ctx = cv.getContext('2d');
-    ctx.scale(dpr, dpr);
-    ctx.clearRect(0, 0, TW, TH + BOT);
-    ctx.strokeStyle = MS_GRID_COLOR; ctx.lineWidth = 0.4;
-    for (let r = 0; r < MS_ROWS; r++) {
-      const base = r * gH, wb = base + cH, ab = wb + auxH;
-      if (r < MS_ROWS - 1) {
-        ctx.beginPath(); ctx.moveTo(0, wb); ctx.lineTo(TW, wb); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(0, ab); ctx.lineTo(TW, ab); ctx.stroke();
-      }
-      for (let c = 1; c < MS_COLS; c++) {
-        ctx.beginPath(); ctx.moveTo(c * cW, base); ctx.lineTo(c * cW, wb); ctx.stroke();
-      }
+  return pages.map(function(pageChars, pi) {
+    // 把字符放进二维数组 grid[row][col]
+    var grid = [];
+    for (var r = 0; r < MS_ROWS; r++) {
+      grid[r] = [];
+      for (var c = 0; c < MS_COLS; c++) grid[r][c] = '';
     }
-    ctx.lineWidth = 0.8;
-    ctx.strokeRect(0.4, 0.4, TW - 0.8, TH + BOT - 0.8);
-    textLayer.innerHTML = '';
-    textLayer.style.width = TW + 'px'; textLayer.style.height = TH + 'px';
-    const fs = Math.round(cH * 0.62);
-    const topOffset = Math.round((cH - fs) / 2) + Math.round(cH * 0.03);
-    const pages = paginateText(text);
-    const pageChars = pages[pi] || [];
-    pageChars.forEach(({ ch, row: r, col: c }) => {
-      const span = document.createElement('span');
-      span.textContent = ch;
-      span.style.cssText = `position:absolute;left:${c*cW}px;top:${r*gH+topOffset}px;` +
-        `width:${cW}px;height:${fs}px;display:flex;align-items:center;justify-content:center;` +
-        `font-size:${fs}px;font-weight:100;line-height:1;color:#2a6a3a;` +
-        `font-family:"Noto Serif SC","SimSun","宋体","STSong",serif;box-sizing:border-box;-webkit-font-smoothing:antialiased;`;
-      textLayer.appendChild(span);
-    });
-  });
+    pageChars.forEach(function(item) { grid[item.row][item.col] = item.ch; });
+
+    var rows = grid.map(function(rowArr) {
+      var cells = rowArr.map(function(ch) {
+        return '<td style="width:' + (100/MS_COLS) + '%;border:0.4px solid #6db86d;text-align:center;vertical-align:middle;' +
+          'font-family:\'Noto Serif SC\',serif;font-size:14px;font-weight:300;color:#2a6a3a;padding:0;line-height:1.3">' +
+          (ch ? ch : '') + '</td>';
+      }).join('');
+      return '<tr style="height:1.5em">' + cells + '</tr>';
+    }).join('');
+
+    var pageLabel = pages.length > 1
+      ? '<div style="font-size:9px;color:#aaa;text-align:right;margin-top:3px">第 ' + (pi+1) + ' 页</div>'
+      : '';
+
+    var pageBreak = pi < pages.length - 1 ? 'page-break-after:always;' : '';
+
+    return '<div style="' + pageBreak + 'margin-bottom:8mm">' +
+      '<table style="width:100%;border-collapse:collapse;border:0.8px solid #6db86d;table-layout:fixed">' +
+        '<tbody>' + rows + '</tbody>' +
+      '</table>' + pageLabel +
+    '</div>';
+  }).join('');
 }
 
 // 当前查询的学生id
@@ -719,24 +694,20 @@ function printEssay() {
   if (!s || !s.essay) return;
 
   var printArea = document.getElementById('print-area');
-  // 移到屏幕外但保持可见，让浏览器计算正确宽度
-  printArea.style.cssText = 'position:fixed;left:-9999px;top:0;width:680px;background:#fff;display:block;padding:12mm';
+  printArea.style.cssText = 'display:block';
   printArea.innerHTML =
-    '<div style="font-family:\'Noto Serif SC\',serif;font-size:13px;color:#444;margin-bottom:12px">' +
-      s.name + ' · ' + s.grade + ' · ' + s.stream +
+    '<div style="font-family:\'Noto Serif SC\',serif;font-size:12px;color:#444;margin-bottom:8mm">' +
+      s.name + '　' + s.grade + '　' + s.stream +
     '</div>' +
-    '<div class="manuscript-pages">' + buildManuscriptHtml(s.essay) + '</div>';
+    buildPrintManuscript(s.essay);
 
-  requestAnimationFrame(function() {
-    renderManuscriptInContainer(printArea, s.essay);
+  setTimeout(function() {
+    window.print();
     setTimeout(function() {
-      window.print();
-      setTimeout(function() {
-        printArea.style.cssText = 'display:none';
-        printArea.innerHTML = '';
-      }, 1000);
-    }, 400);
-  });
+      printArea.style.cssText = 'display:none';
+      printArea.innerHTML = '';
+    }, 1000);
+  }, 100);
 }
 
 loadData();

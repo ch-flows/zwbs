@@ -712,7 +712,7 @@ function printEssay() {
         '</div>'
       : '';
 
-    var pageNum = '<div style="text-align:right;font-size:8pt;color:#6db86d;font-family:sans-serif;margin-top:6px;padding-right:2px">第 ' + (pi+1) + ' / ' + pagedData.length + ' 页</div>';
+    var pageNum = '<div style="text-align:right;font-size:8pt;color:#6db86d;font-family:sans-serif;margin-top:6px;padding-right:2px">' + (pi+1) + ' / ' + pagedData.length + '</div>';
     return '<div style="width:' + PW + 'px;page-break-after:always">' +
       header +
       '<div style="position:relative;width:' + PW + 'px;height:' + TH + 'px">' +

@@ -96,6 +96,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* 平局标记 */
 .tie-mark{font-size:10px;color:#c07830;margin-left:3px;font-family:'Noto Serif SC',serif}
 
+/* 稿纸 */
+.manuscript-pages{display:flex;flex-direction:column;gap:16px;margin-top:16px}
+.ms-page-block{margin-bottom:4px}
+.ms-page-num{font-size:8pt;color:#aaa;text-align:right;padding-right:4px;margin-top:4px;font-family:sans-serif}
+.print-btn{padding:6px 16px;border:0.5px solid #a8c0d8;border-radius:7px;background:transparent;color:#2563a8;font-size:13px;font-family:'Noto Serif SC',serif;font-weight:300;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.print-btn:hover{background:#dde8f4}
+
+/* 打印样式 */
+@media print{
+  body *{visibility:hidden}
+  #print-area,#print-area *{visibility:visible}
+  #print-area{position:fixed;inset:0;padding:12mm;background:#fff}
+  .ms-page-block{page-break-after:always}
+  .ms-page-block:last-child{page-break-after:avoid}
+}
+
 @media(max-width:680px){.admin-wrap{padding:16px 4%}}
 </style>
 </head>
@@ -143,6 +159,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="card">
       <div class="card-hdr">
         <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5a7a9a" stroke-width="1.8" style="margin-right:7px;vertical-align:middle"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>评分查询</h2>
+        <button class="print-btn" id="print-btn" onclick="printEssay()" style="display:none">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          打印稿纸
+        </button>
       </div>
       <div class="card-body">
         <div class="query-wrap">
@@ -163,6 +183,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
+<div id="print-area" style="display:none"></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -525,6 +546,9 @@ function onQuerySelect(studentId) {
 
 function renderQueryResult(studentId) {
   var container = document.getElementById('query-result');
+  _queryStudentId = studentId || null;
+  var printBtn = document.getElementById('print-btn');
+  if (printBtn) printBtn.style.display = studentId ? 'inline-flex' : 'none';
   if (!studentId) { container.innerHTML = ''; return; }
   var s = state.students.find(function(x) { return x.id === studentId; });
   if (!s) return;
@@ -599,6 +623,118 @@ function renderQueryResult(studentId) {
       '</div>' +
       '<div class="score-compare-grid">' + cards + summaryCard + '</div>' +
     '</div>';
+}
+
+// ════════════════════════════════════════════
+// 稿纸渲染引擎
+// ════════════════════════════════════════════
+const MS_COLS = 20, MS_ROWS = 22;
+const MS_GRID_COLOR = '#6db86d';
+const INDENT = '\u3000';
+
+function paginateText(text) {
+  if (text.length > 0 && text[0] !== INDENT) text = INDENT + INDENT + text;
+  const pages = [];
+  let row = 0, col = 0, page = [];
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '\n') { row++; col = 0; }
+    else {
+      page.push({ ch, row: row % MS_ROWS, col });
+      col++;
+      if (col >= MS_COLS) { row++; col = 0; }
+    }
+    if (row >= MS_ROWS) { pages.push(page); page = []; row = 0; col = 0; }
+  }
+  if (page.length || !pages.length) pages.push(page);
+  return pages;
+}
+
+function buildManuscriptHtml(text) {
+  const pages = paginateText(text);
+  if (!pages.length) pages.push([]);
+  return pages.map(function(pageChars, pi) {
+    const pageNum = pages.length > 1 ? '<div class="ms-page-num">第 ' + (pi+1) + ' 页</div>' : '';
+    return '<div class="ms-page-block" data-page="' + pi + '">' +
+      '<div class="ms-grid-wrap"><canvas class="ms-grid-canvas"></canvas><div class="ms-text-layer"></div></div>' +
+      pageNum + '</div>';
+  }).join('');
+}
+
+function renderManuscriptInContainer(container, text) {
+  if (!container) return;
+  const dpr = window.devicePixelRatio || 1;
+  container.querySelectorAll('.ms-page-block').forEach((block, pi) => {
+    const wrap = block.querySelector('.ms-grid-wrap');
+    const cv = block.querySelector('.ms-grid-canvas');
+    const textLayer = block.querySelector('.ms-text-layer');
+    if (!wrap || !cv || !textLayer) return;
+    const TW = wrap.clientWidth || 600;
+    const cW = TW / MS_COLS, cH = cW;
+    const auxH = Math.round(cH * 0.3), gH = cH + auxH;
+    const TH = (MS_ROWS - 1) * gH + cH, BOT = 2;
+    cv.width = Math.round(TW * dpr); cv.height = Math.round((TH + BOT) * dpr);
+    cv.style.width = TW + 'px'; cv.style.height = (TH + BOT) + 'px';
+    wrap.style.height = (TH + BOT) + 'px';
+    const ctx = cv.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, TW, TH + BOT);
+    ctx.strokeStyle = MS_GRID_COLOR; ctx.lineWidth = 0.4;
+    for (let r = 0; r < MS_ROWS; r++) {
+      const base = r * gH, wb = base + cH, ab = wb + auxH;
+      if (r < MS_ROWS - 1) {
+        ctx.beginPath(); ctx.moveTo(0, wb); ctx.lineTo(TW, wb); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, ab); ctx.lineTo(TW, ab); ctx.stroke();
+      }
+      for (let c = 1; c < MS_COLS; c++) {
+        ctx.beginPath(); ctx.moveTo(c * cW, base); ctx.lineTo(c * cW, wb); ctx.stroke();
+      }
+    }
+    ctx.lineWidth = 0.8;
+    ctx.strokeRect(0.4, 0.4, TW - 0.8, TH + BOT - 0.8);
+    textLayer.innerHTML = '';
+    textLayer.style.width = TW + 'px'; textLayer.style.height = TH + 'px';
+    const fs = Math.round(cH * 0.62);
+    const topOffset = Math.round((cH - fs) / 2) + Math.round(cH * 0.03);
+    const pages = paginateText(text);
+    const pageChars = pages[pi] || [];
+    pageChars.forEach(({ ch, row: r, col: c }) => {
+      const span = document.createElement('span');
+      span.textContent = ch;
+      span.style.cssText = `position:absolute;left:${c*cW}px;top:${r*gH+topOffset}px;` +
+        `width:${cW}px;height:${fs}px;display:flex;align-items:center;justify-content:center;` +
+        `font-size:${fs}px;font-weight:100;line-height:1;color:#2a6a3a;` +
+        `font-family:"Noto Serif SC","SimSun","宋体","STSong",serif;box-sizing:border-box;-webkit-font-smoothing:antialiased;`;
+      textLayer.appendChild(span);
+    });
+  });
+}
+
+// 当前查询的学生id
+var _queryStudentId = null;
+
+function printEssay() {
+  if (!_queryStudentId) return;
+  var s = state.students.find(function(x) { return x.id === _queryStudentId; });
+  if (!s || !s.essay) return;
+
+  var printArea = document.getElementById('print-area');
+  printArea.style.display = 'block';
+  printArea.innerHTML =
+    '<div style="font-family:\'Noto Serif SC\',serif;font-size:13px;color:#444;margin-bottom:12px">' +
+      s.name + ' · ' + s.grade + ' · ' + s.stream +
+    '</div>' +
+    '<div class="manuscript-pages">' + buildManuscriptHtml(s.essay) + '</div>';
+
+  // 渲染稿纸后打印
+  requestAnimationFrame(function() {
+    renderManuscriptInContainer(printArea, s.essay);
+    setTimeout(function() {
+      window.print();
+      // 打印完毕后清空
+      setTimeout(function() { printArea.style.display = 'none'; printArea.innerHTML = ''; }, 1000);
+    }, 300);
+  });
 }
 
 loadData();

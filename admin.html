@@ -661,8 +661,9 @@ function printEssay() {
   var pages = paginateText(s.essay);
   if (!pages.length) pages.push([]);
 
-  // A4宽度 210mm，减去边距约20mm，内容区约190mm ≈ 719px at 96dpi
-  var PW = 719;
+  // A4: 297mm high, 210mm wide. At 96dpi: 1122 x 794px. Margins 10mm each side.
+  var PW = 749;  // 210mm - 20mm margins at 96dpi
+  var PH = 1062; // 297mm - 20mm margins at 96dpi
   var cW = PW / MS_COLS;
   var cH = cW;
   var auxH = Math.round(cH * 0.3);
@@ -672,7 +673,6 @@ function printEssay() {
   var topOffset = Math.round((cH - fs) / 2) + Math.round(cH * 0.03);
 
   function buildPageHtml(pageChars, pi, total) {
-    // 用绝对定位span，和评分页面完全一致
     var charSpans = pageChars.map(function(item) {
       return '<span style="position:absolute;' +
         'left:' + (item.col * cW) + 'px;' +
@@ -684,14 +684,24 @@ function printEssay() {
         'box-sizing:border-box;">' + item.ch + '</span>';
     }).join('');
 
-    var pageNum = total > 1 ? '<div style="font-size:8pt;color:#aaa;text-align:right;padding-right:4px;margin-top:4px">第 ' + (pi+1) + ' 页</div>' : '';
-    var pageBreak = pi < total - 1 ? 'page-break-after:always;' : '';
+    var headerHtml = pi === 0
+      ? '<div style="font-size:12px;color:#666;margin-bottom:4px;font-family:\'Noto Serif SC\',serif">' +
+          s.name + '　' + s.grade + '　' + s.stream +
+          (s.title ? '　|　' + s.title : '') +
+        '</div>'
+      : '';
 
-    return '<div style="' + pageBreak + 'margin-bottom:8px">' +
-      '<div style="position:relative;width:' + PW + 'px;height:' + TH + 'px;background:#fff" id="pg' + pi + '">' +
+    var pageNum = total > 1
+      ? '<div style="font-size:8pt;color:#aaa;text-align:right;margin-top:4px">第 ' + (pi+1) + ' / ' + total + ' 页</div>'
+      : '';
+
+    return '<div style="width:' + PW + 'px;height:' + PH + 'px;page-break-after:always;display:flex;flex-direction:column;justify-content:flex-start">' +
+      headerHtml +
+      '<div style="position:relative;width:' + PW + 'px;height:' + TH + 'px;flex-shrink:0">' +
         '<canvas id="cv' + pi + '" width="' + PW + '" height="' + TH + '" style="position:absolute;top:0;left:0;width:' + PW + 'px;height:' + TH + 'px"></canvas>' +
         '<div style="position:absolute;top:0;left:0;width:' + PW + 'px;height:' + TH + 'px;overflow:hidden">' + charSpans + '</div>' +
-      '</div>' + pageNum +
+      '</div>' +
+      pageNum +
     '</div>';
   }
 
@@ -701,11 +711,9 @@ function printEssay() {
     '<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300&display=swap" rel="stylesheet">' +
     '<style>' +
     '*{box-sizing:border-box;margin:0;padding:0}' +
-    'body{padding:10mm;background:#fff;font-family:"Noto Serif SC",serif}' +
-    '.student-info{font-size:13px;color:#444;margin-bottom:10px}' +
-    '@media print{body{padding:0}@page{margin:10mm}}' +
+    'body{background:#fff;font-family:"Noto Serif SC",serif;padding:10mm}' +
+    '@media print{body{padding:0}@page{size:A4;margin:10mm}}' +
     '</style></head><body>' +
-    '<div class="student-info">' + s.name + '　' + s.grade + '　' + s.stream + '</div>' +
     pagesHtml +
     '<script>' +
     'window.onload = function() {' +

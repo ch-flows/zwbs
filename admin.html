@@ -107,7 +107,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 @media print{
   body *{visibility:hidden}
   #print-area,#print-area *{visibility:visible}
-  #print-area{position:fixed;inset:0;padding:12mm;background:#fff}
+  #print-area{position:fixed;inset:0;padding:10mm;background:#fff;left:0!important;width:auto!important}
   .ms-page-block{page-break-after:always}
   .ms-page-block:last-child{page-break-after:avoid}
 }
@@ -719,21 +719,23 @@ function printEssay() {
   if (!s || !s.essay) return;
 
   var printArea = document.getElementById('print-area');
-  printArea.style.display = 'block';
+  // 移到屏幕外但保持可见，让浏览器计算正确宽度
+  printArea.style.cssText = 'position:fixed;left:-9999px;top:0;width:680px;background:#fff;display:block;padding:12mm';
   printArea.innerHTML =
     '<div style="font-family:\'Noto Serif SC\',serif;font-size:13px;color:#444;margin-bottom:12px">' +
       s.name + ' · ' + s.grade + ' · ' + s.stream +
     '</div>' +
     '<div class="manuscript-pages">' + buildManuscriptHtml(s.essay) + '</div>';
 
-  // 渲染稿纸后打印
   requestAnimationFrame(function() {
     renderManuscriptInContainer(printArea, s.essay);
     setTimeout(function() {
       window.print();
-      // 打印完毕后清空
-      setTimeout(function() { printArea.style.display = 'none'; printArea.innerHTML = ''; }, 1000);
-    }, 300);
+      setTimeout(function() {
+        printArea.style.cssText = 'display:none';
+        printArea.innerHTML = '';
+      }, 1000);
+    }, 400);
   });
 }
 
